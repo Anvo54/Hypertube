@@ -7,16 +7,40 @@ import Browse from './movieList/Browse';
 
 const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
-	const { getMovies, movies, savedSearch } = rootStore.movieStore;
+	const {
+		getMovies,
+		getNextPage,
+		movies,
+		savedSearch,
+		page,
+		movieQueryLength,
+	} = rootStore.movieStore;
 	const searchTimer = useRef<NodeJS.Timeout>();
 	const [searchQuery, setQuery] = useState(savedSearch);
 	const [loading, setLoading] = useState(false);
+	const [pageNbr, setpageNb] = useState(0);
 
 	useEffect(() => {
-		if (movies.count !== 0 || savedSearch !== '') return;
+		if (pageNbr !== page && movies.count === 0) {
+			setLoading(true);
+			getMovies(searchQuery).then(() => setLoading(false));
+			setpageNb(page);
+			return;
+		}
+		if (savedSearch !== '' || pageNbr === page || movieQueryLength === 0)
+			return;
 		setLoading(true);
 		getMovies(searchQuery).then(() => setLoading(false));
-	}, [getMovies, movies.count, savedSearch, searchQuery]);
+		setpageNb(page);
+	}, [
+		getMovies,
+		movies.count,
+		savedSearch,
+		searchQuery,
+		pageNbr,
+		page,
+		movieQueryLength,
+	]);
 
 	useEffect(() => {
 		if (savedSearch === '' && searchQuery === '') return;
@@ -38,7 +62,12 @@ const MainContent: React.FC = () => {
 				searchQuery={searchQuery}
 				loading={loading}
 			/>
-			<Browse loading={loading} movies={movies.movies} />
+			<Browse
+				loading={loading}
+				movies={movies.movies}
+				getNextPage={getNextPage}
+				movieQueryLength={movieQueryLength}
+			/>
 		</Segment>
 	);
 };

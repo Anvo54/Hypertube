@@ -58,8 +58,16 @@ const User = {
 };
 
 const Movies = {
-	search: (title: string, token: string): Promise<IMovieList> =>
-		requests.getAuth(`movies/search?query=${title}`, token),
+	search: (
+		title: string,
+		token: string,
+		limit: number,
+		page: number
+	): Promise<IMovieList> =>
+		requests.getAuth(
+			`movies/search?query=${title}&limit=${limit}&page=${page}`,
+			token
+		),
 	get: (imdbCode: string, token: string): Promise<IMovie> =>
 		requests.getAuth(`movies/${imdbCode}`, token),
 };
