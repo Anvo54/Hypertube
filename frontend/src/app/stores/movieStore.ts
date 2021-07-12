@@ -9,7 +9,20 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 1;
-	limit = 50;
+	limitValues = [
+		{ key: 0, text: '20', value: 20 },
+		{ key: 1, text: '40', value: 40 },
+		{ key: 2, text: '60', value: 60 },
+		{ key: 3, text: '80', value: 80 },
+		{ key: 4, text: '100', value: 100 },
+	];
+	testi = [{ key: 'Action', text: 'Action', value: 'Action' }];
+	limit = 20;
+	orderBy = [
+		{ key: 0, test: 'Ascending', value: 'asc' },
+		{ key: 0, test: 'Descending', value: 'desc' },
+	];
+	genres: string[] = [];
 	movie: IMovie | null = null;
 
 	constructor(rootStore: RootStore) {
@@ -28,10 +41,29 @@ export default class MovieStore {
 					this.page
 				);
 				runInAction(() => {
-					this.movieQueryLength = tempMovies.movies.length;
-					this.movies.count += tempMovies.movies.length;
-					this.movies.movies = this.movies.movies.concat(tempMovies.movies);
-					this.savedSearch = search;
+					if (this.savedSearch !== search) {
+						this.movieQueryLength = tempMovies.movies.length;
+						this.movies.movies = tempMovies.movies;
+						this.movies.count = tempMovies.movies.length;
+						this.savedSearch = search;
+						this.genres = [
+							...new Set([
+								...this.genres,
+								...tempMovies.movies.flatMap((m) => m.genres),
+							]),
+						];
+						this.page = 0;
+					} else {
+						this.movieQueryLength = tempMovies.movies.length;
+						this.movies.movies = [...this.movies.movies, ...tempMovies.movies];
+						this.movies.count += tempMovies.movies.length;
+						this.genres = [
+							...new Set([
+								...this.genres,
+								...tempMovies.movies.flatMap((m) => m.genres),
+							]),
+						];
+					}
 				});
 			} catch (error) {
 				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
@@ -55,6 +87,10 @@ export default class MovieStore {
 	};
 
 	getNextPage = (): void => {
-		this.page += 1;
+		runInAction(() => (this.page += 1));
+	};
+
+	setResultLimit = (value: number): void => {
+		runInAction(() => (this.limit = value));
 	};
 }

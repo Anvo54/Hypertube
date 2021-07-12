@@ -27,7 +27,6 @@ const Browse: React.FC<BrowseProps> = ({
 	movieQueryLength,
 }) => {
 	const { t } = useTranslation();
-
 	const getNext = () => {
 		if (movieQueryLength !== 0) {
 			getNextPage();
@@ -68,6 +67,7 @@ const Browse: React.FC<BrowseProps> = ({
 				</Item.Group>
 			)}
 			<Visibility onBottomVisible={() => getNext()} once={loading} />
+			{movieQueryLength === 0 && <Header>No more results!</Header>}
 		</Segment>
 	);
 };

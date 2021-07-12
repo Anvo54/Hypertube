@@ -2,7 +2,7 @@ import SearchMovies from 'app/views/movieList/SearchMovies';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Segment } from 'semantic-ui-react';
+import { Dropdown, Grid, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
 
 const MainContent: React.FC = () => {
@@ -10,6 +10,10 @@ const MainContent: React.FC = () => {
 	const {
 		getMovies,
 		getNextPage,
+		setResultLimit,
+		limitValues,
+		limit,
+		genres,
 		movies,
 		savedSearch,
 		page,
@@ -23,7 +27,9 @@ const MainContent: React.FC = () => {
 	useEffect(() => {
 		if (pageNbr !== page && movies.count === 0) {
 			setLoading(true);
-			getMovies(searchQuery).then(() => setLoading(false));
+			getMovies(searchQuery).then(() => {
+				setLoading(false);
+			});
 			setpageNb(page);
 			return;
 		}
@@ -62,6 +68,29 @@ const MainContent: React.FC = () => {
 				searchQuery={searchQuery}
 				loading={loading}
 			/>
+			<Grid>
+				<Grid.Row>
+					<Grid.Column>
+						<h5>Result limit</h5>
+					</Grid.Column>
+					<Grid.Column>
+						<Dropdown
+							options={limitValues}
+							onChange={(e, { value }) => setResultLimit(value as number)}
+							value={limit}
+						/>
+					</Grid.Column>
+					<Grid.Column>
+						<h5>Filter by genres</h5>
+					</Grid.Column>
+					<Grid.Column>
+						<Dropdown
+							onChange={(e, { value }) => setResultLimit(value as number)}
+						/>
+					</Grid.Column>
+				</Grid.Row>
+			</Grid>
+
 			<Browse
 				loading={loading}
 				movies={movies.movies}
