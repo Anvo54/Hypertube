@@ -11,9 +11,12 @@ const MainContent: React.FC = () => {
 		getMovies,
 		getNextPage,
 		setResultLimit,
+		setGenre,
 		limitValues,
 		limit,
-		genres,
+		genresObj,
+		genre,
+		prevGenre,
 		movies,
 		savedSearch,
 		page,
@@ -25,7 +28,7 @@ const MainContent: React.FC = () => {
 	const [pageNbr, setpageNb] = useState(0);
 
 	useEffect(() => {
-		if (pageNbr !== page && movies.count === 0) {
+		if ((pageNbr !== page && movies.count === 0) || genre !== prevGenre ) {
 			setLoading(true);
 			getMovies(searchQuery).then(() => {
 				setLoading(false);
@@ -84,13 +87,10 @@ const MainContent: React.FC = () => {
 						<h5>Filter by genres</h5>
 					</Grid.Column>
 					<Grid.Column>
-						<Dropdown
-							onChange={(e, { value }) => setResultLimit(value as number)}
-						/>
+						<Dropdown selection multiple options={genresObj} onChange={(e, {value}) => setGenre(value as string[])} />
 					</Grid.Column>
 				</Grid.Row>
 			</Grid>
-
 			<Browse
 				loading={loading}
 				movies={movies.movies}

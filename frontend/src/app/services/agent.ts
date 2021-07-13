@@ -62,10 +62,11 @@ const Movies = {
 		title: string,
 		token: string,
 		limit: number,
-		page: number
+		page: number,
+		genre: string,
 	): Promise<IMovieList> =>
 		requests.getAuth(
-			`movies/search?query=${title}&limit=${limit}&page=${page}`,
+			`movies/search?query=${title}&limit=${limit}&page=${page}${genre}`,
 			token
 		),
 	get: (imdbCode: string, token: string): Promise<IMovie> =>

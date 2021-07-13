@@ -9,6 +9,7 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 1;
+	prevGenre = '&genre=';
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
 		{ key: 1, text: '40', value: 40 },
@@ -16,13 +17,23 @@ export default class MovieStore {
 		{ key: 3, text: '80', value: 80 },
 		{ key: 4, text: '100', value: 100 },
 	];
-	testi = [{ key: 'Action', text: 'Action', value: 'Action' }];
+	genresObj = [
+		{key: 'Action', text: 'Action', value: 'Action'},
+		{key: 'Comedy', text: 'Comedy', value: 'Comedy'},
+		{key: 'Drama', text: 'Drama', value: 'Drama'},
+		{key: 'Fantasy', text: 'Fantasy', value: 'Fantasy'},
+		{key: 'Horror', text: 'Horror', value: 'Horror'},
+		{key: 'Mystery', text: 'Mystery', value: 'Mystery'},
+		{key: 'Romance', text: 'Romance', value: 'Romance'},
+		{key: 'Thriller', text: 'Thriller', value: 'Thriller'},
+		{key: 'Western', text: 'Western', value: 'Western'},
+	];
+	genre = '&genre=';
 	limit = 20;
 	orderBy = [
 		{ key: 0, test: 'Ascending', value: 'asc' },
 		{ key: 0, test: 'Descending', value: 'desc' },
 	];
-	genres: string[] = [];
 	movie: IMovie | null = null;
 
 	constructor(rootStore: RootStore) {
@@ -38,31 +49,20 @@ export default class MovieStore {
 					search,
 					token,
 					this.limit,
-					this.page
+					this.page,
+					this.genre,
 				);
 				runInAction(() => {
-					if (this.savedSearch !== search) {
+					if ((this.savedSearch !== search) || (this.genre != this.prevGenre)) {
 						this.movieQueryLength = tempMovies.movies.length;
 						this.movies.movies = tempMovies.movies;
 						this.movies.count = tempMovies.movies.length;
 						this.savedSearch = search;
-						this.genres = [
-							...new Set([
-								...this.genres,
-								...tempMovies.movies.flatMap((m) => m.genres),
-							]),
-						];
 						this.page = 0;
 					} else {
 						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = [...this.movies.movies, ...tempMovies.movies];
+						this.movies.movies = [...this.movies.movies, ...tempMovies.movies]
 						this.movies.count += tempMovies.movies.length;
-						this.genres = [
-							...new Set([
-								...this.genres,
-								...tempMovies.movies.flatMap((m) => m.genres),
-							]),
-						];
 					}
 				});
 			} catch (error) {
@@ -93,4 +93,12 @@ export default class MovieStore {
 	setResultLimit = (value: number): void => {
 		runInAction(() => (this.limit = value));
 	};
+
+	setGenre = (genre: string[]): void => {
+		runInAction(() => {
+			this.genre = '&genre=' + genre.toLocaleString().replaceAll(',', '&genre=')
+			this.getMovies(this.savedSearch);
+		})
+		this.prevGenre = this.genre;
+	}
 }
