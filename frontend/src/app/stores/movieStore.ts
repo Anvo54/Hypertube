@@ -18,15 +18,15 @@ export default class MovieStore {
 		{ key: 4, text: '100', value: 100 },
 	];
 	genresObj = [
-		{key: 'Action', text: 'Action', value: 'Action'},
-		{key: 'Comedy', text: 'Comedy', value: 'Comedy'},
-		{key: 'Drama', text: 'Drama', value: 'Drama'},
-		{key: 'Fantasy', text: 'Fantasy', value: 'Fantasy'},
-		{key: 'Horror', text: 'Horror', value: 'Horror'},
-		{key: 'Mystery', text: 'Mystery', value: 'Mystery'},
-		{key: 'Romance', text: 'Romance', value: 'Romance'},
-		{key: 'Thriller', text: 'Thriller', value: 'Thriller'},
-		{key: 'Western', text: 'Western', value: 'Western'},
+		{ key: 'Action', text: 'Action', value: 'Action' },
+		{ key: 'Comedy', text: 'Comedy', value: 'Comedy' },
+		{ key: 'Drama', text: 'Drama', value: 'Drama' },
+		{ key: 'Fantasy', text: 'Fantasy', value: 'Fantasy' },
+		{ key: 'Horror', text: 'Horror', value: 'Horror' },
+		{ key: 'Mystery', text: 'Mystery', value: 'Mystery' },
+		{ key: 'Romance', text: 'Romance', value: 'Romance' },
+		{ key: 'Thriller', text: 'Thriller', value: 'Thriller' },
+		{ key: 'Western', text: 'Western', value: 'Western' },
 	];
 	genre = '&genre=';
 	limit = 20;
@@ -50,10 +50,10 @@ export default class MovieStore {
 					token,
 					this.limit,
 					this.page,
-					this.genre,
+					this.genre
 				);
 				runInAction(() => {
-					if ((this.savedSearch !== search) || (this.genre != this.prevGenre)) {
+					if (this.savedSearch !== search || this.genre != this.prevGenre) {
 						this.movieQueryLength = tempMovies.movies.length;
 						this.movies.movies = tempMovies.movies;
 						this.movies.count = tempMovies.movies.length;
@@ -61,7 +61,10 @@ export default class MovieStore {
 						this.page = 0;
 					} else {
 						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = [...this.movies.movies, ...tempMovies.movies]
+						this.movies.movies = [
+							...this.movies.movies,
+							...tempMovies.movies,
+						].filter((el) => !this.movies.movies.includes(el));
 						this.movies.count += tempMovies.movies.length;
 					}
 				});
@@ -96,9 +99,10 @@ export default class MovieStore {
 
 	setGenre = (genre: string[]): void => {
 		runInAction(() => {
-			this.genre = '&genre=' + genre.toLocaleString().replaceAll(',', '&genre=')
+			this.genre =
+				'&genre=' + genre.toLocaleString().replaceAll(',', '&genre=');
 			this.getMovies(this.savedSearch);
-		})
+		});
 		this.prevGenre = this.genre;
-	}
+	};
 }

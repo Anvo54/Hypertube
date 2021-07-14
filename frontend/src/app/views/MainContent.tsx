@@ -48,6 +48,8 @@ const MainContent: React.FC = () => {
 		searchQuery,
 		pageNbr,
 		page,
+		prevGenre,
+		genre,
 		movieQueryLength,
 	]);
 
