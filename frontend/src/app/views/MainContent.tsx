@@ -24,10 +24,48 @@ const MainContent: React.FC = () => {
 	} = rootStore.movieStore;
 	const searchTimer = useRef<NodeJS.Timeout>();
 	const [searchQuery, setQuery] = useState(savedSearch);
+	const [firstLoad, setFirstLoad] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [pageNbr, setpageNb] = useState(0);
 
+	/* Get initial movie list */
 	useEffect(() => {
+		if (firstLoad) {
+			setLoading(true);
+			getMovies(searchQuery).then(() => {
+				setFirstLoad(false);
+				setLoading(false);
+			});
+		}
+	},[firstLoad, getMovies, searchQuery]);
+
+	/* If Page Changes */
+
+	useEffect(() => {
+		if (pageNbr !== page) {
+			setLoading(true)
+			getMovies(searchQuery).then(() => {
+				setLoading(false)
+				setpageNb(page)
+			})
+		}
+	},[getMovies, page, pageNbr, searchQuery])
+
+	/* If Search query changes */
+
+	useEffect(() => {
+		if (savedSearch === '' && searchQuery === '') return;
+		if (savedSearch && searchQuery === savedSearch) return;
+		if (searchTimer.current) clearTimeout(searchTimer.current!);
+		searchTimer.current = setTimeout(() => {
+			setLoading(true);
+			getMovies(searchQuery).then(() => setLoading(false));
+		}, 700);
+		return () => {
+			if (searchTimer.current) clearTimeout(searchTimer.current!);
+		};
+	}, [searchQuery, getMovies, savedSearch]);
+	/* 	useEffect(() => {
 		if ((pageNbr !== page && movies.count === 0) || genre !== prevGenre ) {
 			setLoading(true);
 			getMovies(searchQuery).then(() => {
@@ -64,7 +102,7 @@ const MainContent: React.FC = () => {
 		return () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
-	}, [searchQuery, getMovies, savedSearch]);
+	}, [searchQuery, getMovies, savedSearch]); */
 
 	return (
 		<Segment style={{ minHeight: 500, padding: 60 }}>
@@ -89,7 +127,12 @@ const MainContent: React.FC = () => {
 						<h5>Filter by genres</h5>
 					</Grid.Column>
 					<Grid.Column>
-						<Dropdown selection multiple options={genresObj} onChange={(e, {value}) => setGenre(value as string[])} />
+						<Dropdown
+							selection
+							multiple
+							options={genresObj}
+							onChange={(e, { value }) => setGenre(value as string[])}
+						/>
 					</Grid.Column>
 				</Grid.Row>
 			</Grid>

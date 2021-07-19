@@ -8,7 +8,7 @@ export default class MovieStore {
 	movies: IMovieList = { count: 0, movies: [] };
 	movieQueryLength = 0;
 	savedSearch = '';
-	page = 1;
+	page = 0;
 	prevGenre = '&genre=';
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
@@ -54,6 +54,7 @@ export default class MovieStore {
 				);
 				runInAction(() => {
 					if (this.savedSearch !== search || this.genre != this.prevGenre) {
+						console.log('here1')
 						this.movieQueryLength = tempMovies.movies.length;
 						this.movies.movies = tempMovies.movies;
 						this.movies.count = tempMovies.movies.length;
@@ -64,8 +65,7 @@ export default class MovieStore {
 						this.movies.movies = [
 							...this.movies.movies,
 							...tempMovies.movies,
-						].filter((el) => !this.movies.movies.includes(el));
-						this.movies.count += tempMovies.movies.length;
+						]
 					}
 				});
 			} catch (error) {
