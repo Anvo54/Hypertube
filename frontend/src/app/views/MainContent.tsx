@@ -4,21 +4,24 @@ import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Dropdown, Grid, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
+import { useTranslation } from 'react-i18next';
 
 const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
+	const { t } = useTranslation();
 	const {
 		getMovies,
 		getNextPage,
 		setResultLimit,
 		setGenre,
+		setOrder,
 		limitValues,
-		limit,
 		genresObj,
 		genre,
 		prevGenre,
 		movies,
 		savedSearch,
+		orderBy,
 		page,
 		movieQueryLength,
 	} = rootStore.movieStore;
@@ -37,19 +40,19 @@ const MainContent: React.FC = () => {
 				setLoading(false);
 			});
 		}
-	},[firstLoad, getMovies, searchQuery]);
+	}, [firstLoad, getMovies, searchQuery]);
 
 	/* If Page Changes */
 
 	useEffect(() => {
 		if (pageNbr !== page) {
-			setLoading(true)
+			setLoading(true);
 			getMovies(searchQuery).then(() => {
-				setLoading(false)
-				setpageNb(page)
-			})
+				setLoading(false);
+				setpageNb(page);
+			});
 		}
-	},[getMovies, page, pageNbr, searchQuery])
+	}, [getMovies, page, pageNbr, searchQuery]);
 
 	/* If Search query changes */
 
@@ -65,73 +68,49 @@ const MainContent: React.FC = () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
 	}, [searchQuery, getMovies, savedSearch]);
-	/* 	useEffect(() => {
-		if ((pageNbr !== page && movies.count === 0) || genre !== prevGenre ) {
-			setLoading(true);
-			getMovies(searchQuery).then(() => {
-				setLoading(false);
-			});
-			setpageNb(page);
-			return;
-		}
-		if (savedSearch !== '' || pageNbr === page || movieQueryLength === 0)
-			return;
-		setLoading(true);
-		getMovies(searchQuery).then(() => setLoading(false));
-		setpageNb(page);
-	}, [
-		getMovies,
-		movies.count,
-		savedSearch,
-		searchQuery,
-		pageNbr,
-		page,
-		prevGenre,
-		genre,
-		movieQueryLength,
-	]);
+
+	/* If Genre changes */
 
 	useEffect(() => {
-		if (savedSearch === '' && searchQuery === '') return;
-		if (savedSearch && searchQuery === savedSearch) return;
-		if (searchTimer.current) clearTimeout(searchTimer.current!);
-		searchTimer.current = setTimeout(() => {
+		if (genre !== prevGenre) {
 			setLoading(true);
 			getMovies(searchQuery).then(() => setLoading(false));
-		}, 700);
-		return () => {
-			if (searchTimer.current) clearTimeout(searchTimer.current!);
-		};
-	}, [searchQuery, getMovies, savedSearch]); */
+		}
+	}, [genre, getMovies, prevGenre, searchQuery]);
 
 	return (
 		<Segment style={{ minHeight: 500, padding: 60 }}>
-			<SearchMovies
-				setQuery={setQuery}
-				searchQuery={searchQuery}
-				loading={loading}
-			/>
-			<Grid>
+			<Grid columns="equal">
 				<Grid.Row>
+					<SearchMovies
+						setQuery={setQuery}
+						searchQuery={searchQuery}
+						loading={loading}
+					/>
 					<Grid.Column>
-						<h5>Result limit</h5>
+						<Dropdown
+							loading={loading}
+							compact
+							placeholder={t('genre')}
+							options={genresObj}
+							onChange={(e, { value }) => setGenre(value as string)}
+						/>
+					</Grid.Column>
+					<Grid.Column>
+						<Dropdown
+							loading={loading}
+							compact
+							placeholder={t('order_by')}
+							options={orderBy}
+							onChange={(e, { value }) => setOrder(value as string)}
+						/>
 					</Grid.Column>
 					<Grid.Column>
 						<Dropdown
 							options={limitValues}
+							compact
+							placeholder={t('limit')}
 							onChange={(e, { value }) => setResultLimit(value as number)}
-							value={limit}
-						/>
-					</Grid.Column>
-					<Grid.Column>
-						<h5>Filter by genres</h5>
-					</Grid.Column>
-					<Grid.Column>
-						<Dropdown
-							selection
-							multiple
-							options={genresObj}
-							onChange={(e, { value }) => setGenre(value as string[])}
 						/>
 					</Grid.Column>
 				</Grid.Row>

@@ -70,5 +70,8 @@
 	"year": "Aasta: {{year}}",
 	"written": "Kirjutatud: {{writer}}",
 	"actors": "Näitlejad:",
-	"password_error": "Vähemalt 4 märki. Peab olema vähemalt tähti ja 1 number."
+	"password_error": "Vähemalt 4 märki. Peab olema vähemalt tähti ja 1 number.",
+	"order_by": "Sorteerima",
+	"limit": "Piir",
+	"genre": "Žanr"
 }

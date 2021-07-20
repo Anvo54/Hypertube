@@ -70,5 +70,8 @@
 	"year": "Vuosi: {{year}}",
 	"written": "Kirjottaja: {{writer}}",
 	"actors": "Näyttelijät:",
-	"password_error": "Vähitään 4 merkkiä. Pitää olla kirjaimia ja vähintään yksi numero."
+	"password_error": "Vähitään 4 merkkiä. Pitää olla kirjaimia ja vähintään yksi numero.",
+	"order_by": "Lajittele",
+	"limit": "Rajoita",
+	"genre": "Tyylilaji"
 }

@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
+import _ from 'lodash';
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -9,6 +10,7 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 0;
+	years = [{ key: 2021, text: 2021, value: 2021 }];
 	prevGenre = '&genre=';
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
@@ -31,9 +33,11 @@ export default class MovieStore {
 	genre = '&genre=';
 	limit = 20;
 	orderBy = [
-		{ key: 0, test: 'Ascending', value: 'asc' },
-		{ key: 0, test: 'Descending', value: 'desc' },
+		{ key: 0, text: 'Ascending', value: 'asc' },
+		{ key: 1, text: 'Descending', value: 'desc' },
 	];
+	order = 'asc';
+	prevOrder = 'asc';
 	movie: IMovie | null = null;
 
 	constructor(rootStore: RootStore) {
@@ -50,11 +54,15 @@ export default class MovieStore {
 					token,
 					this.limit,
 					this.page,
+					this.order,
 					this.genre
 				);
 				runInAction(() => {
-					if (this.savedSearch !== search || this.genre != this.prevGenre) {
-						console.log('here1')
+					if (
+						this.savedSearch !== search ||
+						this.genre !== this.prevGenre ||
+						this.order !== this.prevOrder
+					) {
 						this.movieQueryLength = tempMovies.movies.length;
 						this.movies.movies = tempMovies.movies;
 						this.movies.count = tempMovies.movies.length;
@@ -62,10 +70,11 @@ export default class MovieStore {
 						this.page = 0;
 					} else {
 						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = [
-							...this.movies.movies,
-							...tempMovies.movies,
-						]
+						this.movies.movies = _.uniqBy(
+							[...this.movies.movies, ...tempMovies.movies],
+							'imdb'
+						);
+						this.movies.count += tempMovies.movies.length;
 					}
 				});
 			} catch (error) {
@@ -97,12 +106,21 @@ export default class MovieStore {
 		runInAction(() => (this.limit = value));
 	};
 
-	setGenre = (genre: string[]): void => {
+	setOrder = (value: string): void => {
 		runInAction(() => {
-			this.genre =
-				'&genre=' + genre.toLocaleString().replaceAll(',', '&genre=');
-			this.getMovies(this.savedSearch);
+			this.order = value;
+			this.getMovies(this.savedSearch).then(() =>
+				runInAction(() => (this.prevOrder = this.order))
+			);
 		});
-		this.prevGenre = this.genre;
+	};
+
+	setGenre = (genre: string): void => {
+		runInAction(() => {
+			this.genre = '&genre=' + genre;
+			this.getMovies(this.savedSearch).then(() =>
+				runInAction(() => (this.prevGenre = this.genre))
+			);
+		});
 	};
 }
