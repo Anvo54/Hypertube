@@ -10,8 +10,12 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 0;
-	years = [{ key: 2021, text: 2021, value: 2021 }];
+	startYear = new Date('1980');
+	endYear = new Date('2021');
+	prevStartYear = this.startYear;
+	prevEndYear = this.endYear;
 	prevGenre = '&genre=';
+	genre = '&genre=';
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
 		{ key: 1, text: '40', value: 40 },
@@ -30,7 +34,6 @@ export default class MovieStore {
 		{ key: 'Thriller', text: 'Thriller', value: 'Thriller' },
 		{ key: 'Western', text: 'Western', value: 'Western' },
 	];
-	genre = '&genre=';
 	limit = 20;
 	orderBy = [
 		{ key: 0, text: 'Ascending', value: 'asc' },
@@ -61,10 +64,16 @@ export default class MovieStore {
 					if (
 						this.savedSearch !== search ||
 						this.genre !== this.prevGenre ||
-						this.order !== this.prevOrder
+						this.order !== this.prevOrder ||
+						this.prevStartYear.getFullYear() !== this.startYear.getFullYear() ||
+						this.prevEndYear.getFullYear() !== this.endYear.getFullYear()
 					) {
 						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = tempMovies.movies;
+						this.movies.movies = tempMovies.movies.filter(
+							(m) =>
+								m.year >= this.startYear.getFullYear() &&
+								m.year <= this.endYear.getFullYear()
+						);
 						this.movies.count = tempMovies.movies.length;
 						this.savedSearch = search;
 						this.page = 0;
@@ -73,7 +82,12 @@ export default class MovieStore {
 						this.movies.movies = _.uniqBy(
 							[...this.movies.movies, ...tempMovies.movies],
 							'imdb'
+						).filter(
+							(m) =>
+								m.year >= this.startYear.getFullYear() &&
+								m.year <= this.endYear.getFullYear()
 						);
+
 						this.movies.count += tempMovies.movies.length;
 					}
 				});
@@ -112,6 +126,22 @@ export default class MovieStore {
 			this.getMovies(this.savedSearch).then(() =>
 				runInAction(() => (this.prevOrder = this.order))
 			);
+		});
+	};
+
+	setStartYear = (value: Date): void => {
+		runInAction(() => {
+			this.startYear = value;
+			this.getMovies(this.savedSearch).then(() => {
+				runInAction(() => (this.prevStartYear = this.startYear));
+			});
+		});
+	};
+
+	setEndYear = (value: Date): void => {
+		runInAction(() => (this.endYear = value));
+		this.getMovies(this.savedSearch).then(() => {
+			runInAction(() => (this.prevEndYear = this.endYear));
 		});
 	};
 

@@ -2,26 +2,19 @@ import SearchMovies from 'app/views/movieList/SearchMovies';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Dropdown, Grid, Segment } from 'semantic-ui-react';
+import { Grid, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
-import { useTranslation } from 'react-i18next';
+import FilterSort from './movieList/FilterSort';
 
 const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
-	const { t } = useTranslation();
 	const {
 		getMovies,
 		getNextPage,
-		setResultLimit,
-		setGenre,
-		setOrder,
-		limitValues,
-		genresObj,
 		genre,
 		prevGenre,
 		movies,
 		savedSearch,
-		orderBy,
 		page,
 		movieQueryLength,
 	} = rootStore.movieStore;
@@ -87,32 +80,7 @@ const MainContent: React.FC = () => {
 						searchQuery={searchQuery}
 						loading={loading}
 					/>
-					<Grid.Column>
-						<Dropdown
-							loading={loading}
-							compact
-							placeholder={t('genre')}
-							options={genresObj}
-							onChange={(e, { value }) => setGenre(value as string)}
-						/>
-					</Grid.Column>
-					<Grid.Column>
-						<Dropdown
-							loading={loading}
-							compact
-							placeholder={t('order_by')}
-							options={orderBy}
-							onChange={(e, { value }) => setOrder(value as string)}
-						/>
-					</Grid.Column>
-					<Grid.Column>
-						<Dropdown
-							options={limitValues}
-							compact
-							placeholder={t('limit')}
-							onChange={(e, { value }) => setResultLimit(value as number)}
-						/>
-					</Grid.Column>
+					<FilterSort loading={loading} />
 				</Grid.Row>
 			</Grid>
 			<Browse
