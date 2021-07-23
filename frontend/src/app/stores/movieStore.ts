@@ -16,6 +16,8 @@ export default class MovieStore {
 	prevEndYear = this.endYear;
 	prevGenre = '&genre=';
 	genre = '&genre=';
+	rating = 0;
+	prevRating = 0;
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
 		{ key: 1, text: '40', value: 40 },
@@ -39,6 +41,14 @@ export default class MovieStore {
 		{ key: 0, text: 'Ascending', value: 'asc' },
 		{ key: 1, text: 'Descending', value: 'desc' },
 	];
+	orderValue = [
+		{ key: 0, text: 'Title', value: 'title' },
+		{ key: 1, text: 'Year', value: 'year' },
+		{ key: 2, text: 'Imdb rating', value: 'rating' },
+		{ key: 3, text: 'Genre', value: 'genres' },
+	];
+	orderVal = 'title';
+	orderPrevVal = 'title';
 	order = 'asc';
 	prevOrder = 'asc';
 	movie: IMovie | null = null;
@@ -58,22 +68,29 @@ export default class MovieStore {
 					this.limit,
 					this.page,
 					this.order,
-					this.genre
+					this.genre,
+					this.orderVal
 				);
 				runInAction(() => {
 					if (
 						this.savedSearch !== search ||
 						this.genre !== this.prevGenre ||
+						this.rating !== this.prevRating ||
 						this.order !== this.prevOrder ||
+						this.orderVal !== this.orderPrevVal ||
 						this.prevStartYear.getFullYear() !== this.startYear.getFullYear() ||
 						this.prevEndYear.getFullYear() !== this.endYear.getFullYear()
 					) {
 						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = tempMovies.movies.filter(
-							(m) =>
-								m.year >= this.startYear.getFullYear() &&
-								m.year <= this.endYear.getFullYear()
-						);
+						this.movies.movies = tempMovies.movies
+							.filter(
+								(m) =>
+									m.year >= this.startYear.getFullYear() &&
+									m.year <= this.endYear.getFullYear()
+							)
+							.filter((m) => {
+								Math.floor(m.rating) === this.rating;
+							});
 						this.movies.count = tempMovies.movies.length;
 						this.savedSearch = search;
 						this.page = 0;
@@ -82,12 +99,13 @@ export default class MovieStore {
 						this.movies.movies = _.uniqBy(
 							[...this.movies.movies, ...tempMovies.movies],
 							'imdb'
-						).filter(
-							(m) =>
-								m.year >= this.startYear.getFullYear() &&
-								m.year <= this.endYear.getFullYear()
-						);
-
+						)
+							.filter(
+								(m) =>
+									m.year >= this.startYear.getFullYear() &&
+									m.year <= this.endYear.getFullYear()
+							)
+							.filter((m) => Math.floor(m.rating) === this.rating);
 						this.movies.count += tempMovies.movies.length;
 					}
 				});
@@ -120,11 +138,30 @@ export default class MovieStore {
 		runInAction(() => (this.limit = value));
 	};
 
+	setRatingFilter = (value: number): void => {
+		runInAction(() => {
+			this.rating = value;
+			console.log(this.rating, value);
+			this.getMovies(this.savedSearch).then(() =>
+				runInAction(() => (this.prevRating = this.rating))
+			);
+		});
+	};
+
 	setOrder = (value: string): void => {
 		runInAction(() => {
 			this.order = value;
 			this.getMovies(this.savedSearch).then(() =>
 				runInAction(() => (this.prevOrder = this.order))
+			);
+		});
+	};
+
+	setOrderValue = (value: string): void => {
+		runInAction(() => {
+			this.orderVal = value;
+			this.getMovies(this.savedSearch).then(() =>
+				runInAction(() => (this.orderPrevVal = this.orderVal))
 			);
 		});
 	};
