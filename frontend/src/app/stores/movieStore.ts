@@ -23,34 +23,11 @@ export default class MovieStore {
 		{ key: 3, text: '80', value: 80 },
 		{ key: 4, text: '100', value: 100 },
 	];
-	genresObj = [
-		{ key: 'none', text: 'None', value: 'none' },
-		{ key: 'Action', text: 'Action', value: 'Action' },
-		{ key: 'Comedy', text: 'Comedy', value: 'Comedy' },
-		{ key: 'Drama', text: 'Drama', value: 'Drama' },
-		{ key: 'Fantasy', text: 'Fantasy', value: 'Fantasy' },
-		{ key: 'Horror', text: 'Horror', value: 'Horror' },
-		{ key: 'Mystery', text: 'Mystery', value: 'Mystery' },
-		{ key: 'Romance', text: 'Romance', value: 'Romance' },
-		{ key: 'Thriller', text: 'Thriller', value: 'Thriller' },
-		{ key: 'Western', text: 'Western', value: 'Western' },
-	];
 	limit = 20;
-	orderBy = [
-		{ key: 0, text: 'Ascending', value: 'asc' },
-		{ key: 1, text: 'Descending', value: 'desc' },
-	];
-	orderValue = [
-		{ key: 0, text: 'None', value: 'none' },
-		{ key: 1, text: 'Title', value: 'title' },
-		{ key: 2, text: 'Year', value: 'year' },
-		{ key: 3, text: 'Imdb rating', value: 'rating' },
-		{ key: 4, text: 'Genre', value: 'genres' },
-	];
 	orderVal = '&sort=title';
 	order = 'asc';
 	movie: IMovie | null = null;
-
+	
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);

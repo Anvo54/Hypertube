@@ -72,6 +72,13 @@
 	"actors": "Näitlejad:",
 	"password_error": "Vähemalt 4 märki. Peab olema vähemalt tähti ja 1 number.",
 	"order_by": "Sorteerima",
+	"order": "Tellimus",
 	"limit": "Piir",
-	"genre": "Žanr"
+	"genre": "Žanr",
+	"filter": "Filter",
+	"sort": "Sorteerida",
+	"ascending": "Tõusev",
+	"descending": "Laskuv",
+	"title": "Pealkiri",
+	"rating": "Hinnang"
 }

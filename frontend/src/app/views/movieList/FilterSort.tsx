@@ -10,6 +10,8 @@ import {
 	Container,
 	Header,
 	Popup,
+	Item,
+	Divider,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +21,9 @@ interface IProps {
 
 const FilterSort: React.FC<IProps> = ({ loading }) => {
 	const rootStore = useContext(RootStoreContext);
-	const [menuOpen, setMenuOpen] = useState(false);
+	const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+	const [sortMenuOpen, setSortMenuOpen] = useState(false);
+	const [curRating, setCurRating] = useState(0);
 	const { t } = useTranslation();
 	const {
 		setResultLimit,
@@ -28,70 +32,118 @@ const FilterSort: React.FC<IProps> = ({ loading }) => {
 		setOrderValue,
 		setRatingFilter,
 		limitValues,
-		genresObj,
-		orderBy,
-		orderValue,
 	} = rootStore.movieStore;
+
+	const genresObj = [
+		{ key: 'none', text: '', value: 'none' },
+		{ key: 'Action', text: t('action'), value: 'Action' },
+		{ key: 'Comedy', text: t('comedy'), value: 'Comedy' },
+		{ key: 'Drama', text: t('drama'), value: 'Drama' },
+		{ key: 'Fantasy', text: t('fantasy'), value: 'Fantasy' },
+		{ key: 'Horror', text: t('horror'), value: 'Horror' },
+		{ key: 'Mystery', text: t('mystery'), value: 'Mystery' },
+		{ key: 'Romance', text: t('romance'), value: 'Romance' },
+		{ key: 'Thriller', text: t('thriller'), value: 'Thriller' },
+		{ key: 'Western', text: t('western'), value: 'Western' },
+	];
+
+	const orderBy = [
+		{ key: 0, text: t('ascending'), value: 'asc' },
+		{ key: 1, text: t('descending'), value: 'desc' },
+	];
+	const orderValue = [
+		{ key: 0, text: '', value: 'none' },
+		{ key: 1, text: t('title'), value: 'title' },
+		{ key: 2, text: t('year'), value: 'year' },
+		{ key: 3, text: t('imdb rating'), value: 'rating' },
+		{ key: 4, text: t('genre'), value: 'genres' },
+	];
+
 	return (
 		<>
 			<Menu>
 				<Container>
 					<Menu.Menu>
 						<Popup
-							trigger={
-								<Menu.Item>
-									<Header>Filter & Sort</Header>
-								</Menu.Item>
-							}
+							trigger={<Menu.Item icon="filter" />}
 							position="bottom center"
 							on="click"
 							pinned
 							style={{ padding: 10 }}
-							open={menuOpen}
-							onOpen={() => setMenuOpen(true)}
-							onClose={() => setMenuOpen(false)}
+							open={filterMenuOpen}
+							onOpen={() => setFilterMenuOpen(true)}
+							onClose={() => setFilterMenuOpen(false)}
 						>
 							<Menu.Item>
-								<Header>Filter</Header>
+								<Header>{t('filter')}</Header>
+								<Divider />
 								<Grid.Column>
-									<Dropdown
-										loading={loading}
-										compact
-										placeholder={t('genre')}
-										options={genresObj}
-										onChange={(e, { value }) => setGenre(value as string)}
-									/>
+									<Item>
+										<Item.Header as="h4">Genre</Item.Header>
+										<Item.Content>
+											<Dropdown
+												loading={loading}
+												compact
+												placeholder={t('genre')}
+												options={genresObj}
+												onChange={(e, { value }) => setGenre(value as string)}
+											/>
+										</Item.Content>
+									</Item>
 								</Grid.Column>
-							</Menu.Item>
-							<Menu.Item>
 								<Grid.Column>
-									<Rating
-										icon="star"
-										size="mini"
-										defaultRating={0}
-										maxRating={10}
-										onRate={(e, { rating }) =>
-											setRatingFilter(rating as number)
-										}
-									/>
-									<Button
-										content="Clear rating"
-										size="mini"
-										color="red"
-										onClick={() => setRatingFilter(-1)}
-									/>
+									<Item>
+										<Item.Header as="h4">Imdb rating</Item.Header>
+										<Rating
+											icon="star"
+											size="mini"
+											defaultRating={0}
+											maxRating={10}
+											loading={loading}
+											rating={curRating}
+											onRate={(e, { rating }) => {
+												setCurRating(rating as number);
+												setRatingFilter(rating as number);
+											}}
+										/>
+										<Button
+											content="Clear rating"
+											size="mini"
+											loading={loading}
+											color="red"
+											onClick={() => {
+												setCurRating(0);
+												setRatingFilter(-1);
+											}}
+										/>
+									</Item>
 								</Grid.Column>
 								<Grid.Column>
 									<DatePickerWidget />
 								</Grid.Column>
 							</Menu.Item>
+						</Popup>
+					</Menu.Menu>
+					<Menu.Menu>
+						<Popup
+							trigger={<Menu.Item icon="sort" />}
+							position="bottom center"
+							on="click"
+							pinned
+							style={{ padding: 10 }}
+							open={sortMenuOpen}
+							onOpen={() => setSortMenuOpen(true)}
+							onClose={() => setSortMenuOpen(false)}
+						>
+							<Menu.Item>
+								<Header>{t('sort')}</Header>
+							</Menu.Item>
 							<Menu.Item>
 								<Grid.Column>
-									<Header>Sort</Header>
 									<Dropdown
 										loading={loading}
 										compact
-										placeholder={t('Order')}
+										placeholder={t('order')}
 										options={orderValue}
 										onChange={(e, { value }) => setOrderValue(value as string)}
 									/>
@@ -111,6 +163,7 @@ const FilterSort: React.FC<IProps> = ({ loading }) => {
 						<Dropdown
 							options={limitValues}
 							compact
+							loading={loading}
 							placeholder={t('limit')}
 							onChange={(e, { value }) => setResultLimit(value as number)}
 						/>

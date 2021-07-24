@@ -67,7 +67,7 @@ const Browse: React.FC<BrowseProps> = ({
 				</Item.Group>
 			)}
 			<Visibility onBottomVisible={() => getNext()} once={loading} />
-			{movieQueryLength === 0 && <Header>No more results!</Header>}
+			{movieQueryLength === 0 && <Header>{t('no_results')}</Header>}
 		</Segment>
 	);
 };

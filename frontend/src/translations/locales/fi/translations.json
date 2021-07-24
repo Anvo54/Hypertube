@@ -72,6 +72,13 @@
 	"actors": "Näyttelijät:",
 	"password_error": "Vähitään 4 merkkiä. Pitää olla kirjaimia ja vähintään yksi numero.",
 	"order_by": "Lajittele",
+	"order": "Järjestys",
 	"limit": "Rajoita",
-	"genre": "Tyylilaji"
+	"genre": "Tyylilaji",
+	"filter": "Rajaa",
+	"sort": "Lajittele",
+	"ascending": "Nouseva",
+	"descending": "Laskeva",
+	"title": "Nimi",
+	"rating": "Arvostelut"
 }
