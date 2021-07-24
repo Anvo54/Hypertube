@@ -10,14 +10,12 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 0;
-	startYear = new Date('1980');
-	endYear = new Date('2021');
-	prevStartYear = this.startYear;
-	prevEndYear = this.endYear;
-	prevGenre = '&genre=';
-	genre = '&genre=';
-	rating = 0;
-	prevRating = 0;
+	startYear = new Date() || null;
+	endYear = new Date() || null;
+	minYear = '';
+	maxYear = '';
+	genre = '';
+	rating = '';
 	limitValues = [
 		{ key: 0, text: '20', value: 20 },
 		{ key: 1, text: '40', value: 40 },
@@ -26,6 +24,7 @@ export default class MovieStore {
 		{ key: 4, text: '100', value: 100 },
 	];
 	genresObj = [
+		{ key: 'none', text: 'None', value: 'none' },
 		{ key: 'Action', text: 'Action', value: 'Action' },
 		{ key: 'Comedy', text: 'Comedy', value: 'Comedy' },
 		{ key: 'Drama', text: 'Drama', value: 'Drama' },
@@ -42,15 +41,14 @@ export default class MovieStore {
 		{ key: 1, text: 'Descending', value: 'desc' },
 	];
 	orderValue = [
-		{ key: 0, text: 'Title', value: 'title' },
-		{ key: 1, text: 'Year', value: 'year' },
-		{ key: 2, text: 'Imdb rating', value: 'rating' },
-		{ key: 3, text: 'Genre', value: 'genres' },
+		{ key: 0, text: 'None', value: 'none' },
+		{ key: 1, text: 'Title', value: 'title' },
+		{ key: 2, text: 'Year', value: 'year' },
+		{ key: 3, text: 'Imdb rating', value: 'rating' },
+		{ key: 4, text: 'Genre', value: 'genres' },
 	];
-	orderVal = 'title';
-	orderPrevVal = 'title';
+	orderVal = '&sort=title';
 	order = 'asc';
-	prevOrder = 'asc';
 	movie: IMovie | null = null;
 
 	constructor(rootStore: RootStore) {
@@ -69,45 +67,17 @@ export default class MovieStore {
 					this.page,
 					this.order,
 					this.genre,
-					this.orderVal
+					this.orderVal,
+					this.rating,
+					this.minYear,
+					this.maxYear
 				);
 				runInAction(() => {
-					if (
-						this.savedSearch !== search ||
-						this.genre !== this.prevGenre ||
-						this.rating !== this.prevRating ||
-						this.order !== this.prevOrder ||
-						this.orderVal !== this.orderPrevVal ||
-						this.prevStartYear.getFullYear() !== this.startYear.getFullYear() ||
-						this.prevEndYear.getFullYear() !== this.endYear.getFullYear()
-					) {
-						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = tempMovies.movies
-							.filter(
-								(m) =>
-									m.year >= this.startYear.getFullYear() &&
-									m.year <= this.endYear.getFullYear()
-							)
-							.filter((m) => {
-								Math.floor(m.rating) === this.rating;
-							});
-						this.movies.count = tempMovies.movies.length;
-						this.savedSearch = search;
-						this.page = 0;
-					} else {
-						this.movieQueryLength = tempMovies.movies.length;
-						this.movies.movies = _.uniqBy(
-							[...this.movies.movies, ...tempMovies.movies],
-							'imdb'
-						)
-							.filter(
-								(m) =>
-									m.year >= this.startYear.getFullYear() &&
-									m.year <= this.endYear.getFullYear()
-							)
-							.filter((m) => Math.floor(m.rating) === this.rating);
-						this.movies.count += tempMovies.movies.length;
-					}
+					this.movieQueryLength = tempMovies.movies.length;
+					this.movies.movies = tempMovies.movies;
+					this.movies.count = tempMovies.movies.length;
+					this.savedSearch = search;
+					this.page = 0;
 				});
 			} catch (error) {
 				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
@@ -130,6 +100,38 @@ export default class MovieStore {
 		}
 	};
 
+	addMovies = (search: string): Promise<void> => {
+		return new Promise(async (resolve) => {
+			const token = await this.rootStore.userStore.getToken();
+			try {
+				const tempMovies: IMovieList = await agent.Movies.search(
+					search,
+					token,
+					this.limit,
+					this.page,
+					this.order,
+					this.genre,
+					this.orderVal,
+					this.rating,
+					this.minYear,
+					this.maxYear
+				);
+				runInAction(() => {
+					this.movieQueryLength = tempMovies.movies.length;
+					this.movies.movies = _.uniqBy(
+						[...this.movies.movies, ...tempMovies.movies],
+						'imdb'
+					);
+					this.movies.count += tempMovies.movies.length;
+				});
+			} catch (error) {
+				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+				console.log(error);
+			}
+			resolve();
+		});
+	};
+
 	getNextPage = (): void => {
 		runInAction(() => (this.page += 1));
 	};
@@ -140,54 +142,45 @@ export default class MovieStore {
 
 	setRatingFilter = (value: number): void => {
 		runInAction(() => {
-			this.rating = value;
-			console.log(this.rating, value);
-			this.getMovies(this.savedSearch).then(() =>
-				runInAction(() => (this.prevRating = this.rating))
-			);
+			this.rating = value > 0 ? '&rating=' + value : '';
+			this.getMovies(this.savedSearch);
 		});
 	};
 
 	setOrder = (value: string): void => {
 		runInAction(() => {
-			this.order = value;
-			this.getMovies(this.savedSearch).then(() =>
-				runInAction(() => (this.prevOrder = this.order))
-			);
+			this.order = value ? '&order=' + value : '';
+			this.getMovies(this.savedSearch);
 		});
 	};
 
 	setOrderValue = (value: string): void => {
 		runInAction(() => {
-			this.orderVal = value;
-			this.getMovies(this.savedSearch).then(() =>
-				runInAction(() => (this.orderPrevVal = this.orderVal))
-			);
+			this.orderVal = value === 'none' ? '' : '&sort=' + value;
+			this.getMovies(this.savedSearch);
 		});
 	};
 
 	setStartYear = (value: Date): void => {
 		runInAction(() => {
 			this.startYear = value;
-			this.getMovies(this.savedSearch).then(() => {
-				runInAction(() => (this.prevStartYear = this.startYear));
-			});
+			this.minYear = value === null ? '' : '&minYear=' + value.getFullYear();
+			this.getMovies(this.savedSearch);
 		});
 	};
 
 	setEndYear = (value: Date): void => {
-		runInAction(() => (this.endYear = value));
-		this.getMovies(this.savedSearch).then(() => {
-			runInAction(() => (this.prevEndYear = this.endYear));
+		runInAction(() => {
+			this.endYear = value;
+			this.maxYear = value === null ? '' : '&maxYear=' + value.getFullYear();
 		});
+		this.getMovies(this.savedSearch);
 	};
 
 	setGenre = (genre: string): void => {
 		runInAction(() => {
-			this.genre = '&genre=' + genre;
-			this.getMovies(this.savedSearch).then(() =>
-				runInAction(() => (this.prevGenre = this.genre))
-			);
+			this.genre = genre === 'none' ? '' : '&genre=' + genre;
+			this.getMovies(this.savedSearch);
 		});
 	};
 }

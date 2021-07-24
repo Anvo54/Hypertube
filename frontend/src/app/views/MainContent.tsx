@@ -10,9 +10,8 @@ const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
 	const {
 		getMovies,
+		addMovies,
 		getNextPage,
-		genre,
-		prevGenre,
 		movies,
 		savedSearch,
 		page,
@@ -40,12 +39,12 @@ const MainContent: React.FC = () => {
 	useEffect(() => {
 		if (pageNbr !== page) {
 			setLoading(true);
-			getMovies(searchQuery).then(() => {
+			addMovies(searchQuery).then(() => {
 				setLoading(false);
 				setpageNb(page);
 			});
 		}
-	}, [getMovies, page, pageNbr, searchQuery]);
+	}, [addMovies, page, pageNbr, searchQuery]);
 
 	/* If Search query changes */
 
@@ -61,15 +60,6 @@ const MainContent: React.FC = () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
 	}, [searchQuery, getMovies, savedSearch]);
-
-	/* If Genre changes */
-
-	useEffect(() => {
-		if (genre !== prevGenre) {
-			setLoading(true);
-			getMovies(searchQuery).then(() => setLoading(false));
-		}
-	}, [genre, getMovies, prevGenre, searchQuery]);
 
 	return (
 		<Segment style={{ minHeight: 500, padding: 60 }}>

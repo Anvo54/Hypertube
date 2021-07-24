@@ -10,22 +10,24 @@ const DatePickerWidget: React.FC = () => {
 	return (
 		<>
 			<DatePicker
-				selected={new Date(startYear)}
+				selected={startYear}
 				onChange={(date) => setStartYear(date as Date)}
 				selectsStart
-				startDate={new Date(startYear)}
-				endDate={new Date(endYear)}
+				startDate={startYear}
+				endDate={endYear}
 				dateFormat="yyyy"
 				showYearPicker
+				isClearable
 			/>
 			<DatePicker
-				selected={new Date(endYear)}
+				selected={endYear}
 				onChange={(date) => setEndYear(date as Date)}
 				selectsEnd
-				startDate={new Date(startYear)}
-				endDate={new Date(endYear)}
+				startDate={startYear}
+				endDate={endYear}	
 				dateFormat="yyyy"
 				showYearPicker
+				isClearable
 			/>
 		</>
 	);
