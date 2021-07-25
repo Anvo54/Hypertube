@@ -25,6 +25,9 @@ const FilterSort: React.FC = () => {
 		setOrder,
 		setOrderValue,
 		setRatingFilter,
+		ratingVal,
+		genre,
+		orderVal,
 	} = rootStore.movieStore;
 
 	const genresObj = [
@@ -43,7 +46,7 @@ const FilterSort: React.FC = () => {
 	const orderValue = [
 		{ key: 0, text: t('order'), value: 'none' },
 		{ key: 1, text: t('title'), value: 'title' },
-		{ key: 2, text: t('year'), value: 'year' },
+		{ key: 2, text: t('prodyear'), value: 'year' },
 		{ key: 3, text: t('imdb rating'), value: 'rating' },
 		{ key: 4, text: t('genre'), value: 'genres' },
 	];
@@ -52,7 +55,6 @@ const FilterSort: React.FC = () => {
 		ascDesc === 'asc' ? setAscDesc('desc') : setAscDesc('asc');
 		setOrder(ascDesc);
 	};
-
 	return (
 		<>
 			<Menu compact borderless stackable>
@@ -71,28 +73,34 @@ const FilterSort: React.FC = () => {
 							<Header>{t('filter')}</Header>
 							<Divider />
 							<Grid.Column>
+								{t('genre')}
+								<br />
 								<ButtonGroup>
 									<Dropdown
 										placeholder={t('genre')}
 										options={genresObj}
 										onChange={(e, { value }) => setGenre(value as string)}
-										button
 										floating
-										labeled
+										value={genre.replace('&genre=', '')}
+										as={Button}
 									/>
 								</ButtonGroup>
 							</Grid.Column>
+							{t('rating')}
+							<br />
 							<Rating
 								icon="star"
 								size="mini"
 								clearable
-								defaultRating={0}
+								defaultRating={ratingVal}
 								maxRating={10}
 								onRate={(e, { rating }) => {
 									setRatingFilter(rating as number);
 								}}
 							/>
 							<Grid.Column>
+								{t('prodyear')}
+								<br />
 								<DatePickerWidget />
 							</Grid.Column>
 						</Menu.Item>
@@ -115,23 +123,19 @@ const FilterSort: React.FC = () => {
 						</Menu.Item>
 						<Menu.Item>
 							<Grid.Column>
-								<ButtonGroup>
-									<Dropdown
-										button
-										className="icon"
-										floating
-										labeled
-										icon="sort"
-										options={orderValue}
-										search
-										onChange={(e, { value }) => setOrderValue(value as string)}
-										placeholder={t('sort')}
-									/>
-									<Button
-										icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
-										onClick={() => handleSort()}
-									/>
-								</ButtonGroup>
+								<Dropdown
+									button
+									className="icon"
+									floating
+									labeled
+									icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
+									options={orderValue}
+									value={orderVal.replace('&sort=', '')}
+									search
+									onChange={(e, { value }) => setOrderValue(value as string)}
+									placeholder={t('sort')}
+									onClick={() => handleSort()}
+								/>
 							</Grid.Column>
 						</Menu.Item>
 					</Popup>

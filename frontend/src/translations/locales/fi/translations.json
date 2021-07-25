@@ -80,5 +80,6 @@
 	"ascending": "Nouseva",
 	"descending": "Laskeva",
 	"title": "Nimi",
-	"rating": "Arvostelut"
+	"rating": "Arvostelut",
+	"prodyear": "Tuotantovuosi"
 }

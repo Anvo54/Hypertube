@@ -10,18 +10,21 @@ export default class MovieStore {
 	movieQueryLength = 0;
 	savedSearch = '';
 	page = 0;
-	startYear = new Date() || null;
-	endYear = new Date() || null;
+	startYear: Date | null;
+	endYear: Date | null;
 	minYear = '';
 	maxYear = '';
 	genre = '';
 	rating = '';
+	ratingVal = 0;
 	orderVal = '&sort=title';
 	order = 'asc';
 	movie: IMovie | null = null;
-	
+
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
+		this.startYear = null;
+		this.endYear = null;
 		makeAutoObservable(this);
 	}
 
@@ -106,6 +109,7 @@ export default class MovieStore {
 	setRatingFilter = (value: number): void => {
 		runInAction(() => {
 			this.rating = value > 0 ? '&rating=' + value : '';
+			this.ratingVal = value;
 			this.getMovies(this.savedSearch);
 		});
 	};
