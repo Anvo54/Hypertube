@@ -65,12 +65,16 @@ const MainContent: React.FC = () => {
 		<Segment style={{ minHeight: 500, padding: 60 }}>
 			<Grid columns="equal">
 				<Grid.Row>
-					<SearchMovies
-						setQuery={setQuery}
-						searchQuery={searchQuery}
-						loading={loading}
-					/>
-					<FilterSort loading={loading} />
+					<Grid.Column>
+						<SearchMovies
+							setQuery={setQuery}
+							searchQuery={searchQuery}
+							loading={loading}
+						/>
+					</Grid.Column>
+					<Grid.Column>
+						<FilterSort />
+					</Grid.Column>
 				</Grid.Row>
 			</Grid>
 			<Browse
