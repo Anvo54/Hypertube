@@ -16,14 +16,6 @@ export default class MovieStore {
 	maxYear = '';
 	genre = '';
 	rating = '';
-	limitValues = [
-		{ key: 0, text: '20', value: 20 },
-		{ key: 1, text: '40', value: 40 },
-		{ key: 2, text: '60', value: 60 },
-		{ key: 3, text: '80', value: 80 },
-		{ key: 4, text: '100', value: 100 },
-	];
-	limit = 20;
 	orderVal = '&sort=title';
 	order = 'asc';
 	movie: IMovie | null = null;
@@ -40,7 +32,6 @@ export default class MovieStore {
 				const tempMovies: IMovieList = await agent.Movies.search(
 					search,
 					token,
-					this.limit,
 					this.page,
 					this.order,
 					this.genre,
@@ -84,7 +75,6 @@ export default class MovieStore {
 				const tempMovies: IMovieList = await agent.Movies.search(
 					search,
 					token,
-					this.limit,
 					this.page,
 					this.order,
 					this.genre,
@@ -111,10 +101,6 @@ export default class MovieStore {
 
 	getNextPage = (): void => {
 		runInAction(() => (this.page += 1));
-	};
-
-	setResultLimit = (value: number): void => {
-		runInAction(() => (this.limit = value));
 	};
 
 	setRatingFilter = (value: number): void => {

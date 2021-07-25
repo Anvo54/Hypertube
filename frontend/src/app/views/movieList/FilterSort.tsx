@@ -21,12 +21,10 @@ const FilterSort: React.FC = () => {
 	const [ascDesc, setAscDesc] = useState('asc');
 	const { t } = useTranslation();
 	const {
-		setResultLimit,
 		setGenre,
 		setOrder,
 		setOrderValue,
 		setRatingFilter,
-		limitValues,
 	} = rootStore.movieStore;
 
 	const genresObj = [
@@ -57,7 +55,7 @@ const FilterSort: React.FC = () => {
 
 	return (
 		<>
-			<Menu>
+			<Menu compact borderless stackable>
 				<Menu.Menu>
 					<Popup
 						trigger={<Menu.Item icon="filter" />}
@@ -134,16 +132,6 @@ const FilterSort: React.FC = () => {
 										onClick={() => handleSort()}
 									/>
 								</ButtonGroup>
-							</Grid.Column>
-						</Menu.Item>
-						<Menu.Item>
-							<Grid.Column floated="right">
-								<Dropdown
-									options={limitValues}
-									compact
-									placeholder={t('limit')}
-									onChange={(e, { value }) => setResultLimit(value as number)}
-								/>
 							</Grid.Column>
 						</Menu.Item>
 					</Popup>

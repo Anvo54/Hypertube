@@ -2,7 +2,7 @@ import SearchMovies from 'app/views/movieList/SearchMovies';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Grid, Segment } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
 import FilterSort from './movieList/FilterSort';
 
@@ -63,20 +63,13 @@ const MainContent: React.FC = () => {
 
 	return (
 		<Segment style={{ minHeight: 500, padding: 60 }}>
-			<Grid columns="equal">
-				<Grid.Row>
-					<Grid.Column>
-						<SearchMovies
-							setQuery={setQuery}
-							searchQuery={searchQuery}
-							loading={loading}
-						/>
-					</Grid.Column>
-					<Grid.Column>
-						<FilterSort />
-					</Grid.Column>
-				</Grid.Row>
-			</Grid>
+			<SearchMovies
+				setQuery={setQuery}
+				searchQuery={searchQuery}
+				loading={loading}
+			/>
+			<FilterSort />
+
 			<Browse
 				loading={loading}
 				movies={movies.movies}
