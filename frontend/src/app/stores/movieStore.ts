@@ -54,6 +54,7 @@ export default class MovieStore {
 				this.subtitles = subtitles;
 			});
 		} catch (error: any) {
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
 			if (error.response?.data?.message) {
 				throw error.response?.data?.message;
 			} else throw 'Error.';
@@ -79,7 +80,7 @@ export default class MovieStore {
 			const token = await this.rootStore.userStore.getToken();
 			await agent.Movies.setWatched(this.movie.imdb, token);
 		} catch (error) {
-			toast.info('Tried setting movie as watched but failed.')
+			toast.info('Tried setting movie as watched but failed.');
 		}
 	};
 
@@ -100,7 +101,8 @@ export default class MovieStore {
 				}
 			});
 		} catch (error) {
-			console.log(error);
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			toast.error('Failed to add comment.');
 		}
 	};
 }
