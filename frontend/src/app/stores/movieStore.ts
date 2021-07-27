@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
+import { toast } from 'react-toastify';
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -26,7 +27,6 @@ export default class MovieStore {
 				});
 			} catch (error) {
 				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-				console.log(error);
 			}
 			resolve();
 		});
@@ -79,7 +79,7 @@ export default class MovieStore {
 			const token = await this.rootStore.userStore.getToken();
 			await agent.Movies.setWatched(this.movie.imdb, token);
 		} catch (error) {
-			console.log(error);
+			toast.info('Tried setting movie as watched but failed.')
 		}
 	};
 

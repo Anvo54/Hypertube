@@ -102,9 +102,9 @@ export class TorrentInstance extends EventEmitter {
 			);
 			endStream.on('close', () => {
 				if (buffer.length !== 131072) {
-					console.log('Moviehash buffer length not correct', buffer.length);
+					this.debug('Moviehash buffer length not correct', buffer.length);
 				}
-				for (let i = 0; i < 131072 / 8; i++) {
+				for (let i = 0; i < buffer.length / 8; i++) {
 					const offset = i * 8;
 					total += buffer.readBigUInt64LE(offset);
 				}

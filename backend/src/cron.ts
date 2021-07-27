@@ -19,7 +19,7 @@ class CronScheduler {
 				this.addCronJob(movieDocument);
 			});
 		} catch (error) {
-			console.log(error);
+			this.debug(error);
 		}
 	};
 
@@ -57,7 +57,7 @@ class CronScheduler {
 		try {
 			await movieDocument.save();
 		} catch (error) {
-			console.log(error);
+			this.debug(error);
 		}
 	};
 }
