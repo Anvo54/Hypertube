@@ -17,6 +17,7 @@ import Login from 'app/views/Login';
 import Landing from 'app/views/landing/Landing';
 import Movie from 'app/views/movieDetails/Movie';
 import Profile from 'app/views/profile/Profile';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
 	const rootStore = useContext(RootStoreContext);
@@ -55,6 +56,7 @@ const App = () => {
 
 	return (
 		<Container>
+			<ToastContainer />
 			<Navigation token={token} />
 			{message !== '' && (
 				<Message

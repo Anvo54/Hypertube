@@ -22,6 +22,7 @@ import { IUser, IUpdateForm } from 'app/models/user';
 import { useTranslation } from 'react-i18next';
 import { FormApi, FORM_ERROR } from 'final-form';
 import { getRegisterFormValidator } from 'app/sharedComponents/form/validators';
+import { toast } from 'react-toastify';
 
 const Profile: React.FC = () => {
 	const { t } = useTranslation();
@@ -34,8 +35,11 @@ const Profile: React.FC = () => {
 
 	useEffect(() => {
 		getCurrentUser().then((res) => {
-			if (res?.user) setUser(res.user);
-			// TODO show toast that getting user failed!
+			if (res?.user) {
+				setUser(res.user);
+			} else {
+				toast.error('Fetching user profile failed.');
+			}
 			setIsLoading(false);
 		});
 	}, [getCurrentUser]);

@@ -1,5 +1,6 @@
 import React, { createRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { Button, Form } from 'semantic-ui-react';
 import ImgPreview from './ImgPreview';
 
@@ -26,14 +27,18 @@ const UploadField: React.FC<IProps> = ({ fileName, setImgFile }) => {
 
 	const fileChange = (e: React.FormEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.files && e.currentTarget.files[0]) {
-			// TODO validate on frontend too! When have some toast showing logic, then easier to show error
-			// 5MB max pic
-			// file type image
-			// ext only .jpg .png .jpeg
-			setImgFile(e.currentTarget.files[0]);
+			const allowedTypes = ['image/jpeg', 'image/png'];
+			const file = e.currentTarget.files[0];
+			if (file.size > 5242880 || !allowedTypes.includes(file.type)) {
+				toast.error(
+					'Invalid file. Supported types are jpeg and png. Maximum size is 5MB'
+				);
+				return;
+			}
+			setImgFile(file);
 			const reader = new FileReader();
 			reader.onload = () => setImg(reader.result as string);
-			reader.readAsDataURL(e.currentTarget.files[0]);
+			reader.readAsDataURL(file);
 		}
 	};
 

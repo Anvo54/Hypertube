@@ -23,6 +23,8 @@ import { useTranslation } from 'react-i18next';
 import Comments from './Comments';
 import UsersProfileModal from './UsersProfileModal';
 import MoviePlayer from './MoviePlayer';
+import { toast } from 'react-toastify';
+import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 
 interface IParams {
 	id: string;
@@ -36,19 +38,23 @@ const Movie = () => {
 	const [playerLoader, setPlayerLoader] = useState(false);
 	const [playMovie, setPlayMovie] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [error, setError] = useState('');
 	const [modalUsername, setModalUsername] = useState('');
 	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
-		if (movie === null || movie.imdb !== id) getMovie(id);
-		if (movie && movie.imdb === id) setLoading(false);
+		if (movie === null || movie.imdb !== id) {
+			getMovie(id)
+				.catch((err) => setError(err))
+				.finally(() => setLoading(false));
+		}
 	}, [id, getMovie, movie]);
 
 	const startPlay = () => {
 		setPlayerLoader(true);
 		prepareMovie()
 			.then(() => setPlayMovie(true))
-			.catch((err) => console.log(err))
+			.catch((err) => toast.error(err))
 			.finally(() => setPlayerLoader(false));
 	};
 
@@ -58,6 +64,8 @@ const Movie = () => {
 	};
 
 	if (loading) return <MovieLoader />;
+	if (error.length)
+		return <ErrorMessage style={{ marginTop: 80 }} message={error} />;
 
 	const headerStyles: any = {};
 	if (movie && movie.watched) headerStyles.marginBottom = '5px';
