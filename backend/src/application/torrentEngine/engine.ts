@@ -29,7 +29,7 @@ export class TorrentEngine extends EventEmitter {
 				return reject(new BadRequest('Torrent engine disabled.'));
 			}
 			if (this.instances.size > 4) {
-				return reject(new BadRequest('Too many torrents are downloading already.'));
+				return reject(new BadRequest('Too many torrents are downloading already. Please try again later.'));
 			}
 			if (this.instances.get(infoHash)) {
 				return reject(new BadRequest('Duplicate torrent.'));
@@ -37,7 +37,7 @@ export class TorrentEngine extends EventEmitter {
 			const discovery = new TorrentDiscovery(infoHash);
 			const discoveryTimeout = setTimeout(() => {
 				discovery.destroy();
-				return reject(new BadRequest('Error fetching metadata for torrent.'));
+				return reject(new BadRequest('Error fetching metadata for torrent. Please try again later.'));
 			}, 30000);
 			if (discoveryTimeout.unref) discoveryTimeout.unref();
 
@@ -47,7 +47,7 @@ export class TorrentEngine extends EventEmitter {
 				const torrentMetadata = this.validateMetadata(metadata);
 				if (!torrentMetadata) {
 					discovery.destroy();
-					return reject(new BadRequest('Torrent metadata validation failed.'));
+					return reject(new BadRequest('Torrent metadata validation failed. Please try again later.'));
 				}
 				const instance = new TorrentInstance(
 					discovery,
