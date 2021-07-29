@@ -102,7 +102,7 @@ export default class MovieStore {
 			});
 		} catch (error) {
 			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-			toast.error('Failed to add comment.');
+			throw error;
 		}
 	};
 }

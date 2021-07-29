@@ -177,7 +177,6 @@ export default class UserStore {
 			await agent.User.changeLanguage(token, language);
 		} catch (error) {
 			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-			console.log(error);
 			throw error;
 		}
 	};

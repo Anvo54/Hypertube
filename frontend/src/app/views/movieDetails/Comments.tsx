@@ -2,6 +2,7 @@ import { IComment } from 'app/models/movie';
 import React, { KeyboardEvent, useState } from 'react';
 import { Button, Comment, Form, Header } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 interface IProps {
 	comments: IComment[];
@@ -22,6 +23,7 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 		setLoading(true);
 		createComment(comment)
 			.then(() => setComment(''))
+			.catch(() => toast.error('Failed to add comment.'))
 			.finally(() => setLoading(false));
 	};
 
@@ -40,10 +42,16 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 		const minutes =
 			date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
 		const month =
-			date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
-		const day = date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
+			date.getMonth() + 1 < 10
+				? `0${date.getMonth() + 1}`
+				: `${date.getMonth() + 1}`;
+		const day =
+			date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
 		if (date.getFullYear() === now.getFullYear()) {
-			if (date.getMonth() === now.getMonth() && date.getDate() === now.getDate())
+			if (
+				date.getMonth() === now.getMonth() &&
+				date.getDate() === now.getDate()
+			)
 				return `Today ${hours}:${minutes}`;
 			return `${day}.${month}. ${hours}:${minutes}`;
 		}
@@ -53,7 +61,9 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 	return (
 		<Comment.Group style={{ maxWidth: '100%' }}>
 			<Header as="h4">{t('comments')}:</Header>
-			{!comments.length && <p style={{ color: 'gray' }}>{t('no_comments')}...</p>}
+			{!comments.length && (
+				<p style={{ color: 'gray' }}>{t('no_comments')}...</p>
+			)}
 			{comments.map(({ username, profilePicName, timestamp, text }) => (
 				<Comment key={`${username}-${new Date(timestamp).toString()}`}>
 					<Comment.Avatar

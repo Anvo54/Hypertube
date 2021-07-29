@@ -2,6 +2,7 @@ import { RootStoreContext } from 'app/stores/rootStore';
 import { Languages, languageArray } from 'app/stores/userStore';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import { changeLanguage, languagesSelect } from 'translations/i18n';
 
@@ -19,12 +20,10 @@ const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
 		if (oldLanguage && token) {
 			window.localStorage.removeItem('language');
 			if (!languageArray.includes(oldLanguage)) {
-				console.log('Could not save unknown language. Please try again.');
-				//TODO Unknown language toast here.
+				toast.error('Failed to save unknown language. Please try again.');
 			} else {
 				updateLanguage(oldLanguage as Languages).catch(() => {
-					console.log('Failed to save language. Please try again.');
-					//TODO toast here.
+					toast.error('Failed to save language. Please try again.');
 				});
 			}
 		}
