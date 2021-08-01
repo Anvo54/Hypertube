@@ -182,6 +182,7 @@ export default class MovieStore {
 	};
 
 	setSearchQuery = (query: string): void => {
+		this.savedSearch = query;
 		runInAction(() => {
 			if (this.params.has('query')) {
 				this.params.set('query', query);

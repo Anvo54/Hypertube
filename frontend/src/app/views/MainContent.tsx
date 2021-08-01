@@ -34,8 +34,6 @@ const MainContent: React.FC = () => {
 	/* If Search query changes */
 
 	useEffect(() => {
-		if (savedSearch === '' && searchQuery === '') return;
-		if (savedSearch && searchQuery === savedSearch) return;
 		if (searchTimer.current) clearTimeout(searchTimer.current!);
 		searchTimer.current = setTimeout(() => {
 			setQuery(searchQuery);
