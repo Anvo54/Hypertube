@@ -10,41 +10,26 @@ const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
 	const {
 		getMovies,
-		addMovies,
 		getNextPage,
+		setSearchQuery,
+		loading,
 		movies,
 		savedSearch,
 		page,
-		movieQueryLength,
+		totalPages,
 	} = rootStore.movieStore;
 	const searchTimer = useRef<NodeJS.Timeout>();
 	const [searchQuery, setQuery] = useState(savedSearch);
 	const [firstLoad, setFirstLoad] = useState(true);
-	const [loading, setLoading] = useState(false);
-	const [pageNbr, setpageNb] = useState(0);
 
 	/* Get initial movie list */
 	useEffect(() => {
 		if (firstLoad) {
-			setLoading(true);
-			getMovies(searchQuery).then(() => {
+			getMovies().then(() => {
 				setFirstLoad(false);
-				setLoading(false);
 			});
 		}
-	}, [firstLoad, getMovies, searchQuery]);
-
-	/* If Page Changes */
-
-	useEffect(() => {
-		if (pageNbr !== page) {
-			setLoading(true);
-			addMovies(searchQuery).then(() => {
-				setLoading(false);
-				setpageNb(page);
-			});
-		}
-	}, [addMovies, page, pageNbr, searchQuery]);
+	}, [firstLoad, getMovies, searchQuery, setSearchQuery]);
 
 	/* If Search query changes */
 
@@ -53,13 +38,13 @@ const MainContent: React.FC = () => {
 		if (savedSearch && searchQuery === savedSearch) return;
 		if (searchTimer.current) clearTimeout(searchTimer.current!);
 		searchTimer.current = setTimeout(() => {
-			setLoading(true);
-			getMovies(searchQuery).then(() => setLoading(false));
+			setQuery(searchQuery);
+			setSearchQuery(searchQuery);
 		}, 700);
 		return () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
-	}, [searchQuery, getMovies, savedSearch]);
+	}, [searchQuery, savedSearch, setSearchQuery]);
 
 	return (
 		<Segment style={{ minHeight: 500, padding: 60 }}>
@@ -74,7 +59,8 @@ const MainContent: React.FC = () => {
 				loading={loading}
 				movies={movies.movies}
 				getNextPage={getNextPage}
-				movieQueryLength={movieQueryLength}
+				totalPages={totalPages}
+				page={page}
 			/>
 		</Segment>
 	);

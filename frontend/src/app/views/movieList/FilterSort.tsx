@@ -81,7 +81,7 @@ const FilterSort: React.FC = () => {
 										options={genresObj}
 										onChange={(e, { value }) => setGenre(value as string)}
 										floating
-										value={genre.replace('&genre=', '')}
+										value={genre}
 										as={Button}
 									/>
 								</ButtonGroup>
@@ -130,7 +130,7 @@ const FilterSort: React.FC = () => {
 									labeled
 									icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
 									options={orderValue}
-									value={orderVal.replace('&sort=', '')}
+									value={orderVal}
 									search
 									onChange={(e, { value }) => setOrderValue(value as string)}
 									placeholder={t('sort')}

@@ -17,22 +17,23 @@ export interface BrowseProps {
 	movies: IMovie[];
 	loading: boolean;
 	getNextPage: any;
-	movieQueryLength: number;
+	totalPages: number;
+	page: number;
 }
 
 const Browse: React.FC<BrowseProps> = ({
 	movies,
 	loading,
 	getNextPage,
-	movieQueryLength,
+	totalPages,
+	page,
 }) => {
 	const { t } = useTranslation();
 	const getNext = () => {
-		if (movieQueryLength !== 0) {
-			getNextPage();
+		if (totalPages !== page) {
+			getNextPage(page + 1);
 		}
 	};
-
 	return (
 		<Segment>
 			{loading && <BrowseLoader />}
@@ -66,8 +67,9 @@ const Browse: React.FC<BrowseProps> = ({
 					))}
 				</Item.Group>
 			)}
+			{totalPages !== page && <Header>{t('load_more')}</Header>}
 			<Visibility onBottomVisible={() => getNext()} once={loading} />
-			{movieQueryLength === 0 && <Header>{t('no_results')}</Header>}
+			{totalPages === page && <Header>{t('no_more_results')}</Header>}
 		</Segment>
 	);
 };

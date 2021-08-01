@@ -81,5 +81,7 @@
 	"descending": "Laskeva",
 	"title": "Nimi",
 	"rating": "Arvostelut",
-	"prodyear": "Tuotantovuosi"
+	"prodyear": "Tuotantovuosi",
+	"no_more_results": "Ei enempää tuloksia",
+	"load_more": "Ladataan lisää"
 }

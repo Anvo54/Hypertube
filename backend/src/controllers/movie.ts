@@ -29,7 +29,7 @@ const parseParams = (req: Request) => {
 		sort: 'title',
 		order: 'asc',
 		genre: undefined,
-		rating: undefined
+		rating: undefined,
 	};
 
 	if (isString(req.query.query) && req.query.query.length > 1) {
@@ -79,7 +79,6 @@ export const filterList = (
 		list = list.filter((t) => t.year >= params.minYear!);
 	}
 	if (params.maxYear) {
-		console.log('here')
 		list = list.filter((t) => t.year <= params.maxYear!);
 	}
 	return list;

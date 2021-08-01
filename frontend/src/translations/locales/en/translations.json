@@ -81,5 +81,7 @@
 	"descending": "Descending",
 	"title": "Title",
 	"rating": "Rating",
-	"prodyear": "Production year"
+	"prodyear": "Production year",
+	"no_more_results": "No more results",
+	"load_more": "Loading more result"
 }
