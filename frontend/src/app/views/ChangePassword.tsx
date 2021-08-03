@@ -1,9 +1,7 @@
 import { history } from '../..';
 import { RootStoreContext } from 'app/stores/rootStore';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
-import { Validators } from '@lemoncode/fonk';
-import { createFinalFormValidation } from '@lemoncode/fonk-final-form';
 import {
 	Button,
 	Dimmer,
@@ -11,7 +9,6 @@ import {
 	Grid,
 	Header,
 	Icon,
-	Image,
 	Segment,
 } from 'semantic-ui-react';
 import { useParams } from 'react-router-dom';
@@ -19,8 +16,8 @@ import { IResetPassword } from 'app/models/user';
 import { observer } from 'mobx-react-lite';
 import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 import TextInput from 'app/sharedComponents/form/TextInput';
-import { getTranslatedPasswordComplexity } from 'app/sharedComponents/form/validators/passwordComplexity';
 import { useTranslation } from 'react-i18next';
+import { getChangePasswordFormValidator } from 'app/sharedComponents/form/validators';
 
 interface IParams {
 	id: string;
@@ -30,23 +27,19 @@ const ChangePassword = () => {
 	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { success, sendResetPassword } = rootStore.userStore;
-	const CloseChangePassword = () => history.push('/');
+	const CloseChangePassword = () => history.push('/movies');
 	const { id } = useParams<IParams>();
 
-	const validationSchema = {
-		field: {
-			username: [Validators.required.validator],
-			password: [
-				Validators.required.validator,
-				{ validator: getTranslatedPasswordComplexity(t('password_error')) },
-			],
-		},
-	};
-	const formValidation = createFinalFormValidation(validationSchema);
+	const formValidation = getChangePasswordFormValidator(t);
 
-	const onSubmit = (data: IResetPassword) => {
-		sendResetPassword(data, id);
-	};
+	useEffect(() => {
+		// In order when on mobile scolled to bottom and this view is opened
+		window.scrollTo(0, 0);
+	}, []);
+
+	const onSubmit = async (
+		data: IResetPassword
+	): Promise<Record<string, any> | void> => await sendResetPassword(data, id);
 
 	return (
 		<FinalForm
@@ -61,7 +54,6 @@ const ChangePassword = () => {
 					<Form onSubmit={handleSubmit} error size="large">
 						<Grid.Column style={{ maxWidth: 450 }}>
 							<Header as="h2" color="teal" textAlign="center">
-								<Image src="/logo_128.png" />
 								{t('enter_password')}
 							</Header>
 							<Segment stacked>
@@ -83,7 +75,9 @@ const ChangePassword = () => {
 							<Header as="h2" icon inverted>
 								<Icon name="heart" />
 								{t('password_changed')}
-								<Header.Subheader>{t('you_can_login')}</Header.Subheader>
+								<Header.Subheader>
+									{t('you_will_be_logged_in')}
+								</Header.Subheader>
 							</Header>
 						</Dimmer>
 					</Form>

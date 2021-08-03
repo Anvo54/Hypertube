@@ -34,6 +34,15 @@ const Browse: React.FC<BrowseProps> = ({
 			getNextPage(page + 1);
 		}
 	};
+
+	const label = {
+		icon: 'eye',
+		color: 'teal',
+		ribbon: true,
+		content: t('watched'),
+		style: { position: 'absolute', top: '10px', left: '-14px' },
+	};
+
 	return (
 		<Segment>
 			{loading && <BrowseLoader />}
@@ -43,7 +52,10 @@ const Browse: React.FC<BrowseProps> = ({
 				<Item.Group divided>
 					{movies.map((movie) => (
 						<Item key={movie.imdb} as={Link} to={`/movies/${movie.imdb}`}>
-							<Item.Image src={movie.coverImage} />
+							<Item.Image
+								src={movie.coverImage}
+								label={movie.watched ? label : null}
+							/>
 							<Item.Content>
 								<Item.Header>{movie.title}</Item.Header>
 								<Item.Meta>
@@ -59,7 +71,9 @@ const Browse: React.FC<BrowseProps> = ({
 								<Item.Description>
 									{movie.genres &&
 										movie.genres.map((genre) => (
-											<Label key={genre}>{t(genre.toLowerCase())}</Label>
+											<Label key={genre} style={{ marginBottom: 4 }}>
+												{t(genre.toLowerCase())}
+											</Label>
 										))}
 								</Item.Description>
 							</Item.Content>

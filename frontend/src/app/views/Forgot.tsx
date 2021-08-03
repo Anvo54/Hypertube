@@ -1,37 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
-import { Validators } from '@lemoncode/fonk';
-import { createFinalFormValidation } from '@lemoncode/fonk-final-form';
 import {
 	Grid,
 	Form,
 	Header,
-	Image,
 	Segment,
 	Button,
 	Dimmer,
 	Icon,
 } from 'semantic-ui-react';
-import { history } from '../..';
+import { history } from 'index';
 import TextInput from 'app/sharedComponents/form/TextInput';
 import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
-import { RootStoreContext } from '../stores/rootStore';
+import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-
-const validationSchema = {
-	field: {
-		email: [Validators.required.validator, Validators.email.validator],
-	},
-};
-
-const formValidation = createFinalFormValidation(validationSchema);
+import { getForgotPasswordFormValidator } from 'app/sharedComponents/form/validators';
 
 const Forgot = () => {
 	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { forgetPassword, success } = rootStore.userStore;
 	const CloseForgot = () => history.push('/');
+
+	const formValidation = getForgotPasswordFormValidator(t);
+
+	useEffect(() => {
+		// In order when on mobile scolled to bottom and this view is opened
+		window.scrollTo(0, 0);
+	}, []);
+
 	return (
 		<FinalForm
 			onSubmit={forgetPassword}
@@ -45,7 +43,6 @@ const Forgot = () => {
 					<Form onSubmit={handleSubmit} error size="large">
 						<Grid.Column style={{ maxWidth: 450 }}>
 							<Header as="h2" color="teal" textAlign="center">
-								<Image src="/logo_128.png" />
 								{t('request_password')}
 							</Header>
 							<Segment stacked>

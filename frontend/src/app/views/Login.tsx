@@ -1,40 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Form as FinalForm, Field } from 'react-final-form';
-import { Validators } from '@lemoncode/fonk';
-import { createFinalFormValidation } from '@lemoncode/fonk-final-form';
 import { Link } from 'react-router-dom';
 import {
 	Grid,
 	Form,
 	Header,
-	Image,
 	Segment,
 	Button,
 	Message,
 	Divider,
 } from 'semantic-ui-react';
-import { getTranslatedPasswordComplexity } from 'app/sharedComponents/form/validators/passwordComplexity';
 import TextInput from 'app/sharedComponents/form/TextInput';
-import { RootStoreContext } from '../stores/rootStore';
+import { RootStoreContext } from 'app/stores/rootStore';
 import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 import OAuthButtons from 'app/sharedComponents/form/OAuthButtons';
 import { useTranslation } from 'react-i18next';
+import { getLoginFormValidator } from 'app/sharedComponents/form/validators';
 
 const Login: React.FC = () => {
 	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { loginUser } = rootStore.userStore;
 
-	const validationSchema = {
-		field: {
-			username: [Validators.required.validator],
-			password: [
-				Validators.required.validator,
-				{ validator: getTranslatedPasswordComplexity(t('password_error')) },
-			],
-		},
-	};
-	const formValidation = createFinalFormValidation(validationSchema);
+	const formValidation = getLoginFormValidator(t);
+
+	useEffect(() => {
+		// In order when on mobile scolled to bottom and this view is opened
+		window.scrollTo(0, 0);
+	}, []);
 
 	return (
 		<FinalForm
@@ -54,7 +47,6 @@ const Login: React.FC = () => {
 					<Form onSubmit={handleSubmit} error size="large">
 						<Grid.Column style={{ maxWidth: 450 }}>
 							<Header as="h2" color="teal" textAlign="center">
-								<Image src="/logo_128.png" />
 								{t('login')}
 							</Header>
 							<Segment stacked>

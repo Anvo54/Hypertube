@@ -1,6 +1,7 @@
+import { IGetUser } from 'app/models/user';
 import { ILink } from 'app/models/oAuth';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { IMovie, IMovieList } from '../models/movie';
+import { IComment, IMovie, IMovieList } from 'app/models/movie';
 import {
 	IForgetPassword,
 	ILoginFormValues,
@@ -8,9 +9,10 @@ import {
 	IResetPassword,
 	IAccessToken,
 } from '../models/user';
+import { Languages } from 'app/stores/userStore';
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 20000;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(
@@ -50,8 +52,16 @@ const User = {
 		requests.post('/pre-auth/login', user),
 	forget: (data: IForgetPassword): Promise<void> =>
 		requests.post(`/pre-auth/send-reset-password`, data),
-	reset: (code: string, data: IResetPassword): Promise<void> =>
+	reset: (code: string, data: IResetPassword): Promise<IAccessToken> =>
 		requests.put(`/pre-auth/reset-password/${code}`, data),
+	getCurrentProfile: (token: string): Promise<IGetUser> =>
+		requests.getAuth('/user', token),
+	getUsersProfile: (token: string, usersId: string): Promise<IGetUser> =>
+		requests.getAuth(`/user/${usersId}`, token),
+	update: (token: string, user: FormData): Promise<IGetUser> =>
+		requests.postAuth('/user', token, user),
+	changeLanguage: (token: string, language: Languages): Promise<void> =>
+		requests.postAuth('/user/language', token, { language }),
 	accessToken: (): Promise<IAccessToken> => requests.post('/accessToken', {}),
 	logout: (token: string): Promise<void> =>
 		requests.postAuth('/user/logout', token, {}),
@@ -67,6 +77,24 @@ const Movies = {
 		}).then(responseBody),
 	get: (imdbCode: string, token: string): Promise<IMovie> =>
 		requests.getAuth(`movies/${imdbCode}`, token),
+	prepare: (imdbCode: string, token: string): Promise<string[]> =>
+		axios
+			.post(
+				`movies/${imdbCode}/prepare`,
+				{},
+				{ headers: { Authorization: `Bearer ${token}` }, timeout: 0 }
+			)
+			.then(responseBody),
+	setWatched: (imdbCode: string, token: string): Promise<void> =>
+		requests.postAuth(`movies/${imdbCode}/watch`, token, {}),
+	comment: (
+		imdbCode: string,
+		comment: string,
+		token: string
+	): Promise<IComment> =>
+		requests.postAuth(`movies/${imdbCode}/comment`, token, {
+			comment: comment,
+		}),
 };
 
 const OAuth = {

@@ -10,6 +10,8 @@ export interface IMovie {
 	writer: string;
 	director: string;
 	actors: IActorObj[] | string | [];
+	comments: IComment[];
+	watched: boolean;
 }
 
 export interface IActorObj {
@@ -17,6 +19,13 @@ export interface IActorObj {
 	character_name: string;
 	url_small_image: string;
 	imdb_code: string;
+}
+
+export interface IComment {
+	username: string;
+	profilePicName?: string;
+	text: string;
+	timestamp: number;
 }
 
 export interface IMovieList {

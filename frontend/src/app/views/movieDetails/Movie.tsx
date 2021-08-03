@@ -12,14 +12,17 @@ import {
 	Rating,
 	Segment,
 	Header,
-	Embed,
 	Label,
 	Loader,
 	Dimmer,
 	Image,
+	Icon,
 } from 'semantic-ui-react';
 import { IActorObj } from 'app/models/movie';
 import { useTranslation } from 'react-i18next';
+import Comments from './Comments';
+import UsersProfileModal from './UsersProfileModal';
+import MoviePlayer from './MoviePlayer';
 
 interface IParams {
 	id: string;
@@ -32,7 +35,9 @@ const Movie = () => {
 	const [loading, setLoading] = useState(true);
 	const [playerLoader, setPlayerLoader] = useState(false);
 	const [playMovie, setPlayMovie] = useState(false);
-	const { movie, getMovie } = rootStore.movieStore;
+	const [showModal, setShowModal] = useState(false);
+	const [modalUsername, setModalUsername] = useState('');
+	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
 		if (movie === null || movie.imdb !== id) getMovie(id);
@@ -41,21 +46,40 @@ const Movie = () => {
 
 	const startPlay = () => {
 		setPlayerLoader(true);
-		setInterval(() => {
-			setPlayMovie(true);
-			setPlayerLoader(false);
-		}, 5000);
+		prepareMovie()
+			.then(() => setPlayMovie(true))
+			.catch((err) => console.log(err))
+			.finally(() => setPlayerLoader(false));
+	};
+
+	const openModal = (username: string): void => {
+		setModalUsername(username);
+		setShowModal(true);
 	};
 
 	if (loading) return <MovieLoader />;
 
+	const headerStyles: any = {};
+	if (movie && movie.watched) headerStyles.marginBottom = '5px';
+
 	return (
 		movie && (
-			<Segment style={{ marginTop: '60px' }}>
+			<Segment style={{ marginTop: 80, paddingBottom: 40 }}>
 				<Grid>
 					<Grid.Row columns="1">
 						<GridColumn>
-							<Header as="h1">{movie.title}</Header>
+							<Header as="h1" style={headerStyles}>
+								{movie.title}
+							</Header>
+							{movie.watched && (
+								<Header
+									sub
+									style={{ color: 'teal', fontSize: '1.1rem', marginTop: 0 }}
+								>
+									<Icon name="eye" />
+									{t('watched')}
+								</Header>
+							)}
 							{!playMovie && (
 								<Dimmer.Dimmable
 									dimmed={playerLoader}
@@ -68,21 +92,13 @@ const Movie = () => {
 								>
 									<Dimmer active={playerLoader} inverted>
 										<Loader>
-											{t('movie_loading', { movieName: movie.title })}
+											{t('movie_loading')} {movie.title}
 										</Loader>
 									</Dimmer>
 									<Image src="/background.png" onClick={() => startPlay()} />
 								</Dimmer.Dimmable>
 							)}
-
-							{!playerLoader && playMovie && (
-								<Embed
-									id="LsGZ_2RuJ2A"
-									placeholder="/background.png"
-									source="youtube"
-									autoplay
-								/>
-							)}
+							{!playerLoader && playMovie && <MoviePlayer />}
 						</GridColumn>
 						<Grid.Column style={{ marginTop: '10px' }}>
 							<Item.Content>
@@ -92,13 +108,19 @@ const Movie = () => {
 									maxRating={10}
 									rating={movie.rating}
 								/>
+								<Item.Meta style={{ fontWeight: 600, marginBottom: 10 }}>
+									{movie.summary}
+								</Item.Meta>
 								<ItemExtra>
-									{t('directed', { director: movie.director })}
+									{t('directed')} {movie.director}
 								</ItemExtra>
 								<ItemExtra>{t('runtime', { time: movie.runtime })}</ItemExtra>
-								<Item.Content>{t('year', { year: movie.year })}</Item.Content>
-								<Item.Meta>{movie.summary}</Item.Meta>
-								<ItemExtra>{t('written', { writer: movie.writer })}</ItemExtra>
+								<Item.Content>
+									{t('year')} {movie.year}
+								</Item.Content>
+								<ItemExtra>
+									{t('written')} {movie.writer}
+								</ItemExtra>
 								{typeof movie.actors !== 'undefined' && (
 									<Header as="h5">{t('actors')}</Header>
 								)}
@@ -110,6 +132,9 @@ const Movie = () => {
 											key={actor.imdb_code}
 											as="a"
 											href={`https://www.imdb.com/name/nm${actor.imdb_code}`}
+											style={{ marginRight: 5, marginTop: 5 }}
+											target="_blank"
+											rel="noreferrer noopener"
 										>
 											<img
 												src={actor.url_small_image || '/NoImage.png'}
@@ -122,6 +147,16 @@ const Movie = () => {
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
+				<Comments
+					comments={movie.comments}
+					createComment={createComment}
+					showModal={openModal}
+				/>
+				<UsersProfileModal
+					show={showModal}
+					username={modalUsername}
+					setShow={setShowModal}
+				/>
 			</Segment>
 		)
 	);

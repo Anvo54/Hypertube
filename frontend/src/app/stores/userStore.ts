@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../services/agent';
 import {
 	IForgetPassword,
+	IGetUser,
 	ILoginFormValues,
 	IRegisterFormValues,
 	IResetPassword,
@@ -10,13 +11,9 @@ import { RootStore } from './rootStore';
 import { history } from '../..';
 import { FORM_ERROR } from 'final-form';
 import { MouseEvent } from 'react';
-const RegErrorTypes = [
-	'username',
-	'email',
-	'firstname',
-	'lastname',
-	'password',
-];
+
+export type Languages = 'en' | 'fi' | 'ee';
+export const languageArray = ['en', 'fi', 'ee'];
 
 export default class UserStore {
 	rootStore: RootStore;
@@ -48,6 +45,7 @@ export default class UserStore {
 			if (callLogout) this.logOutBtnClicked = true;
 			this.token = null;
 			this.tokenExpiresDate = null;
+			this.rootStore.movieStore.movies = { count: 0, movies: [] };
 		});
 	};
 
@@ -77,7 +75,7 @@ export default class UserStore {
 				resolve(data.accessToken);
 			} catch (error) {
 				if (error.logUserOut) this.logoutUser();
-				console.log(error);
+				console.log('ERROR getNewToken ->', error);
 				reject();
 			}
 		});
@@ -88,6 +86,7 @@ export default class UserStore {
 		setTimeout(() => {
 			runInAction(() => {
 				this.success = !this.success;
+				if (this.token) return history.push('/movies');
 				history.push('/');
 			});
 		}, 3000);
@@ -100,16 +99,7 @@ export default class UserStore {
 			await agent.User.register(data);
 			this.setSuccess();
 		} catch (error) {
-			if (error.response.data.message === 'Invalid data') {
-				return error.response.data.errors.reduce((obj: any, item: string) => {
-					RegErrorTypes.forEach((error) => {
-						if (item.includes(error)) {
-							obj[error] = item;
-						}
-					});
-					return obj;
-				}, {});
-			}
+			if (error.response.data.errors) return error.response.data.errors;
 			return { [FORM_ERROR]: error.response.data.errors };
 		}
 	};
@@ -119,7 +109,8 @@ export default class UserStore {
 		code: string
 	): Promise<void | Record<string, any>> => {
 		try {
-			await agent.User.reset(code, data);
+			const user = await agent.User.reset(code, data);
+			this.setToken(user.accessToken);
 			this.setSuccess();
 		} catch (error) {
 			return { [FORM_ERROR]: error.response.data.message };
@@ -146,6 +137,50 @@ export default class UserStore {
 			this.setSuccess();
 		} catch (error) {
 			return { [FORM_ERROR]: error.response.data.message };
+		}
+	};
+
+	getCurrentUser = async (): Promise<IGetUser | null> => {
+		try {
+			const token = await this.getToken();
+			return await agent.User.getCurrentProfile(token);
+		} catch (error) {
+			console.log(error);
+			return null;
+		}
+	};
+
+	updateUser = (data: FormData): Promise<IGetUser | Record<string, string>> => {
+		return new Promise(async (resolve) => {
+			try {
+				const token = await this.getToken();
+				resolve(await agent.User.update(token, data));
+			} catch (error) {
+				if (error.response.data.errors)
+					return resolve(error.response.data.errors);
+				resolve({ [FORM_ERROR]: error.response.data.message });
+			}
+		});
+	};
+
+	getUsersProfile = async (usersId: string): Promise<IGetUser | null> => {
+		try {
+			const token = await this.getToken();
+			return await agent.User.getUsersProfile(token, usersId);
+		} catch (error) {
+			console.log(error);
+			return null;
+		}
+	};
+
+	updateLanguage = async (language: Languages): Promise<void> => {
+		try {
+			const token = await this.getToken();
+			await agent.User.changeLanguage(token, language);
+		} catch (error) {
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			console.log(error);
+			throw error;
 		}
 	};
 }

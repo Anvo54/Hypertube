@@ -1,18 +1,9 @@
 import { ValidationResult } from '@lemoncode/fonk/typings/model';
-
-interface IFieldValidatorArgs {
-	value: any;
-	values?: any;
-	customArgs?: any;
-	message?: string | string[];
-}
-
-type ValidatorFunction = (
-	fieldValidatorArgs: IFieldValidatorArgs
-) => ValidationResult;
+import { IFieldValidatorArgs, ValidatorFunction } from './types';
 
 export const getTranslatedPasswordComplexity = (
-	errorText: string
+	errorText: string,
+	isEmptyOk = false
 ): ValidatorFunction => {
 	return (fieldValidatorArgs: IFieldValidatorArgs): ValidationResult => {
 		const { value } = fieldValidatorArgs;
@@ -23,7 +14,13 @@ export const getTranslatedPasswordComplexity = (
 			message: errorText,
 		};
 
-		if (/[A-Za-z]+/.test(value) && /\d+/.test(value)) {
+		if (
+			(/[A-Za-z]+/.test(value) &&
+				/\d+/.test(value) &&
+				value.length > 3 &&
+				value.length < 256) ||
+			(isEmptyOk && value === undefined)
+		) {
 			validationResult.succeeded = true;
 			validationResult.message = '';
 		}
