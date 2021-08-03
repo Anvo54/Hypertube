@@ -209,7 +209,7 @@ export default class MovieStore {
 			this.getMovies();
 		});
 	}
-	
+
 	prepareMovie = async (): Promise<void> => {
 		if (!this.movie) return;
 		const token = await this.rootStore.userStore.getToken();
@@ -218,6 +218,10 @@ export default class MovieStore {
 			this.subtitles = subtitles;
 		});
 	};
+
+	setLoading = (value: boolean):void => {
+		runInAction(() => {this.loading = value})
+	}
 
 	get getSubtitles(): any[] {
 		if (!this.movie) return [];
