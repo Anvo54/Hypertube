@@ -1,10 +1,10 @@
-import SearchMovies from 'app/views/movieList/SearchMovies';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Segment } from 'semantic-ui-react';
+import { Menu, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
 import FilterSort from './movieList/FilterSort';
+import SearchMovies from './movieList/SearchMovies';
 
 const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
@@ -54,19 +54,27 @@ const MainContent: React.FC = () => {
 		return () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
-	}, [searchQuery, getMovies, savedSearch, isMounted, setLoading, setSearchQuery]);
+	}, [
+		searchQuery,
+		getMovies,
+		savedSearch,
+		isMounted,
+		setLoading,
+		setSearchQuery,
+	]);
 
 	return (
 		<Segment
 			style={{ minHeight: 500, padding: 30, paddingTop: 30, marginTop: 80 }}
 		>
-			<SearchMovies
-				setQuery={setQuery}
-				searchQuery={searchQuery}
-				loading={loading}
-			/>
-			<FilterSort />
-
+			<Menu stackable borderless>
+				<SearchMovies
+					setQuery={setQuery}
+					searchQuery={searchQuery}
+					loading={loading}
+				/>
+				<FilterSort />
+			</Menu>
 			<Browse
 				loading={loading}
 				movies={movies.movies}

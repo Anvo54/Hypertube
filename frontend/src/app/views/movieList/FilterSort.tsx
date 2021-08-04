@@ -11,6 +11,7 @@ import {
 	Popup,
 	Divider,
 	ButtonGroup,
+	Icon,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,90 +58,89 @@ const FilterSort: React.FC = () => {
 	};
 	return (
 		<>
-			<Menu compact borderless stackable>
-				<Menu.Menu>
-					<Popup
-						trigger={<Menu.Item icon="filter" />}
-						position="bottom left"
-						on="click"
-						pinned
-						style={{ padding: 10 }}
-						open={filterMenuOpen}
-						onOpen={() => setFilterMenuOpen(true)}
-						onClose={() => setFilterMenuOpen(false)}
-					>
-						<Menu.Item>
-							<Header>{t('filter')}</Header>
-							<Divider />
-							<Grid.Column>
-								{t('genre')}
-								<br />
-								<ButtonGroup>
-									<Dropdown
-										placeholder={t('genre')}
-										options={genresObj}
-										onChange={(e, { value }) => setGenre(value as string)}
-										floating
-										value={genre}
-										as={Button}
-									/>
-								</ButtonGroup>
-							</Grid.Column>
-							{t('rating')}
-							<br />
-							<Rating
-								icon="star"
-								size="mini"
-								clearable
-								defaultRating={ratingVal}
-								maxRating={10}
-								onRate={(e, { rating }) => {
-									setRatingFilter(rating as number);
-								}}
-							/>
-							<Grid.Column>
-								{t('prodyear')}
-								<br />
-								<DatePickerWidget />
-							</Grid.Column>
-						</Menu.Item>
-					</Popup>
-				</Menu.Menu>
-				<Menu.Menu>
-					<Popup
-						trigger={<Menu.Item icon="sort" />}
-						position="bottom center"
-						on="click"
-						pinned
-						label="Sort"
-						style={{ padding: 10 }}
-						open={sortMenuOpen}
-						onOpen={() => setSortMenuOpen(true)}
-						onClose={() => setSortMenuOpen(false)}
-					>
-						<Menu.Item>
-							<Header>{t('sort')}</Header>
-						</Menu.Item>
-						<Menu.Item>
-							<Grid.Column>
-								<Dropdown
-									button
-									className="icon"
-									floating
-									labeled
-									icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
-									options={orderValue}
-									value={orderVal}
-									search
-									onChange={(e, { value }) => setOrderValue(value as string)}
-									placeholder={t('sort')}
-									onClick={() => handleSort()}
-								/>
-							</Grid.Column>
-						</Menu.Item>
-					</Popup>
-				</Menu.Menu>
-			</Menu>
+			<Popup
+				trigger={
+					<Menu.Item>
+						<Icon name="filter" />
+						{t('filter')}
+					</Menu.Item>
+				}
+				position="bottom center"
+				on="click"
+				pinned
+				style={{ padding: 10 }}
+				open={filterMenuOpen}
+				onOpen={() => setFilterMenuOpen(true)}
+				onClose={() => setFilterMenuOpen(false)}
+			>
+				<Header>{t('filter')}</Header>
+				<Divider />
+				<Grid.Column>
+					{t('genre')}
+					<br />
+					<ButtonGroup>
+						<Dropdown
+							placeholder={t('genre')}
+							options={genresObj}
+							onChange={(e, { value }) => setGenre(value as string)}
+							floating
+							value={genre}
+							as={Button}
+						/>
+					</ButtonGroup>
+				</Grid.Column>
+				{t('rating')}
+				<br />
+				<Rating
+					icon="star"
+					size="mini"
+					clearable
+					defaultRating={ratingVal}
+					maxRating={10}
+					onRate={(e, { rating }) => {
+						setRatingFilter(rating as number);
+					}}
+				/>
+				<Grid.Column>
+					{t('prodyear')}
+					<br />
+					<DatePickerWidget />
+				</Grid.Column>
+			</Popup>
+
+			<Popup
+				trigger={
+					<Menu.Item>
+						<Icon name="sort" />
+						{t('sort')}
+					</Menu.Item>
+				}
+				position="bottom center"
+				on="click"
+				label="Sort"
+				open={sortMenuOpen}
+				onOpen={() => setSortMenuOpen(true)}
+				onClose={() => setSortMenuOpen(false)}
+			>
+				<Header>{t('sort')}</Header>
+				<Menu.Item>
+					<Grid.Column>
+						<Dropdown
+							button
+							className="icon"
+							floating
+							labeled
+							icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
+							options={orderValue}
+							value={orderVal}
+							search
+							onChange={(e, { value }) => setOrderValue(value as string)}
+							placeholder={t('sort')}
+							onClick={() => handleSort()}
+						/>
+					</Grid.Column>
+				</Menu.Item>
+			</Popup>
 		</>
 	);
 };
