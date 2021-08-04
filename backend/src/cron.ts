@@ -49,9 +49,19 @@ class CronScheduler {
 			this.activeCrons[movieDocument.imdbCode].stop();
 			delete this.activeCrons[movieDocument.imdbCode];
 		}
-		const path = Path.resolve(__dirname, `../movies/${movieDocument.imdbCode}`);
-		if (Fs.existsSync(path)) {
-			Fs.rmdirSync(path, { recursive: true });
+		const moviePath = Path.resolve(
+			__dirname,
+			`../movies/${movieDocument.imdbCode}`
+		);
+		if (Fs.existsSync(moviePath)) {
+			Fs.rmdirSync(moviePath, { recursive: true });
+		}
+		const subtitlesPath = Path.resolve(
+			__dirname,
+			`../public/subtitles/${movieDocument.imdbCode}`
+		);
+		if (Fs.existsSync(subtitlesPath)) {
+			Fs.rmdirSync(subtitlesPath, { recursive: true });
 		}
 		movieDocument.status = 0;
 		try {
