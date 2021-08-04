@@ -56,9 +56,9 @@ const MainContent: React.FC = () => {
 		};
 	}, [
 		searchQuery,
-		getMovies,
 		savedSearch,
 		isMounted,
+		getMovies,
 		setLoading,
 		setSearchQuery,
 	]);
