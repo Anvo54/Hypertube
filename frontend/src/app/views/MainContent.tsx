@@ -39,16 +39,23 @@ const MainContent: React.FC = () => {
 	}, [searchQuery, getMovies, savedSearch, isMounted]);
 
 	return (
-		<Segment
-			style={{ minHeight: 500, padding: 30, paddingTop: 30, marginTop: 80 }}
-		>
-			<SearchMovies
-				setQuery={setQuery}
-				searchQuery={searchQuery}
-				loading={loading}
-			/>
-			<Browse loading={loading} movies={movies.movies} />
-		</Segment>
+		<div style={{ paddingBottom: 70 }}>
+			<Segment
+				style={{
+					minHeight: 400,
+					padding: 30,
+					paddingTop: 30,
+					marginTop: 80,
+				}}
+			>
+				<SearchMovies
+					setQuery={setQuery}
+					searchQuery={searchQuery}
+					loading={loading}
+				/>
+				<Browse loading={loading} movies={movies.movies} />
+			</Segment>
+		</div>
 	);
 };
 
