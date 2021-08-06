@@ -3,6 +3,21 @@ import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
 import _ from 'lodash';
+import { EventSourcePolyfill } from 'event-source-polyfill';
+
+export type PrepareTaskStatus =
+	| 'disabled'
+	| 'waiting'
+	| 'loading'
+	| 'done'
+	| 'error';
+
+export interface IPrepareTasks {
+	torrent: PrepareTaskStatus;
+	metadata: PrepareTaskStatus;
+	subtitles: PrepareTaskStatus;
+	firstPieces: PrepareTaskStatus;
+}
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -20,11 +35,21 @@ export default class MovieStore {
 	params = new URLSearchParams();
 	movie: IMovie | null = null;
 	subtitles: string[] = [];
+	prepareMode: 'torrent' | 'server' | null = null;
+	prepareTasks: IPrepareTasks;
+	prepareModalOpen = false;
+	prepareError?: string;
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		this.startYear = null;
 		this.endYear = null;
+		this.prepareTasks = {
+			torrent: 'waiting',
+			metadata: 'waiting',
+			subtitles: 'waiting',
+			firstPieces: 'waiting',
+		};
 		makeAutoObservable(this);
 	}
 
@@ -221,19 +246,97 @@ export default class MovieStore {
 	};
 
 	prepareMovie = async (): Promise<void> => {
-		if (!this.movie) return;
-		try {
+		return new Promise(async (resolve, reject) => {
+			if (!this.movie) return reject();
 			const token = await this.rootStore.userStore.getToken();
-			const subtitles = await agent.Movies.prepare(this.movie.imdb, token);
-			runInAction(() => {
-				this.subtitles = subtitles;
-			});
-		} catch (error: any) {
-			if (error.response?.data?.message) {
-				throw error.response?.data?.message;
-			}
-			throw error;
-		}
+			runInAction(() => (this.prepareModalOpen = true));
+			const sse = new EventSourcePolyfill(
+				`http://localhost:8080/api/movies/${this.movie.imdb}/prepare`,
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+			sse.onerror = () => {
+				runInAction(() => (this.prepareError = 'error'));
+				sse.close();
+				reject(new Error('error'));
+			};
+			sse.onmessage = (event: any) => {
+				runInAction(() => {
+					const message = JSON.parse(event.data);
+					switch (message.kind) {
+						case 'mode':
+							if (message.status === 'server') {
+								this.prepareMode = 'server';
+								this.prepareTasks = {
+									torrent: 'disabled',
+									metadata: 'disabled',
+									subtitles: 'waiting',
+									firstPieces: 'disabled',
+								};
+							} else {
+								this.prepareMode = 'torrent';
+								this.prepareTasks = {
+									torrent: 'loading',
+									metadata: 'waiting',
+									subtitles: 'waiting',
+									firstPieces: 'waiting',
+								};
+							}
+							break;
+						case 'torrent':
+							this.prepareTasks.torrent = message.status;
+							if (this.prepareTasks.torrent === 'done') {
+								this.prepareTasks.metadata = 'loading';
+							}
+							break;
+						case 'metadata':
+							this.prepareTasks.metadata = message.status;
+							if (this.prepareTasks.metadata === 'done') {
+								this.prepareTasks.subtitles = 'loading';
+							}
+							break;
+						case 'subtitles':
+							this.prepareTasks.subtitles = message.status;
+							if (this.prepareTasks.subtitles === 'done') {
+								this.subtitles = message.subtitles;
+							}
+							if (this.prepareTasks.firstPieces === 'waiting') {
+								this.prepareTasks.firstPieces = 'loading';
+							}
+							break;
+						case 'firstPieces':
+							this.prepareTasks.firstPieces = message.status;
+							break;
+						case 'ready':
+							if (!this.prepareModalOpen) this.closePrepareModal();
+							sse.close();
+							resolve();
+							break;
+						case 'error':
+							if (message.type === 'logout') {
+								return this.rootStore.userStore.logoutUser();
+							} else {
+								this.prepareError = message.message ?? 'error';
+							}
+							sse.close();
+							reject(message.message);
+					}
+				});
+			};
+		});
+	};
+
+	closePrepareModal = (): void => {
+		this.prepareModalOpen = false;
+		this.prepareMode = null;
+		this.prepareTasks = {
+			torrent: 'waiting',
+			metadata: 'waiting',
+			subtitles: 'waiting',
+			firstPieces: 'waiting',
+		};
+		this.prepareError = undefined;
 	};
 
 	setLoading = (value: boolean): void => {
