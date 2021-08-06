@@ -73,22 +73,22 @@ const MainContent: React.FC = () => {
 					marginTop: 80,
 				}}
 			>
-        <Menu stackable borderless>
-				<SearchMovies
-					setQuery={setQuery}
-					searchQuery={searchQuery}
+				<Menu stackable borderless>
+					<SearchMovies
+						setQuery={setQuery}
+						searchQuery={searchQuery}
+						loading={loading}
+					/>
+					<FilterSort />
+				</Menu>
+				<Browse
 					loading={loading}
+					movies={movies.movies}
+					getNextPage={getNextPage}
+					totalPages={totalPages}
+					page={page}
 				/>
-				<FilterSort />
-			</Menu>
-			<Browse
-				loading={loading}
-				movies={movies.movies}
-				getNextPage={getNextPage}
-				totalPages={totalPages}
-				page={page}
-			/>
-		</Segment>
+			</Segment>
 		</div>
 	);
 };
