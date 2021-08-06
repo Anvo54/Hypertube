@@ -115,5 +115,11 @@
 	"add_comment_failed": "Failed to add comment.",
 	"get_user_profile_failed": "Fetching user profile failed.",
 	"get_current_user_profile_failed": "Fetching your profile failed.",
-	"profile_pic_validation_error": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB."
+	"profile_pic_validation_error": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB.",
+	"preparing_movie": "Valmistellaan elokuvaa",
+	"searching_torrent": "Etsitää torrenttia",
+	"fetching_metadata": "Haetaan torrentin tietoja",
+	"downloading_subtitles": "Ladataan tekstityksiä",
+	"waiting_download": "Odotetaan latauksen alkamista",
+	"play_movie": "Katso elokuva"
 }

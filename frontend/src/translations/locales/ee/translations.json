@@ -115,5 +115,11 @@
 	"add_comment_failed": "Kommentaari lisamine ebaõnnestus.",
 	"get_user_profile_failed": "Kasutaja profiili saamine ebaõnnestus.",
 	"get_current_user_profile_failed": "Sinu profiili saamine ebaõnnestus.",
-	"profile_pic_validation_error": "Ebakorrektne fail. Faili tüüp peab olema kas jpeg või png. Maksimaalne suurus 5MB."
+	"profile_pic_validation_error": "Ebakorrektne fail. Faili tüüp peab olema kas jpeg või png. Maksimaalne suurus 5MB.",
+	"preparing_movie": "Valmistame filmi ette",
+    "searching_torrent": "Torrenti otsimine",
+    "fetching_metadata": "Torrenti metaandmete laadimine",
+    "downloading_subtitles": "Subtiitrite allalaadimine",
+    "waiting_download": "Filmi allalaadimine algab peagi",
+    "play_movie": "Vaata filmi"
 }
