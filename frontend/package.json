@@ -9,6 +9,7 @@
     "@lemoncode/fonk-final-form": "^2.3.4",
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
+    "event-source-polyfill": "^1.0.24",
     "final-form": "^4.20.2",
     "i18next": "^20.3.1",
     "lodash.uniq": "^4.5.0",
