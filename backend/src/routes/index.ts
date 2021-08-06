@@ -7,6 +7,7 @@ import { accessTokenController } from 'controllers/accessToken';
 import userRouter from 'routes/private/user';
 import streamRouter from './stream';
 import Path from 'path';
+import { prepareMovie } from 'controllers/movie';
 
 const mountRoutes = (app: Application): void => {
 	// Public routes
@@ -15,6 +16,7 @@ const mountRoutes = (app: Application): void => {
 	app.post('/api/accessToken', accessTokenController);
 	app.use('/api/stream', streamRouter);
 	// Private routes
+	app.get('/api/movies/:imdbCode/prepare', prepareMovie);
 	app.use('/api/movies', checkAccessToken, movieRouter);
 	app.use('/api/user', checkAccessToken, userRouter);
 	app.get('*', (_req, res) => {

@@ -20,6 +20,13 @@ import UserModel from 'models/user';
 import ViewingModel from 'models/viewing';
 import CommentModel, { IComment } from 'models/comment';
 import cronScheduler from 'cron';
+import { IAuthPayload } from '../../@types/express';
+import { JsonWebTokenError, verify } from 'jsonwebtoken';
+import { prepare } from 'application/prepare';
+import Debug from 'debug';
+import { SetupError } from 'application/torrentEngine/setup';
+
+const debug = Debug('app');
 
 export interface IQueryParams {
 	query: string;
@@ -176,48 +183,42 @@ export const getMovie = asyncHandler(async (req, res) => {
 });
 
 export const prepareMovie = asyncHandler(async (req, res) => {
-	const user = await UserModel.findById(req.authPayload?.userId);
-	if (!user) throw new Unauthorized('not logged in');
+	// Send SSE headers.
+	const headers = {
+		'Content-Type': 'text/event-stream',
+		Connection: 'keep-alive',
+		'Cache-Control': 'no-cache',
+	};
+	res.writeHead(200, headers);
 
-	let movieDocument = await MovieModel.findOne({
-		imdbCode: req.params.imdbCode,
-	});
-	if (!movieDocument) {
-		movieDocument = new MovieModel({
-			imdbCode: req.params.imdbCode,
-			status: 0,
-		});
-	}
+	// Check JWT Token.
+	try {
+		const { authorization } = req.headers;
+		if (!authorization) throw new JsonWebTokenError('Token is missing.');
+		const token = authorization.split(' ')[1];
+		const payload = verify(
+			token,
+			process.env.ACCESS_TOKEN_SECRET!
+		) as IAuthPayload;
+		const user = await UserModel.findById(payload.userId);
+		if (!user) throw new Unauthorized('User not found.');
 
-	movieDocument.lastViewed = Date.now();
-	cronScheduler.addCronJob(movieDocument);
-
-	let subtitles: string[] = [];
-
-	if (movieDocument.status === 2) {
-		const videoPath = Path.resolve(
-			__dirname,
-			`../../movies/${movieDocument.imdbCode}/${movieDocument.fileName}`
-		);
-		if (!Fs.existsSync(videoPath)) {
-			movieDocument.status = 0;
+		// Setup torrent and download subtitles
+		await prepare(req.params.imdbCode, user, res);
+		res.write('data: { "kind": "ready" }\n\n');
+	} catch (error) {
+		if (error instanceof JsonWebTokenError || error instanceof Unauthorized) {
+			res.write(`data: { "kind": "error", "type": "logout" }\n\n`);
 		} else {
-			subtitles = await downloadSubtitles(movieDocument, user);
+			if (error instanceof SetupError) {
+				res.write(`data: { "kind": "${error.task}", "status": "error" }\n\n`);
+			}
+			res.write(
+				`data: { "kind": "error", "type": "generic", "message": "${error.message}" }\n\n`
+			);
 		}
 	}
-
-	if (movieDocument.status === 1) {
-		if (!torrentEngine.instances.get(movieDocument.torrentHash)) {
-			movieDocument.status = 0;
-		} else {
-			subtitles = await downloadSubtitles(movieDocument, user);
-		}
-	}
-
-	if (movieDocument.status === 0) {
-		subtitles = await startMovieDownload(movieDocument, user);
-	}
-	res.json(subtitles);
+	res.end();
 });
 
 export const streamMovie = asyncHandler(async (req, res) => {
