@@ -50,7 +50,7 @@ export interface IMovieDocument extends Document {
 
 const MovieSchema = new Schema<IMovieDocument>({
 	imdbCode: { type: String, required: true },
-	status: { type: Number, required: true }, // 0 = not downloaded, 1 = downloading, 2 = download completed
+	status: { type: Number, required: true }, // 0 = not downloaded, 1 = downloading, 2 = download completed, 3 = download starting
 	fileName: { type: String },
 	torrentHash: { type: String },
 	movieHash: { type: String },

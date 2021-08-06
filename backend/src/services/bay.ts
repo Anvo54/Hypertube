@@ -1,15 +1,13 @@
 import { AxiosAgent } from './axiosAgent';
 
 export interface IBayMovie {
-	id: number;
 	name: string;
 	info_hash: string;
-	size: number;
 	seeders: string;
 	imdb: string | null;
 }
 
-const agent = new AxiosAgent(process.env.BAY_API, 3000);
+const agent = new AxiosAgent(process.env.BAY_API, 50000);
 
 const makeParams = (key: string, value: string) => {
 	const params = new URLSearchParams();
