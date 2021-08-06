@@ -91,7 +91,7 @@ const Profile: React.FC = () => {
 	return (
 		<>
 			{message && (
-				<Message style={{ marginTop: 80, marginBottom: -30 }} success>
+				<Message style={{ marginTop: 80, marginBottom: -60 }} success>
 					<Message.Header>{message}</Message.Header>
 				</Message>
 			)}
@@ -101,100 +101,102 @@ const Profile: React.FC = () => {
 				</Dimmer>
 			)}
 			{!isLoading && (
-				<FinalForm
-					onSubmit={onSubmit}
-					validate={formValidation.validateForm}
-					render={({
-						handleSubmit,
-						submitting,
-						submitError,
-						dirtySinceLastSubmit,
-					}) => (
-						<Grid
-							textAlign="center"
-							style={{ height: '100vh', marginTop: 60 }}
-							verticalAlign="middle"
-						>
-							<Form onSubmit={handleSubmit} error size="large">
-								<Grid.Column style={{ maxWidth: 450 }}>
-									<Header as="h2" color="teal" textAlign="center">
-										{t('update_title')}
-									</Header>
-									<Segment stacked>
-										<Form.Group widths="equal">
+				<div style={{ paddingBottom: 200 }}>
+					<FinalForm
+						onSubmit={onSubmit}
+						validate={formValidation.validateForm}
+						render={({
+							handleSubmit,
+							submitting,
+							submitError,
+							dirtySinceLastSubmit,
+						}) => (
+							<Grid
+								textAlign="center"
+								style={{ height: '100vh', marginTop: 90 }}
+								verticalAlign="middle"
+							>
+								<Form onSubmit={handleSubmit} error size="large">
+									<Grid.Column style={{ maxWidth: 450 }}>
+										<Header as="h2" color="teal" textAlign="center">
+											{t('update_title')}
+										</Header>
+										<Segment stacked>
+											<Form.Group widths="equal">
+												<Field
+													name="firstName"
+													placeholder={t('first_name')}
+													initialValue={user?.firstName}
+												>
+													{(props: ITextInputProps) => (
+														<TextInput {...props} label={t('first_name')} />
+													)}
+												</Field>
+												<Field
+													name="lastName"
+													placeholder={t('last_name')}
+													initialValue={user?.lastName}
+												>
+													{(props: ITextInputProps) => (
+														<TextInput {...props} label={t('last_name')} />
+													)}
+												</Field>
+											</Form.Group>
 											<Field
-												name="firstName"
-												placeholder={t('first_name')}
-												initialValue={user?.firstName}
+												name="username"
+												placeholder={t('username')}
+												defaultValue={user?.username}
 											>
 												{(props: ITextInputProps) => (
-													<TextInput {...props} label={t('first_name')} />
+													<TextInput {...props} label={t('username')} />
 												)}
 											</Field>
 											<Field
-												name="lastName"
-												placeholder={t('last_name')}
-												initialValue={user?.lastName}
+												name="email"
+												placeholder={t('email')}
+												defaultValue={user?.email}
 											>
 												{(props: ITextInputProps) => (
-													<TextInput {...props} label={t('last_name')} />
+													<TextInput {...props} label={t('email')} />
 												)}
 											</Field>
-										</Form.Group>
-										<Field
-											name="username"
-											placeholder={t('username')}
-											defaultValue={user?.username}
-										>
-											{(props: ITextInputProps) => (
-												<TextInput {...props} label={t('username')} />
+											<Field
+												name="password"
+												placeholder={t('new_password')}
+												type="password"
+											>
+												{(props: ITextInputProps) => (
+													<TextInput {...props} label={t('new_password')} />
+												)}
+											</Field>
+											<UploadField
+												fileName={user?.profilePicName || 'blank-profile.png'}
+												setImgFile={setFile}
+											/>
+											{submitError && !dirtySinceLastSubmit && (
+												<ErrorMessage message={submitError} />
 											)}
-										</Field>
-										<Field
-											name="email"
-											placeholder={t('email')}
-											defaultValue={user?.email}
-										>
-											{(props: ITextInputProps) => (
-												<TextInput {...props} label={t('email')} />
-											)}
-										</Field>
-										<Field
-											name="password"
-											placeholder={t('new_password')}
-											type="password"
-										>
-											{(props: ITextInputProps) => (
-												<TextInput {...props} label={t('new_password')} />
-											)}
-										</Field>
-										<UploadField
-											fileName={user?.profilePicName || 'blank-profile.png'}
-											setImgFile={setFile}
-										/>
-										{submitError && !dirtySinceLastSubmit && (
-											<ErrorMessage message={submitError} />
-										)}
-										<Button
-											disabled={submitting}
-											color="teal"
-											fluid
-											size="large"
-										>
-											{t('update')}
-										</Button>
-									</Segment>
-								</Grid.Column>
-								<Dimmer active={success} page>
-									<Header as="h2" icon inverted>
-										<Icon name="heart" />
-										{t('update_success')}
-									</Header>
-								</Dimmer>
-							</Form>
-						</Grid>
-					)}
-				/>
+											<Button
+												disabled={submitting}
+												color="teal"
+												fluid
+												size="large"
+											>
+												{t('update')}
+											</Button>
+										</Segment>
+									</Grid.Column>
+									<Dimmer active={success} page>
+										<Header as="h2" icon inverted>
+											<Icon name="heart" />
+											{t('update_success')}
+										</Header>
+									</Dimmer>
+								</Form>
+							</Grid>
+						)}
+					/>
+				</div>
 			)}
 		</>
 	);

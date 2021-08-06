@@ -30,55 +30,58 @@ const Login: React.FC = () => {
 	}, []);
 
 	return (
-		<FinalForm
-			onSubmit={loginUser}
-			validate={formValidation.validateForm}
-			render={({
-				handleSubmit,
-				submitting,
-				submitError,
-				dirtySinceLastSubmit,
-			}) => (
-				<Grid
-					textAlign="center"
-					style={{ height: '100vh', marginTop: 60 }}
-					verticalAlign="middle"
-				>
-					<Form onSubmit={handleSubmit} error size="large">
-						<Grid.Column style={{ maxWidth: 450 }}>
-							<Header as="h2" color="teal" textAlign="center">
-								{t('login')}
-							</Header>
-							<Segment stacked>
-								<Field
-									component={TextInput}
-									name="username"
-									placeholder={t('username')}
-								/>
-								<Field
-									component={TextInput}
-									type="password"
-									name="password"
-									placeholder={t('password')}
-								/>
-								{submitError && !dirtySinceLastSubmit && (
-									<ErrorMessage message={submitError} />
-								)}
-								<Button disabled={submitting} color="teal" fluid size="large">
+		<div style={{ paddingBottom: 40 }}>
+			<FinalForm
+				onSubmit={loginUser}
+				validate={formValidation.validateForm}
+				render={({
+					handleSubmit,
+					submitting,
+					submitError,
+					dirtySinceLastSubmit,
+				}) => (
+					<Grid
+						textAlign="center"
+						style={{ height: '100vh', marginTop: 90 }}
+						verticalAlign="middle"
+					>
+						<Form onSubmit={handleSubmit} error size="large">
+							<Grid.Column style={{ maxWidth: 450 }}>
+								<Header as="h2" color="teal" textAlign="center">
 									{t('login')}
-								</Button>
-								<OAuthButtons disabled={submitting} />
-							</Segment>
-							<Message>
-								{t('need_account')} <Link to="/register">{t('register')}</Link>
-								<Divider />
-								{t('forgot_password')} <Link to="/forgot">{t('reset')}</Link>
-							</Message>
-						</Grid.Column>
-					</Form>
-				</Grid>
-			)}
-		/>
+								</Header>
+								<Segment stacked>
+									<Field
+										component={TextInput}
+										name="username"
+										placeholder={t('username')}
+									/>
+									<Field
+										component={TextInput}
+										type="password"
+										name="password"
+										placeholder={t('password')}
+									/>
+									{submitError && !dirtySinceLastSubmit && (
+										<ErrorMessage message={submitError} />
+									)}
+									<Button disabled={submitting} color="teal" fluid size="large">
+										{t('login')}
+									</Button>
+									<OAuthButtons disabled={submitting} />
+								</Segment>
+								<Message>
+									{t('need_account')}{' '}
+									<Link to="/register">{t('register')}</Link>
+									<Divider />
+									{t('forgot_password')} <Link to="/forgot">{t('reset')}</Link>
+								</Message>
+							</Grid.Column>
+						</Form>
+					</Grid>
+				)}
+			/>
+		</div>
 	);
 };
 

@@ -64,10 +64,16 @@ const MainContent: React.FC = () => {
 	]);
 
 	return (
-		<Segment
-			style={{ minHeight: 500, padding: 30, paddingTop: 30, marginTop: 80 }}
-		>
-			<Menu stackable borderless>
+		<div style={{ paddingBottom: 70 }}>
+			<Segment
+				style={{
+					minHeight: 400,
+					padding: 30,
+					paddingTop: 30,
+					marginTop: 80,
+				}}
+			>
+        <Menu stackable borderless>
 				<SearchMovies
 					setQuery={setQuery}
 					searchQuery={searchQuery}
@@ -83,6 +89,7 @@ const MainContent: React.FC = () => {
 				page={page}
 			/>
 		</Segment>
+		</div>
 	);
 };
 

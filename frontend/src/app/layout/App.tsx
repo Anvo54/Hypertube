@@ -17,6 +17,7 @@ import Login from 'app/views/Login';
 import Landing from 'app/views/landing/Landing';
 import Movie from 'app/views/movieDetails/Movie';
 import Profile from 'app/views/profile/Profile';
+import Footer from 'app/sharedComponents/Footer';
 
 const App = () => {
 	const rootStore = useContext(RootStoreContext);
@@ -54,30 +55,33 @@ const App = () => {
 		emailStatus === 'error' || oAuthError !== null || tokenError !== null;
 
 	return (
-		<Container>
-			<Navigation token={token} />
-			{message !== '' && (
-				<Message
-					style={{ marginTop: 80, marginBottom: -30 }}
-					success={emailStatus === 'success'}
-					negative={isMessageNegative}
-				>
-					{message}
-				</Message>
-			)}
-			<Switch>
-				<Route path="/register" component={Register} />
-				<Route path="/login" component={Login} />
-				<Route path="/forgot" component={Forgot} />
-				<Route path="/reset-password/:id" component={ChangePassword} />
-				<OAuthRoute path="/oauth" />
-				<Privateroute path="/profile" component={Profile} />
-				<Privateroute path="/movies/:id" component={Movie} />
-				<Privateroute path="/movies" component={MainContent} />
-				<Route exact path="/" component={Landing} />
-				<Route component={NotFound} />
-			</Switch>
-		</Container>
+		<>
+			<Container>
+				<Navigation token={token} />
+				{message !== '' && (
+					<Message
+						style={{ marginTop: 80, marginBottom: -30 }}
+						success={emailStatus === 'success'}
+						negative={isMessageNegative}
+					>
+						{message}
+					</Message>
+				)}
+				<Switch>
+					<Route path="/register" component={Register} />
+					<Route path="/login" component={Login} />
+					<Route path="/forgot" component={Forgot} />
+					<Route path="/reset-password/:id" component={ChangePassword} />
+					<OAuthRoute path="/oauth" />
+					<Privateroute path="/profile" component={Profile} />
+					<Privateroute path="/movies/:id" component={Movie} />
+					<Privateroute path="/movies" component={MainContent} />
+					<Route exact path="/" component={Landing} />
+					<Route component={NotFound} />
+				</Switch>
+			</Container>
+			<Footer />
+		</>
 	);
 };
 
