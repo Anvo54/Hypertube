@@ -4,7 +4,7 @@ import { IYtsMovie } from 'services/yts';
 
 export const ytsMovieToMovieThumbnail = (
 	ytsMovie?: IYtsMovie
-): IMovieThumbnail => {
+): IMovieThumbnail | undefined => {
 	if (
 		ytsMovie &&
 		ytsMovie.title_english.length > 0 &&
@@ -20,12 +20,11 @@ export const ytsMovieToMovieThumbnail = (
 			imdb: ytsMovie.imdb_code,
 		} as IMovieThumbnail;
 	}
-	throw new Error('ytsMovie data not complete');
 };
 
 export const omdbDetailsToMovieThumbnail = (
 	omdbDetails?: IOmdbMovieDetails
-): IMovieThumbnail => {
+): IMovieThumbnail | undefined => {
 	if (
 		omdbDetails &&
 		omdbDetails.Title.length > 0 &&
@@ -40,5 +39,4 @@ export const omdbDetailsToMovieThumbnail = (
 			imdb: omdbDetails.imdbID,
 		} as IMovieThumbnail;
 	}
-	throw new Error('omdbDetails data not complete');
 };
