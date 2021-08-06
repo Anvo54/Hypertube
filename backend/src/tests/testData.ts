@@ -38,54 +38,42 @@ export const ytsMovieList: IYtsMovie[] = [
 
 export const bayMovieList: IBayMovie[] = [
 	{
-		id: 44900854,
 		info_hash: '481154F75C8F18A9EBFC481AA6B0EB540A8F8256',
 		name: 'Demon.Slayer.Kimetsu.no.Yaiba.The.Movie.Mugen/Infinity.Train.264',
-		seeders: 1970,
-		leechers: 412,
+		seeders: '1970',
 		imdb: 'tt11032374',
 	},
 	{
-		id: 44094798,
 		info_hash: '135E2BE1F525D30AAC80E413F371AD171E81C68D',
 		name: 'Nobody (2021) [1080p] [WEBRip] [5.1]',
-		seeders: 1929,
-		leechers: 388,
+		seeders: '1929',
 		imdb: 'tt7888964',
 	},
 	{
-		id: 43342755,
 		info_hash: '2EDC556DBD0F63FA7D37A5689002AA65F26CC025',
 		name: 'Godzilla.vs.Kong.2021.1080p.WEB-DL.DDP5.1.Atmos.x264-EVO[TGx]',
-		seeders: 953,
-		leechers: 190,
+		seeders: '953',
 		imdb: 'tt5034838',
 	},
 ];
 
 export const dupBayMovieList: IBayMovie[] = [
 	{
-		id: 44900854,
 		info_hash: '481154F75C8F18A9EBFC481AA6B0EB540A8F8256',
 		name: 'Demon.Slayer.Kimetsu.no.Yaiba.The.Movie.Mugen/Infinity.Train.264',
-		seeders: 1970,
-		leechers: 412,
+		seeders: '1970',
 		imdb: 'tt4154756',
 	},
 	{
-		id: 44094798,
 		info_hash: '135E2BE1F525D30AAC80E413F371AD171E81C68D',
 		name: 'Nobody (2021) [1080p] [WEBRip] [5.1]',
-		seeders: 1929,
-		leechers: 388,
+		seeders: '1929',
 		imdb: 'tt1825683',
 	},
 	{
-		id: 43342755,
 		info_hash: '2EDC556DBD0F63FA7D37A5689002AA65F26CC025',
 		name: 'Godzilla.vs.Kong.2021.1080p.WEB-DL.DDP5.1.Atmos.x264-EVO[TGx]',
-		seeders: 953,
-		leechers: 190,
+		seeders: '953',
 		imdb: 'tt5463162',
 	},
 ];
@@ -107,6 +95,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		],
 		rating: 6.9,
 		imdb: 'tt6139732',
+		watched: true,
 	},
 	{
 		title: 'Alita: Battle Angel',
@@ -116,6 +105,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Sci-Fi', 'Thriller'],
 		rating: 7.3,
 		imdb: 'tt0437086',
+		watched: true,
 	},
 	{
 		title: 'Ant-Man and the Wasp',
@@ -125,6 +115,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Comedy', 'Sci-Fi'],
 		rating: 7,
 		imdb: 'tt5095030',
+		watched: true,
 	},
 	{
 		title: 'Aquaman',
@@ -134,6 +125,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Fantasy', 'Sci-Fi'],
 		rating: 6.9,
 		imdb: 'tt1477834',
+		watched: true,
 	},
 	{
 		title: 'Avengers: Endgame',
@@ -143,6 +135,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Drama', 'Sci-Fi'],
 		rating: 8.4,
 		imdb: 'tt4154796',
+		watched: true,
 	},
 	{
 		title: 'Avengers: Infinity War',
@@ -152,6 +145,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Drama', 'Fantasy', 'Sci-Fi'],
 		rating: 8.4,
 		imdb: 'tt4154756',
+		watched: true,
 	},
 	{
 		title: 'Beauty and the Beast',
@@ -161,6 +155,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Family', 'Fantasy', 'Musical', 'Romance'],
 		rating: 7.1,
 		imdb: 'tt2771200',
+		watched: true,
 	},
 	{
 		title: 'Big Hero 6',
@@ -178,6 +173,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		],
 		rating: 7.8,
 		imdb: 'tt2245084',
+		watched: true,
 	},
 	{
 		title: 'Black Panther',
@@ -187,6 +183,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Sci-Fi'],
 		rating: 7.3,
 		imdb: 'tt1825683',
+		watched: true,
 	},
 	{
 		title: 'Captain Marvel',
@@ -196,6 +193,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Sci-Fi'],
 		rating: 6.9,
 		imdb: 'tt4154664',
+		watched: true,
 	},
 	{
 		title: 'Deadpool',
@@ -205,6 +203,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Comedy', 'Romance', 'Sci-Fi'],
 		rating: 8,
 		imdb: 'tt1431045',
+		watched: true,
 	},
 	{
 		title: 'Deadpool 2',
@@ -214,6 +213,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Comedy', 'Sci-Fi'],
 		rating: 7.7,
 		imdb: 'tt5463162',
+		watched: true,
 	},
 	{
 		title: 'Doctor Strange',
@@ -223,6 +223,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Fantasy', 'Sci-Fi'],
 		rating: 7.5,
 		imdb: 'tt1211837',
+		watched: true,
 	},
 	{
 		title: 'Fantastic Beasts and Where to Find Them',
@@ -232,6 +233,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Family', 'Fantasy'],
 		rating: 7.3,
 		imdb: 'tt3183660',
+		watched: true,
 	},
 	{
 		title: 'Fast & Furious Presents: Hobbs & Shaw',
@@ -241,6 +243,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Thriller'],
 		rating: 6.4,
 		imdb: 'tt6806448',
+		watched: true,
 	},
 	{
 		title: 'Guardians of the Galaxy',
@@ -250,6 +253,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Comedy', 'Sci-Fi'],
 		rating: 8,
 		imdb: 'tt2015381',
+		watched: true,
 	},
 	{
 		title: 'Guardians of the Galaxy Vol. 2',
@@ -259,6 +263,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Comedy', 'Sci-Fi'],
 		rating: 7.6,
 		imdb: 'tt3896198',
+		watched: true,
 	},
 	{
 		title: 'How to Train Your Dragon: The Hidden World',
@@ -268,6 +273,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Animation', 'Comedy', 'Family', 'Fantasy'],
 		rating: 7.5,
 		imdb: 'tt2386490',
+		watched: true,
 	},
 	{
 		title: 'Incredibles 2',
@@ -277,6 +283,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Animation', 'Comedy', 'Family', 'Sci-Fi'],
 		rating: 7.6,
 		imdb: 'tt3606756',
+		watched: true,
 	},
 	{
 		title: 'Interstellar',
@@ -286,6 +293,7 @@ export const thumbnailList20: IMovieThumbnail[] = [
 		genres: ['Action', 'Adventure', 'Drama', 'Sci-Fi', 'Thriller'],
 		rating: 8.6,
 		imdb: 'tt0816692',
+		watched: true,
 	},
 ];
 
@@ -349,5 +357,20 @@ export const ytsRocketmanDetails: IYtsMovieDetails = {
 				'https://yts.mx/assets/images/actors/thumb/nm0334318.jpg',
 			imdb_code: '0334318',
 		},
+	],
+	title_english: "Rocketman",
+	torrents: [
+		{
+			"hash": "A93EEC31CB9DD39654DA645262D45CFB507E0C04",
+			"quality": "720p",
+			"type": "bluray",
+			"seeds": 2,
+		},
+		{
+			"hash": "57B7BD235B89DED7FDF223D016157A5494204557",
+			"quality": "1080p",
+			"type": "bluray",
+			"seeds": 5,
+		}
 	],
 };
