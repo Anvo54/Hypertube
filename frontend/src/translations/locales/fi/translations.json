@@ -117,9 +117,16 @@
 	"get_current_user_profile_failed": "Fetching your profile failed.",
 	"profile_pic_validation_error": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB.",
 	"preparing_movie": "Valmistellaan elokuvaa",
-	"searching_torrent": "Etsitää torrenttia",
+	"searching_torrent": "Etsitään torrenttia",
 	"fetching_metadata": "Haetaan torrentin tietoja",
 	"downloading_subtitles": "Ladataan tekstityksiä",
 	"waiting_download": "Odotetaan latauksen alkamista",
-	"play_movie": "Katso elokuva"
+	"play_movie": "Katso elokuva",
+	"torrent_no_metadata": "Torrentin tietoja ei löytynyt.",
+	"torrent_engine_disabled": "Torrent-moottori on disabloitu.",
+	"torrent_max_instances": "Yhtäaikaiset lataukset ylittyvät.",
+	"torrent_duplicate": "Duplikaatti torrent.",
+	"torrent_invalid_metadata": "Torrentin tiedot ",
+	"generic_prepare_error": "Jotain meni pieleen.",
+	"error": "Tapahtui virhe."
 }

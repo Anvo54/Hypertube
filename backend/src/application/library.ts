@@ -36,15 +36,14 @@ export const getMovieInfo = async (
 					ytsEnvelope.data.movies[0]
 				);
 				if (!ytsThumbnail) throw new Error('ytsMovie data not complete');
-				return ytsThumbnail
+				return ytsThumbnail;
 			} catch (error) {
 				debug(error);
 				const omdbDetails = await omdbService.details(movie.imdb);
 				if ('Title' in omdbDetails && omdbDetails.Type === 'movie') {
 					const omdbThumbnail = omdbDetailsToMovieThumbnail(omdbDetails);
 					if (omdbThumbnail) throw new Error('omdbDetails data not complete');
-				return omdbThumbnail;
-					
+					return omdbThumbnail;
 				}
 				return Promise.reject('Movie data not found');
 			}
@@ -101,7 +100,7 @@ export const search = async (query: string): Promise<IMovieThumbnail[]> => {
 
 	// First check if we have the results in cache and return immediately if we do.
 	thumbnailList = thumbnailCache.get(query);
-	if (thumbnailList) return thumbnailList;
+	if (thumbnailList && thumbnailList.length) return thumbnailList;
 
 	// Re-initialize thumbnailList so it is not undefined.
 	thumbnailList = [];

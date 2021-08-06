@@ -58,6 +58,24 @@ const getMovieDocument = async (imdbCode: string): Promise<IMovieDocument> => {
 	return movieDocument;
 };
 
+const handleSubtitles = async (
+	movieDocument: IMovieDocument,
+	user: IUserDocument,
+	res: Response
+): Promise<void> => {
+	try {
+		const subtitles = await downloadSubtitles(movieDocument, user);
+		res.write(
+			`data: { "kind": "subtitles", "status": "done", "subtitles": ${JSON.stringify(
+				subtitles
+			)} }\n\n`
+		);
+	} catch (error) {
+		debug(error);
+		res.write(`data: { "kind": "subtitles", "status": "error" }\n\n`);
+	}
+};
+
 const startDownload = (
 	movieDocument: IMovieDocument,
 	user: IUserDocument,
@@ -73,6 +91,16 @@ const startDownload = (
 		const torrentSetup = torrentEngine.setup(movieDocument.imdbCode);
 		torrentSetup.on('task', (task: string) => {
 			res.write(`data: { "kind": "${task}", "status": "done" }\n\n`);
+			if (task === 'metadata') {
+				const instance = torrentEngine.instances.get(
+					torrentSetup.torrent?.hash ?? ''
+				);
+				if (instance) {
+					instance.on('piece', (index: number) => {
+						debug(`Downloaded piece ${index} for ${movieDocument.imdbCode}`);
+					});
+				}
+			}
 		});
 
 		torrentSetup.once('error', async (error: SetupError) => {
@@ -92,18 +120,8 @@ const startDownload = (
 		});
 
 		torrentSetup.once('movieHash', async (movieHash: string) => {
-			try {
-				movieDocument.movieHash = movieHash;
-				const subtitles = await downloadSubtitles(movieDocument, user);
-				res.write(
-					`data: { "kind": "subtitles", "status": "done", "subtitles": ${JSON.stringify(
-						subtitles
-					)} }\n\n`
-				);
-			} catch (error) {
-				debug(error);
-				res.write(`data: { "kind": "subtitles", "status": "error" }\n\n`);
-			}
+			movieDocument.movieHash = movieHash;
+			await handleSubtitles(movieDocument, user, res);
 		});
 
 		torrentSetup.once('ready', async () => {
@@ -123,9 +141,6 @@ const startDownload = (
 					if (!movie.movieHash && torrentSetup.movieHash) {
 						movie.movieHash = torrentSetup.movieHash;
 					}
-					instance.on('piece', (index: number) => {
-						debug(`Downloaded piece ${index} for ${movie.imdbCode}`);
-					});
 					await movie.save();
 				}
 				resolve();
@@ -136,6 +151,49 @@ const startDownload = (
 		});
 
 		torrentSetup.setup();
+	});
+};
+
+const waitDownload = (
+	movieDocument: IMovieDocument,
+	user: IUserDocument,
+	res: Response
+): Promise<void> => {
+	return new Promise(async (resolve, reject) => {
+		const torrentSetup = torrentEngine.setups.get(movieDocument.imdbCode);
+		if (!torrentSetup) return prepare(movieDocument.imdbCode, user, res);
+
+		torrentSetup.on('task', (task: string) => {
+			res.write(`data: { "kind": "${task}", "status": "done" }\n\n`);
+		});
+
+		torrentSetup.once('error', async (error: SetupError) => {
+			torrentSetup.removeAllListeners();
+			reject(error);
+		});
+
+		torrentSetup.once('movieHash', async (movieHash: string) => {
+			movieDocument.movieHash = movieHash;
+			await handleSubtitles(movieDocument, user, res);
+		});
+
+		torrentSetup.once('ready', async () => {
+			torrentSetup.removeAllListeners();
+			resolve();
+		});
+
+		if (torrentSetup.torrent) {
+			res.write(`data: { "kind": "torrent", "status": "done" }\n\n`);
+		}
+
+		if (torrentEngine.instances.get(torrentSetup.torrent?.hash ?? '')) {
+			res.write(`data: { "kind": "metadata", "status": "done" }\n\n`);
+		}
+
+		if (torrentSetup.movieHash) {
+			movieDocument.movieHash = torrentSetup.movieHash;
+			await handleSubtitles(movieDocument, user, res);
+		}
 	});
 };
 
@@ -161,6 +219,9 @@ export const prepare = async (
 	switch (movieDocument.status) {
 		case 0:
 			await startDownload(movieDocument, user, res);
+			break;
+		case 3:
+			await waitDownload(movieDocument, user, res);
 			break;
 		default:
 			try {

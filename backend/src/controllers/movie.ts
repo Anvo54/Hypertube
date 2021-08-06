@@ -190,6 +190,9 @@ export const prepareMovie = asyncHandler(async (req, res) => {
 		'Cache-Control': 'no-cache',
 	};
 	res.writeHead(200, headers);
+	const interval = setInterval(() => {
+		res.write('data: { "kind": "keepalive" }\n\n');
+	}, 30000);
 
 	// Check JWT Token.
 	try {
@@ -218,6 +221,7 @@ export const prepareMovie = asyncHandler(async (req, res) => {
 			);
 		}
 	}
+	clearInterval(interval);
 	res.end();
 });
 

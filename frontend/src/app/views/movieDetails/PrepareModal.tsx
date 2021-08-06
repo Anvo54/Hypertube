@@ -68,7 +68,7 @@ const PrepareModal: React.FC<IProps> = ({ movieReady }) => {
 							paddingTop: 7,
 							paddingBottom: 7,
 						}}
-						message={prepareError}
+						message={t(prepareError)}
 					/>
 				)}
 			</Modal.Content>

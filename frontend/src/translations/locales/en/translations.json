@@ -121,5 +121,12 @@
 	"fetching_metadata": "Fetching torrent metadata",
 	"downloading_subtitles": "Downloading subtitles",
 	"waiting_download": "Waiting download to start",
-	"play_movie": "Play movie"
+	"play_movie": "Play movie",
+	"torrent_no_metadata": "Failed to fetch metadata.",
+	"torrent_engine_disabled": "Torrent engine is disabled.",
+	"torrent_max_instances": "Maximum downloads reached.",
+	"torrent_duplicate": "Duplicate torrent.",
+	"torrent_invalid_metadata": "Torrent metadata is invalid.",
+	"generic_prepare_error": "Something went wrong.",
+	"error": "An error occured."
 }
