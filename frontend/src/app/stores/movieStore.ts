@@ -294,6 +294,7 @@ export default class MovieStore {
 							this.prepareTasks.metadata = message.status;
 							if (this.prepareTasks.metadata === 'done') {
 								this.prepareTasks.subtitles = 'loading';
+								this.prepareTasks.firstPieces = 'loading';
 							}
 							break;
 						case 'subtitles':

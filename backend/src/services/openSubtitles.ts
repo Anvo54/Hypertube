@@ -31,7 +31,7 @@ export interface IOSDownload {
 	remaining: number;
 }
 
-const agent = new AxiosAgent(process.env.OS_API, 5000);
+const agent = new AxiosAgent(process.env.OS_API, 15000);
 const apiKey = process.env.OS_API_KEY ?? '';
 agent.axiosInstance.defaults.headers.common['Api-Key'] = apiKey;
 agent.axiosInstance.defaults.headers.common.Accept = '*/*';

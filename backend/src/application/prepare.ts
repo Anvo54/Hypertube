@@ -23,9 +23,6 @@ const getMovieDocument = async (imdbCode: string): Promise<IMovieDocument> => {
 		});
 	}
 
-	movieDocument.lastViewed = Date.now();
-	cronScheduler.addCronJob(movieDocument);
-
 	const videoPath = Path.resolve(
 		__dirname,
 		`../../movies/${movieDocument.imdbCode}/${movieDocument.fileName}`
@@ -82,6 +79,8 @@ const startDownload = (
 	res: Response
 ): Promise<void> => {
 	return new Promise(async (resolve, reject) => {
+		let ready = false;
+		let subs = false;
 		try {
 			movieDocument.status = 3;
 			await movieDocument.save();
@@ -122,9 +121,13 @@ const startDownload = (
 		torrentSetup.once('movieHash', async (movieHash: string) => {
 			movieDocument.movieHash = movieHash;
 			await handleSubtitles(movieDocument, user, res);
+			subs = true;
+			if (ready) {
+				await onReady();
+			}
 		});
 
-		torrentSetup.once('ready', async () => {
+		const onReady = async () => {
 			torrentSetup.removeAllListeners();
 			torrentEngine.setups.delete(movieDocument.imdbCode);
 			try {
@@ -147,6 +150,13 @@ const startDownload = (
 			} catch (error) {
 				debug(error);
 				reject(error);
+			}
+		};
+
+		torrentSetup.once('ready', async () => {
+			ready = true;
+			if (subs) {
+				await onReady();
 			}
 		});
 
@@ -235,4 +245,6 @@ export const prepare = async (
 				res.write(`data: { "kind": "subtitles", "status": "error" }\n\n`);
 			}
 	}
+	movieDocument.lastViewed = Date.now();
+	cronScheduler.addCronJob(movieDocument);
 };
