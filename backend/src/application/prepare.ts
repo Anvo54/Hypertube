@@ -5,7 +5,6 @@ import Fs from 'fs';
 import Path from 'path';
 import { torrentEngine } from 'app';
 import { Response } from 'express';
-import { startMovieDownload } from './torrent';
 import { downloadSubtitles } from './subtitles';
 import { SetupError } from './torrentEngine/setup';
 import Debug from 'debug';
@@ -14,11 +13,11 @@ const debug = Debug('torrent');
 
 const getMovieDocument = async (imdbCode: string): Promise<IMovieDocument> => {
 	let movieDocument = await MovieModel.findOne({
-		imdbCode: imdbCode,
+		imdbCode,
 	});
 	if (!movieDocument) {
 		movieDocument = new MovieModel({
-			imdbCode: imdbCode,
+			imdbCode,
 			status: 0,
 		});
 	}
@@ -69,7 +68,7 @@ const handleSubtitles = async (
 		);
 	} catch (error) {
 		debug(error);
-		res.write(`data: { "kind": "subtitles", "status": "error" }\n\n`);
+		res.write('data: { "kind": "subtitles", "status": "error" }\n\n');
 	}
 };
 
@@ -177,7 +176,7 @@ const waitDownload = (
 			res.write(`data: { "kind": "${task}", "status": "done" }\n\n`);
 		});
 
-		torrentSetup.once('error', async (error: SetupError) => {
+		torrentSetup.once('error', (error: SetupError) => {
 			torrentSetup.removeAllListeners();
 			reject(error);
 		});
@@ -187,17 +186,17 @@ const waitDownload = (
 			await handleSubtitles(movieDocument, user, res);
 		});
 
-		torrentSetup.once('ready', async () => {
+		torrentSetup.once('ready', () => {
 			torrentSetup.removeAllListeners();
 			resolve();
 		});
 
 		if (torrentSetup.torrent) {
-			res.write(`data: { "kind": "torrent", "status": "done" }\n\n`);
+			res.write('data: { "kind": "torrent", "status": "done" }\n\n');
 		}
 
 		if (torrentEngine.instances.get(torrentSetup.torrent?.hash ?? '')) {
-			res.write(`data: { "kind": "metadata", "status": "done" }\n\n`);
+			res.write('data: { "kind": "metadata", "status": "done" }\n\n');
 		}
 
 		if (torrentSetup.movieHash) {
@@ -242,7 +241,7 @@ export const prepare = async (
 					)}}\n\n`
 				);
 			} catch (error) {
-				res.write(`data: { "kind": "subtitles", "status": "error" }\n\n`);
+				res.write('data: { "kind": "subtitles", "status": "error" }\n\n');
 			}
 	}
 	movieDocument.lastViewed = Date.now();

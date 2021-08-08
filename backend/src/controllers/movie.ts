@@ -9,24 +9,15 @@ import lodash, { isString, toLower } from 'lodash';
 import { details } from 'application/movie';
 import { Request } from 'express';
 import MovieModel from 'models/movie';
-import { startMovieDownload } from 'application/torrent';
-import Path from 'path';
-import Fs from 'fs';
 import { BadRequest, Unauthorized } from 'http-errors';
 import { movieStream } from 'application/stream';
-import { torrentEngine } from 'app';
-import { downloadSubtitles } from 'application/subtitles';
 import UserModel from 'models/user';
 import ViewingModel from 'models/viewing';
 import CommentModel, { IComment } from 'models/comment';
-import cronScheduler from 'cron';
 import { IAuthPayload } from '../../@types/express';
 import { JsonWebTokenError, verify } from 'jsonwebtoken';
 import { prepare } from 'application/prepare';
-import Debug from 'debug';
 import { SetupError } from 'application/torrentEngine/setup';
-
-const debug = Debug('app');
 
 export interface IQueryParams {
 	query: string;
@@ -137,11 +128,14 @@ export const searchMovies = asyncHandler(async (req, res) => {
 		'movie',
 		'imdbCode'
 	);
-	thumbnailList.forEach((thumbnail) => {
-		thumbnail.watched = !!viewings.find(
-			(v) => 'imdbCode' in v.movie && v.movie.imdbCode === thumbnail.imdb
-		);
-	});
+	if (viewings.length) {
+		console.log(viewings);
+		thumbnailList.forEach((thumbnail) => {
+			thumbnail.watched = !!viewings.find(
+				(v) => 'imdbCode' in v.movie && v.movie.imdbCode === thumbnail.imdb
+			);
+		});
+	}
 
 	const envelope: IMovieThumbnailEnvelope = {
 		count,
@@ -211,7 +205,7 @@ export const prepareMovie = asyncHandler(async (req, res) => {
 		res.write('data: { "kind": "ready" }\n\n');
 	} catch (error) {
 		if (error instanceof JsonWebTokenError || error instanceof Unauthorized) {
-			res.write(`data: { "kind": "error", "type": "logout" }\n\n`);
+			res.write('data: { "kind": "error", "type": "logout" }\n\n');
 		} else {
 			if (error instanceof SetupError) {
 				res.write(`data: { "kind": "${error.task}", "status": "error" }\n\n`);

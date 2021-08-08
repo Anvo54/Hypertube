@@ -180,7 +180,3 @@ export const startMovieDownload = async (
 		instance.startDownload();
 	});
 };
-
-export const waitDownloadStart = (imdbCode: string): Promise<void> => {
-	return new Promise(async (resolve, reject) => {});
-};
