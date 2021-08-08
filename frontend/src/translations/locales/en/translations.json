@@ -128,5 +128,11 @@
 	"torrent_duplicate": "Duplicate torrent.",
 	"torrent_invalid_metadata": "Torrent metadata is invalid.",
 	"generic_prepare_error": "Something went wrong.",
-	"error": "An error occured."
+	"error": "An error occured.",
+	"error_movie_fetch": "Failed to fetch movie information.",
+	"error_comment_add": "Failed to add comment.",
+	"error_language_save": "Failed to save language. Please try again.",
+	"error_movie_watched": "Failed to set movie as watched.",
+	"error_user_fetch": "Fetching user profile failed.",
+	"error_invalid_file": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB"
 }

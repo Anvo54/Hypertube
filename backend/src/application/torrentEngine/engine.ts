@@ -4,7 +4,8 @@ import ParseTorrentFile from 'parse-torrent-file';
 import { IMetadata, TorrentInstance } from 'application/torrentEngine/instance';
 import Debug from 'debug';
 import Path from 'path';
-import { SetupError, TorrentSetup } from './setup';
+import { TorrentSetup } from './setup';
+import { SetupError } from './setupError';
 
 interface IOptions {
 	path: string;
@@ -25,7 +26,7 @@ export class TorrentEngine extends EventEmitter {
 	}
 
 	add = (infoHash: string, imdbCode: string): Promise<TorrentInstance> =>
-		new Promise<TorrentInstance>(async (resolve, reject) => {
+		new Promise<TorrentInstance>((resolve, reject) => {
 			const discovery = new TorrentDiscovery(infoHash);
 			const discoveryTimeout = setTimeout(() => {
 				discovery.destroy();
@@ -97,16 +98,6 @@ export class TorrentEngine extends EventEmitter {
 		this.setups.set(imdbCode, torrentSetup);
 		return torrentSetup;
 	};
-
-	// speed = (): number => {
-	// 	let speed = 0;
-	// 	this.instances.forEach((instance) => {
-	// 		instance.discovery.peers.forEach((peer) => {
-	// 			speed = speed + peer.wire.downloadSpeed();
-	// 		});
-	// 	});
-	// 	return speed;
-	// };
 
 	close = (infoHash: string): void => {
 		const instance = this.instances.get(infoHash);

@@ -39,13 +39,15 @@ const Movie = () => {
 	const [playerLoader, setPlayerLoader] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [error, setError] = useState('');
+	const [prepareError, setPrepareError] = useState('');
 	const [movieReady, setMovieReady] = useState(false);
 	const [modalUsername, setModalUsername] = useState('');
-	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
+	const { movie, getMovie, prepareMovie, createComment, prepareModalOpen } =
+		rootStore.movieStore;
 
 	useEffect(() => {
 		getMovie(id)
-			.catch((err) => setError(err))
+			.catch((err) => setError(err.message))
 			.finally(() => setLoading(false));
 	}, [getMovie, id]);
 
@@ -53,7 +55,13 @@ const Movie = () => {
 		setPlayerLoader(true);
 		prepareMovie()
 			.then(() => setMovieReady(true))
-			.catch((error) => console.log(error))
+			.catch((error) => {
+				if (prepareModalOpen) {
+					setPrepareError(error.message);
+				} else {
+					toast.error(t(error.message));
+				}
+			})
 			.finally(() => setPlayerLoader(false));
 	};
 
@@ -63,8 +71,8 @@ const Movie = () => {
 	};
 
 	if (loading) return <MovieLoader />;
-	if (error.length)
-		return <ErrorMessage style={{ marginTop: 80 }} message={error} />;
+	if (error)
+		return <ErrorMessage style={{ marginTop: 80 }} message={t(error)} />;
 
 	const headerStyles: any = {};
 	if (movie && movie.watched) headerStyles.marginBottom = '5px';
@@ -124,49 +132,7 @@ const Movie = () => {
 								</ItemExtra>
 								<ItemExtra>{t('runtime', { time: movie.runtime })}</ItemExtra>
 								<Item.Content>
-									<Rating
-										icon="star"
-										disabled
-										maxRating={10}
-										rating={movie.rating}
-									/>
-									<Item.Meta style={{ fontWeight: 600, marginBottom: 10 }}>
-										{movie.summary}
-									</Item.Meta>
-									<ItemExtra>
-										{t('directed')} {movie.director}
-									</ItemExtra>
-									<ItemExtra>{t('runtime', { time: movie.runtime })}</ItemExtra>
-									<Item.Content>
-										{t('year')} {movie.year}
-									</Item.Content>
-									<ItemExtra>
-										{t('written')} {movie.writer}
-									</ItemExtra>
-									{typeof movie.actors !== 'undefined' && (
-										<Header as="h5">{t('actors')}</Header>
-									)}
-									{typeof movie.actors === 'string' && (
-										<div>{movie.actors}</div>
-									)}
-									{typeof movie.actors === 'object' &&
-										movie.actors.map((actor: IActorObj) => (
-											<Label
-												image
-												key={actor.imdb_code}
-												as="a"
-												href={`https://www.imdb.com/name/nm${actor.imdb_code}`}
-												style={{ marginRight: 5, marginTop: 5 }}
-												target="_blank"
-												rel="noreferrer noopener"
-											>
-												<img
-													src={actor.url_small_image || '/NoImage.png'}
-													alt={actor.name}
-												/>
-												{` ${actor.name} `}
-											</Label>
-										))}
+									{t('year')} {movie.year}
 								</Item.Content>
 								<ItemExtra>
 									{t('written')} {movie.writer}
@@ -207,7 +173,7 @@ const Movie = () => {
 					username={modalUsername}
 					setShow={setShowModal}
 				/>
-				<PrepareModal movieReady={movieReady} />
+				<PrepareModal movieReady={movieReady} prepareError={prepareError} />
 			</Segment>
 		)
 	);

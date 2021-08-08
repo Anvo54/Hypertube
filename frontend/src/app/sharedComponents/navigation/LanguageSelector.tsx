@@ -20,10 +20,10 @@ const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
 		if (oldLanguage && token) {
 			window.localStorage.removeItem('language');
 			if (!languageArray.includes(oldLanguage)) {
-				toast.error(t('save_unknown_language'));
+				toast.error(t('error_language_save'));
 			} else {
 				updateLanguage(oldLanguage as Languages).catch(() => {
-					toast.error(t('save_language_fail'));
+					toast.error(t('error_language_save'));
 				});
 			}
 		}

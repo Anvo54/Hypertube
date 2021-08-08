@@ -9,17 +9,13 @@ import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 
 interface IProps {
 	movieReady: boolean;
+	prepareError: string;
 }
 
-const PrepareModal: React.FC<IProps> = ({ movieReady }) => {
+const PrepareModal: React.FC<IProps> = ({ movieReady, prepareError }) => {
 	const rootStore = useContext(RootStoreContext);
-	const {
-		prepareModalOpen,
-		closePrepareModal,
-		prepareTasks,
-		prepareMode,
-		prepareError,
-	} = rootStore.movieStore;
+	const { prepareModalOpen, closePrepareModal, prepareTasks, prepareMode } =
+		rootStore.movieStore;
 	const { t } = useTranslation();
 
 	return (

@@ -38,7 +38,7 @@ const Profile: React.FC = () => {
 			if (res?.user) {
 				setUser(res.user);
 			} else {
-				toast.error(t('get_current_user_profile_failed'));
+				toast.error(t('error_user_fetch'));
 			}
 			setIsLoading(false);
 		});

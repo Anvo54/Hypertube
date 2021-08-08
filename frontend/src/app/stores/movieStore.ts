@@ -38,7 +38,6 @@ export default class MovieStore {
 	prepareMode: 'torrent' | 'server' | null = null;
 	prepareTasks: IPrepareTasks;
 	prepareModalOpen = false;
-	prepareError?: string;
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -98,7 +97,8 @@ export default class MovieStore {
 				this.loading = false;
 			});
 		} catch (error) {
-			throw error;
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			throw new Error('error_movie_fetch');
 		}
 	};
 
@@ -257,7 +257,6 @@ export default class MovieStore {
 				}
 			);
 			sse.onerror = () => {
-				runInAction(() => (this.prepareError = 'error'));
 				sse.close();
 				reject(new Error('error'));
 			};
@@ -315,13 +314,11 @@ export default class MovieStore {
 							resolve();
 							break;
 						case 'error':
+							sse.close();
 							if (message.type === 'logout') {
 								return this.rootStore.userStore.logoutUser();
-							} else {
-								this.prepareError = message.message ?? 'error';
 							}
-							sse.close();
-							reject(message.message);
+							reject(new Error(message.message ?? 'error'));
 					}
 				});
 			};
@@ -337,7 +334,6 @@ export default class MovieStore {
 			subtitles: 'waiting',
 			firstPieces: 'waiting',
 		};
-		this.prepareError = undefined;
 	};
 
 	setLoading = (value: boolean): void => {
@@ -361,12 +357,8 @@ export default class MovieStore {
 	setWatched = async (): Promise<void> => {
 		if (!this.movie) return;
 		this.movie.watched = true;
-		try {
-			const token = await this.rootStore.userStore.getToken();
-			await agent.Movies.setWatched(this.movie.imdb, token);
-		} catch (error) {
-			throw error;
-		}
+		const token = await this.rootStore.userStore.getToken();
+		await agent.Movies.setWatched(this.movie.imdb, token);
 	};
 
 	createComment = async (comment: string): Promise<void> => {
