@@ -145,7 +145,6 @@ export default class UserStore {
 			const token = await this.getToken();
 			return await agent.User.getCurrentProfile(token);
 		} catch (error) {
-			console.log(error);
 			return null;
 		}
 	};
@@ -168,7 +167,6 @@ export default class UserStore {
 			const token = await this.getToken();
 			return await agent.User.getUsersProfile(token, usersId);
 		} catch (error) {
-			console.log(error);
 			return null;
 		}
 	};
@@ -179,7 +177,6 @@ export default class UserStore {
 			await agent.User.changeLanguage(token, language);
 		} catch (error) {
 			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-			console.log(error);
 			throw error;
 		}
 	};

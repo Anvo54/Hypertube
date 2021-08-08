@@ -2,6 +2,7 @@ import { IUser } from 'app/models/user';
 import { RootStoreContext } from 'app/stores/rootStore';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import {
 	Modal,
 	Image,
@@ -29,11 +30,12 @@ const UsersProfileModal: React.FC<IProps> = ({ show, username, setShow }) => {
 				if (res?.user) {
 					setUser(res.user);
 				} else {
-					// TODO show toast that fetching failed and close modal!
+					setShow(false);
+					toast.error('Fetching user profile failed.');
 				}
 			});
 		}
-	}, [show, username, getUsersProfile, user]);
+	}, [show, username, getUsersProfile, user, setShow]);
 
 	return (
 		<>
