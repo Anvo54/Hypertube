@@ -121,5 +121,12 @@
     "fetching_metadata": "Torrenti metaandmete laadimine",
     "downloading_subtitles": "Subtiitrite allalaadimine",
     "waiting_download": "Filmi allalaadimine algab peagi",
-    "play_movie": "Vaata filmi"
+    "play_movie": "Vaata filmi",
+	"torrent_no_metadata": "Metaandmeid ei õnnestunud saada.",
+    "torrent_engine_disabled": "Torrenti mootor ei tööta.",
+    "torrent_max_instances": "Allalaadimiste arv on ületatud.",
+    "torrent_duplicate": "Torrent juba laeb.",
+    "torrent_invalid_metadata": "Torrenti metaandmed on vigased.",
+    "generic_prepare_error": "Midagi läks valesti.",
+	"error": "Tekkis viga."
 }
