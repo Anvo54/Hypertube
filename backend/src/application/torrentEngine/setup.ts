@@ -6,15 +6,7 @@ import bayService from 'services/bay';
 import ytsService from 'services/yts';
 import { TorrentEngine } from './engine';
 import { TorrentInstance } from './instance';
-
-export class SetupError extends Error {
-	task: string;
-	constructor(message: string, task: string) {
-		super(message);
-		this.task = task;
-		Object.setPrototypeOf(this, SetupError.prototype);
-	}
-}
+import { SetupError } from './setupError';
 
 interface ITorrent {
 	hash: string;
@@ -114,7 +106,7 @@ export class TorrentSetup extends EventEmitter {
 		this.imdbCode = imdbCode;
 	}
 
-	setup = async () => {
+	setup = async (): Promise<void> => {
 		try {
 			if (!this.engine.enabled) {
 				throw new SetupError('torrent_engine_disabled', 'torrent');
