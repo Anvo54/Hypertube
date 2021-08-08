@@ -15,7 +15,7 @@ export const buildMovie = (
 	let movieThumbnail: IMovieThumbnail;
 
 	if (!ytsMovie && !omdbDetails)
-		throw new Error('no movie data to build movie from');
+		throw new Error('No movie data to build movie from.');
 
 	// Try to get movie thumbnails from both services.
 	try {
@@ -31,7 +31,7 @@ export const buildMovie = (
 		movieThumbnail = ytsThumbnail;
 	} else if (omdbThumbnail) {
 		movieThumbnail = omdbThumbnail;
-	} else throw new Error('Unable to build movie thumbnail');
+	} else throw new Error('Unable to build movie thumbnail.');
 
 	const movie: IMovie = {
 		...movieThumbnail,
@@ -61,7 +61,7 @@ export const buildMovie = (
 
 export const details = async (imdbCode: string): Promise<IMovie> => {
 	if (!imdbCode.match(/^tt\d+$/)) {
-		throw new BadRequest('imdb code not valid');
+		throw new BadRequest('Imdb code not valid.');
 	}
 
 	const cachedMovie = movieCache.get(imdbCode);

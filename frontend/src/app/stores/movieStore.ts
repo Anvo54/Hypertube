@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
+import { toast } from 'react-toastify';
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -26,7 +27,6 @@ export default class MovieStore {
 				});
 			} catch (error) {
 				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-				console.log(error);
 			}
 			resolve();
 		});
@@ -41,17 +41,24 @@ export default class MovieStore {
 			});
 		} catch (error) {
 			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-			console.log(error);
+			throw 'Failed to fetch movie data.';
 		}
 	};
 
 	prepareMovie = async (): Promise<void> => {
 		if (!this.movie) return;
-		const token = await this.rootStore.userStore.getToken();
-		const subtitles = await agent.Movies.prepare(this.movie.imdb, token);
-		runInAction(() => {
-			this.subtitles = subtitles;
-		});
+		try {
+			const token = await this.rootStore.userStore.getToken();
+			const subtitles = await agent.Movies.prepare(this.movie.imdb, token);
+			runInAction(() => {
+				this.subtitles = subtitles;
+			});
+		} catch (error: any) {
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			if (error.response?.data?.message) {
+				throw error.response?.data?.message;
+			} else throw 'Error.';
+		}
 	};
 
 	get getSubtitles(): any[] {
@@ -73,7 +80,7 @@ export default class MovieStore {
 			const token = await this.rootStore.userStore.getToken();
 			await agent.Movies.setWatched(this.movie.imdb, token);
 		} catch (error) {
-			console.log(error);
+			toast.info('Tried setting movie as watched but failed.');
 		}
 	};
 
@@ -94,7 +101,8 @@ export default class MovieStore {
 				}
 			});
 		} catch (error) {
-			console.log(error);
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			throw error;
 		}
 	};
 }

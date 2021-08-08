@@ -1,12 +1,16 @@
 import React from 'react';
-import { Message } from 'semantic-ui-react';
+import { Message, MessageProps } from 'semantic-ui-react';
 
-interface IProps {
+interface IProps extends MessageProps {
 	message: string;
 }
 
-const ErrorMessage: React.FC<IProps> = ({ message }) => {
-	return <Message error>{message}</Message>;
+const ErrorMessage: React.FC<IProps> = ({ message, style }) => {
+	return (
+		<Message style={style} error>
+			{message}
+		</Message>
+	);
 };
 
 export default ErrorMessage;

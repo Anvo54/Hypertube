@@ -5,6 +5,7 @@ import App from './app/layout/App';
 import { createBrowserHistory } from 'history';
 import { Router } from 'react-router';
 import './translations/i18n';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const history = createBrowserHistory();
 

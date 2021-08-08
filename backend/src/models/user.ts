@@ -1,13 +1,12 @@
 import { genSalt, hash, compare } from 'bcryptjs';
 import mongoose, { Schema, Document, HookNextFunction } from 'mongoose';
 
-// TODO with import this gives type error when applying plugin below
-// import uniqueValidator from "mongoose-unique-validator";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const uniqueValidator = require('mongoose-unique-validator');
 
 const HASH_ROUNDS = 10;
-const EMAIL_REGEX = /[a-zA-Z\d!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z\d!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z\d](?:[a-zA-Z\d-]*[a-zA-Z\d])?\.)+[a-zA-Z\d](?:[a-zA-Z\d-]*[a-zA-Z\d])?/;
+const EMAIL_REGEX =
+	/[a-zA-Z\d!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z\d!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z\d](?:[a-zA-Z\d-]*[a-zA-Z\d])?\.)+[a-zA-Z\d](?:[a-zA-Z\d-]*[a-zA-Z\d])?/;
 
 export enum Language {
 	ENGLISH = 'en',
