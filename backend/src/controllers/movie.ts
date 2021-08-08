@@ -17,7 +17,7 @@ import CommentModel, { IComment } from 'models/comment';
 import { IAuthPayload } from '../../@types/express';
 import { JsonWebTokenError, verify } from 'jsonwebtoken';
 import { prepare } from 'application/prepare';
-import { SetupError } from 'application/torrentEngine/setup';
+import { SetupError } from 'application/torrentEngine/setupError';
 
 export interface IQueryParams {
 	query: string;
