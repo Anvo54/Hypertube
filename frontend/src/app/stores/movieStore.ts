@@ -29,11 +29,11 @@ export default class MovieStore {
 		makeAutoObservable(this);
 	}
 
-	@computed get searchParams(): URLSearchParams {
+	get searchParams(): URLSearchParams {
 		return this.params;
 	}
 
-	@computed get totalPages(): number {
+	get totalPages(): number {
 		return Math.ceil(this.count / 20);
 	}
 
@@ -208,7 +208,7 @@ export default class MovieStore {
 			}
 			this.getMovies();
 		});
-	}
+	};
 
 	prepareMovie = async (): Promise<void> => {
 		if (!this.movie) return;
@@ -226,9 +226,11 @@ export default class MovieStore {
 		}
 	};
 
-	setLoading = (value: boolean):void => {
-		runInAction(() => {this.loading = value})
-	}
+	setLoading = (value: boolean): void => {
+		runInAction(() => {
+			this.loading = value;
+		});
+	};
 
 	get getSubtitles(): any[] {
 		if (!this.movie) return [];

@@ -58,7 +58,7 @@ const App = () => {
 	return (
 		<>
 			<Container>
-        <ToastContainer />
+				<ToastContainer />
 				<Navigation token={token} />
 				{message !== '' && (
 					<Message
