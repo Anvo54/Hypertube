@@ -72,100 +72,104 @@ const Movie = () => {
 
 	return (
 		movie && (
-			<Segment style={{ marginTop: 80, paddingBottom: 40 }}>
-				<Grid>
-					<Grid.Row columns="1">
-						<GridColumn>
-							<Header as="h1" style={headerStyles}>
-								{movie.title}
-							</Header>
-							{movie.watched && (
-								<Header
-									sub
-									style={{ color: 'teal', fontSize: '1.1rem', marginTop: 0 }}
-								>
-									<Icon name="eye" />
-									{t('watched')}
+			<div style={{ paddingBottom: 70 }}>
+				<Segment style={{ marginTop: 80, paddingBottom: 40 }}>
+					<Grid>
+						<Grid.Row columns="1">
+							<GridColumn>
+								<Header as="h1" style={headerStyles}>
+									{movie.title}
 								</Header>
-							)}
-							{!playMovie && (
-								<Dimmer.Dimmable
-									dimmed={playerLoader}
-									style={{
-										backgroundImage: `url(${movie.coverImage})`,
-										backgroundSize: 'cover',
-										backgroundPosition: 'right 0px bottom 0px',
-										cursor: 'pointer',
-									}}
-								>
-									<Dimmer active={playerLoader} inverted>
-										<Loader>
-											{t('movie_loading')} {movie.title}
-										</Loader>
-									</Dimmer>
-									<Image src="/background.png" onClick={() => startPlay()} />
-								</Dimmer.Dimmable>
-							)}
-							{!playerLoader && playMovie && <MoviePlayer />}
-						</GridColumn>
-						<Grid.Column style={{ marginTop: '10px' }}>
-							<Item.Content>
-								<Rating
-									icon="star"
-									disabled
-									maxRating={10}
-									rating={movie.rating}
-								/>
-								<Item.Meta style={{ fontWeight: 600, marginBottom: 10 }}>
-									{movie.summary}
-								</Item.Meta>
-								<ItemExtra>
-									{t('directed')} {movie.director}
-								</ItemExtra>
-								<ItemExtra>{t('runtime', { time: movie.runtime })}</ItemExtra>
-								<Item.Content>
-									{t('year')} {movie.year}
-								</Item.Content>
-								<ItemExtra>
-									{t('written')} {movie.writer}
-								</ItemExtra>
-								{typeof movie.actors !== 'undefined' && (
-									<Header as="h5">{t('actors')}</Header>
+								{movie.watched && (
+									<Header
+										sub
+										style={{ color: 'teal', fontSize: '1.1rem', marginTop: 0 }}
+									>
+										<Icon name="eye" />
+										{t('watched')}
+									</Header>
 								)}
-								{typeof movie.actors === 'string' && <div>{movie.actors}</div>}
-								{typeof movie.actors === 'object' &&
-									movie.actors.map((actor: IActorObj) => (
-										<Label
-											image
-											key={actor.imdb_code}
-											as="a"
-											href={`https://www.imdb.com/name/nm${actor.imdb_code}`}
-											style={{ marginRight: 5, marginTop: 5 }}
-											target="_blank"
-											rel="noreferrer noopener"
-										>
-											<img
-												src={actor.url_small_image || '/NoImage.png'}
-												alt={actor.name}
-											/>
-											{` ${actor.name} `}
-										</Label>
-									))}
-							</Item.Content>
-						</Grid.Column>
-					</Grid.Row>
-				</Grid>
-				<Comments
-					comments={movie.comments}
-					createComment={createComment}
-					showModal={openModal}
-				/>
-				<UsersProfileModal
-					show={showModal}
-					username={modalUsername}
-					setShow={setShowModal}
-				/>
-			</Segment>
+								{!playMovie && (
+									<Dimmer.Dimmable
+										dimmed={playerLoader}
+										style={{
+											backgroundImage: `url(${movie.coverImage})`,
+											backgroundSize: 'cover',
+											backgroundPosition: 'right 0px bottom 0px',
+											cursor: 'pointer',
+										}}
+									>
+										<Dimmer active={playerLoader} inverted>
+											<Loader>
+												{t('movie_loading')} {movie.title}
+											</Loader>
+										</Dimmer>
+										<Image src="/background.png" onClick={() => startPlay()} />
+									</Dimmer.Dimmable>
+								)}
+								{!playerLoader && playMovie && <MoviePlayer />}
+							</GridColumn>
+							<Grid.Column style={{ marginTop: '10px' }}>
+								<Item.Content>
+									<Rating
+										icon="star"
+										disabled
+										maxRating={10}
+										rating={movie.rating}
+									/>
+									<Item.Meta style={{ fontWeight: 600, marginBottom: 10 }}>
+										{movie.summary}
+									</Item.Meta>
+									<ItemExtra>
+										{t('directed')} {movie.director}
+									</ItemExtra>
+									<ItemExtra>{t('runtime', { time: movie.runtime })}</ItemExtra>
+									<Item.Content>
+										{t('year')} {movie.year}
+									</Item.Content>
+									<ItemExtra>
+										{t('written')} {movie.writer}
+									</ItemExtra>
+									{typeof movie.actors !== 'undefined' && (
+										<Header as="h5">{t('actors')}</Header>
+									)}
+									{typeof movie.actors === 'string' && (
+										<div>{movie.actors}</div>
+									)}
+									{typeof movie.actors === 'object' &&
+										movie.actors.map((actor: IActorObj) => (
+											<Label
+												image
+												key={actor.imdb_code}
+												as="a"
+												href={`https://www.imdb.com/name/nm${actor.imdb_code}`}
+												style={{ marginRight: 5, marginTop: 5 }}
+												target="_blank"
+												rel="noreferrer noopener"
+											>
+												<img
+													src={actor.url_small_image || '/NoImage.png'}
+													alt={actor.name}
+												/>
+												{` ${actor.name} `}
+											</Label>
+										))}
+								</Item.Content>
+							</Grid.Column>
+						</Grid.Row>
+					</Grid>
+					<Comments
+						comments={movie.comments}
+						createComment={createComment}
+						showModal={openModal}
+					/>
+					<UsersProfileModal
+						show={showModal}
+						username={modalUsername}
+						setShow={setShowModal}
+					/>
+				</Segment>
+			</div>
 		)
 	);
 };
