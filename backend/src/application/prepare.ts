@@ -6,7 +6,7 @@ import Path from 'path';
 import { torrentEngine } from 'app';
 import { Response } from 'express';
 import { downloadSubtitles } from './subtitles';
-import { SetupError } from './torrentEngine/setup';
+import { SetupError } from './torrentEngine/setupError';
 import Debug from 'debug';
 
 const debug = Debug('torrent');
