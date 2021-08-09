@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, computed } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
