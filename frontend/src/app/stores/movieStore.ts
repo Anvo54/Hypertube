@@ -38,6 +38,7 @@ export default class MovieStore {
 	prepareMode: 'torrent' | 'server' | null = null;
 	prepareTasks: IPrepareTasks;
 	prepareModalOpen = false;
+	prepareError = '';
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -246,10 +247,10 @@ export default class MovieStore {
 	};
 
 	prepareMovie = async (): Promise<void> => {
+		this.prepareModalOpen = true;
 		return new Promise(async (resolve, reject) => {
 			if (!this.movie) return reject();
 			const token = await this.rootStore.userStore.getToken();
-			runInAction(() => (this.prepareModalOpen = true));
 			const sse = new EventSourcePolyfill(
 				`http://localhost:8080/api/movies/${this.movie.imdb}/prepare`,
 				{
@@ -258,7 +259,9 @@ export default class MovieStore {
 			);
 			sse.onerror = () => {
 				sse.close();
-				reject(new Error('error'));
+				this.prepareError = 'error';
+				if (!this.prepareModalOpen) return reject(new Error(this.prepareError));
+				reject();
 			};
 			sse.onmessage = (event: any) => {
 				runInAction(() => {
@@ -318,12 +321,20 @@ export default class MovieStore {
 							if (message.type === 'logout') {
 								return this.rootStore.userStore.logoutUser();
 							}
-							reject(new Error(message.message ?? 'error'));
+							this.prepareError = message.message ?? 'error';
+							if (!this.prepareModalOpen)
+								return reject(new Error(this.prepareError));
+							reject();
 					}
 				});
 			};
 		});
 	};
+
+	get isPrepareModalOpen(): string {
+		if (this.prepareModalOpen) return 'true';
+		return 'false';
+	}
 
 	closePrepareModal = (): void => {
 		this.prepareModalOpen = false;
@@ -334,6 +345,7 @@ export default class MovieStore {
 			subtitles: 'waiting',
 			firstPieces: 'waiting',
 		};
+		this.prepareError = '';
 	};
 
 	setLoading = (value: boolean): void => {

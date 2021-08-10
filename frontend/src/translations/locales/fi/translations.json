@@ -125,8 +125,8 @@
 	"torrent_no_metadata": "Torrentin tietoja ei löytynyt.",
 	"torrent_engine_disabled": "Torrent-moottori on disabloitu.",
 	"torrent_max_instances": "Yhtäaikaiset lataukset ylittyvät.",
-	"torrent_duplicate": "Duplikaatti torrent.",
-	"torrent_invalid_metadata": "Torrentin tiedot ",
+	"torrent_duplicate": "Tämä torrent on jo latauksessa.",
+	"torrent_invalid_metadata": "Torrentin tiedot virheelliset.",
 	"generic_prepare_error": "Jotain meni pieleen.",
 	"error": "Tapahtui virhe."
 }

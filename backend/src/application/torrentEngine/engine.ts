@@ -39,7 +39,7 @@ export class TorrentEngine extends EventEmitter {
 				const torrentMetadata = this.validateMetadata(metadata);
 				if (!torrentMetadata) {
 					discovery.destroy();
-					return reject(new Error('torrent_invalid_metadata'));
+					return reject(new SetupError('torrent_invalid_metadata', 'metadata'));
 				}
 				const instance = new TorrentInstance(
 					discovery,

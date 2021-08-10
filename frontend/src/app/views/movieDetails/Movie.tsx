@@ -23,9 +23,9 @@ import { useTranslation } from 'react-i18next';
 import Comments from './Comments';
 import UsersProfileModal from './UsersProfileModal';
 import MoviePlayer from './MoviePlayer';
-import { toast } from 'react-toastify';
 import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 import PrepareModal from './PrepareModal';
+import { toast } from 'react-toastify';
 
 interface IParams {
 	id: string;
@@ -39,11 +39,9 @@ const Movie = () => {
 	const [playerLoader, setPlayerLoader] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [error, setError] = useState('');
-	const [prepareError, setPrepareError] = useState('');
 	const [movieReady, setMovieReady] = useState(false);
 	const [modalUsername, setModalUsername] = useState('');
-	const { movie, getMovie, prepareMovie, createComment, prepareModalOpen } =
-		rootStore.movieStore;
+	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
 		getMovie(id)
@@ -56,11 +54,7 @@ const Movie = () => {
 		prepareMovie()
 			.then(() => setMovieReady(true))
 			.catch((error) => {
-				if (prepareModalOpen) {
-					setPrepareError(error.message);
-				} else {
-					toast.error(t(error.message));
-				}
+				if (error && error.message) toast.error(t(error.message));
 			})
 			.finally(() => setPlayerLoader(false));
 	};
@@ -173,7 +167,7 @@ const Movie = () => {
 					username={modalUsername}
 					setShow={setShowModal}
 				/>
-				<PrepareModal movieReady={movieReady} prepareError={prepareError} />
+				<PrepareModal movieReady={movieReady} />
 			</Segment>
 		)
 	);
