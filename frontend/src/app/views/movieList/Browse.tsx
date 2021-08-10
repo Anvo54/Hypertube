@@ -1,17 +1,39 @@
 import { IMovie } from 'app/models/movie';
 import BrowseLoader from 'app/views/movieList/BrowseLoader';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Header, Item, Label, Rating, Segment } from 'semantic-ui-react';
+import {
+	Header,
+	Item,
+	Label,
+	Rating,
+	Segment,
+	Visibility,
+} from 'semantic-ui-react';
 
 export interface BrowseProps {
 	movies: IMovie[];
 	loading: boolean;
+	getNextPage: any;
+	totalPages: number;
+	page: number;
 }
 
-const Browse: React.FC<BrowseProps> = ({ movies, loading }) => {
+const Browse: React.FC<BrowseProps> = ({
+	movies,
+	loading,
+	getNextPage,
+	totalPages,
+	page,
+}) => {
 	const { t } = useTranslation();
+	const getNext = () => {
+		if (totalPages !== page) {
+			getNextPage(page + 1);
+		}
+	};
 
 	const label = {
 		icon: 'eye',
@@ -59,8 +81,11 @@ const Browse: React.FC<BrowseProps> = ({ movies, loading }) => {
 					))}
 				</Item.Group>
 			)}
+			{totalPages !== page && <Header>{t('load_more')}</Header>}
+			<Visibility onBottomVisible={() => getNext()} once={loading} />
+			{totalPages === page && <Header>{t('no_more_results')}</Header>}
 		</Segment>
 	);
 };
 
-export default Browse;
+export default observer(Browse);

@@ -68,8 +68,13 @@ const User = {
 };
 
 const Movies = {
-	search: (title: string, token: string): Promise<IMovieList> =>
-		requests.getAuth(`movies/search?query=${title}`, token),
+	search: (params: URLSearchParams, token: string): Promise<IMovieList> =>
+		axios({
+			method: 'get',
+			url: 'movies/search',
+			headers: { Authorization: `Bearer ${token}` },
+			params: params,
+		}).then(responseBody),
 	get: (imdbCode: string, token: string): Promise<IMovie> =>
 		requests.getAuth(`movies/${imdbCode}`, token),
 	prepare: (imdbCode: string, token: string): Promise<string[]> =>

@@ -1,27 +1,43 @@
-import SearchMovies from 'app/views/movieList/SearchMovies';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Segment } from 'semantic-ui-react';
+import { Menu, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
+import FilterSort from './movieList/FilterSort';
+import SearchMovies from './movieList/SearchMovies';
 
 const MainContent: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
-	const { getMovies, movies, savedSearch } = rootStore.movieStore;
+	const {
+		getMovies,
+		getNextPage,
+		setSearchQuery,
+		setLoading,
+		loading,
+		movies,
+		savedSearch,
+		page,
+		totalPages,
+	} = rootStore.movieStore;
 	const searchTimer = useRef<NodeJS.Timeout>();
 	const [searchQuery, setQuery] = useState(savedSearch);
-	const [loading, setLoading] = useState(false);
+	const [firstLoad, setFirstLoad] = useState(true);
 	const [isMounted, setIsMounted] = useState(true);
 
 	useEffect(() => {
 		return () => setIsMounted(false);
 	}, []);
 
+	/* Get initial movie list */
 	useEffect(() => {
-		if (movies.count !== 0 || savedSearch !== '') return;
-		setLoading(true);
-		getMovies(searchQuery).then(() => setLoading(false));
-	}, [getMovies, movies.count, savedSearch, searchQuery]);
+		if (firstLoad) {
+			getMovies().then(() => {
+				setFirstLoad(false);
+			});
+		}
+	}, [firstLoad, getMovies, searchQuery, setSearchQuery]);
+
+	/* If Search query changes */
 
 	useEffect(() => {
 		if ((savedSearch === '' && searchQuery === '') || !isMounted) return;
@@ -29,14 +45,23 @@ const MainContent: React.FC = () => {
 		if (searchTimer.current) clearTimeout(searchTimer.current!);
 		searchTimer.current = setTimeout(() => {
 			setLoading(true);
-			getMovies(searchQuery).then(() => {
+			setQuery(searchQuery);
+			setSearchQuery(searchQuery);
+			getMovies().then(() => {
 				if (isMounted) setLoading(false);
 			});
 		}, 700);
 		return () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
 		};
-	}, [searchQuery, getMovies, savedSearch, isMounted]);
+	}, [
+		searchQuery,
+		savedSearch,
+		isMounted,
+		getMovies,
+		setLoading,
+		setSearchQuery,
+	]);
 
 	return (
 		<div style={{ paddingBottom: 70 }}>
@@ -48,12 +73,21 @@ const MainContent: React.FC = () => {
 					marginTop: 80,
 				}}
 			>
-				<SearchMovies
-					setQuery={setQuery}
-					searchQuery={searchQuery}
+				<Menu stackable borderless>
+					<SearchMovies
+						setQuery={setQuery}
+						searchQuery={searchQuery}
+						loading={loading}
+					/>
+					<FilterSort />
+				</Menu>
+				<Browse
 					loading={loading}
+					movies={movies.movies}
+					getNextPage={getNextPage}
+					totalPages={totalPages}
+					page={page}
 				/>
-				<Browse loading={loading} movies={movies.movies} />
 			</Segment>
 		</div>
 	);

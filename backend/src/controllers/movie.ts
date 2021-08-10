@@ -28,6 +28,9 @@ export interface IQueryParams {
 	sort: string;
 	order: boolean | 'asc' | 'desc';
 	genre?: string;
+	rating?: number;
+	minYear?: number;
+	maxYear?: number;
 }
 
 const parseParams = (req: Request) => {
@@ -38,6 +41,7 @@ const parseParams = (req: Request) => {
 		sort: 'title',
 		order: 'asc',
 		genre: undefined,
+		rating: undefined,
 	};
 
 	if (isString(req.query.query) && req.query.query.length > 1) {
@@ -61,6 +65,15 @@ const parseParams = (req: Request) => {
 	if (isString(req.query.genre)) {
 		params.genre = req.query.genre;
 	}
+	if (isString(req.query.rating)) {
+		params.rating = parseInt(req.query.rating);
+	}
+	if (isString(req.query.minYear)) {
+		params.minYear = parseInt(req.query.minYear);
+	}
+	if (isString(req.query.maxYear)) {
+		params.maxYear = parseInt(req.query.maxYear);
+	}
 	return params;
 };
 
@@ -70,6 +83,15 @@ export const filterList = (
 ): IMovieThumbnail[] => {
 	if (params.genre) {
 		list = list.filter((t) => t.genres.includes(params.genre!));
+	}
+	if (params.rating) {
+		list = list.filter((t) => Math.floor(t.rating) === params.rating!);
+	}
+	if (params.minYear) {
+		list = list.filter((t) => t.year >= params.minYear!);
+	}
+	if (params.maxYear) {
+		list = list.filter((t) => t.year <= params.maxYear!);
 	}
 	return list;
 };
