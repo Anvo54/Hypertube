@@ -83,6 +83,7 @@
 	"descending": "Descending",
 	"title": "Title",
 	"rating": "rating",
+	"imdb_rating": "IMDB rating",
 	"prodyear": "Production year",
 	"no_more_results": "No more results",
 	"load_more": "Loading more results...",

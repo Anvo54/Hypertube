@@ -175,7 +175,7 @@ export default class UserStore {
 			const token = await this.getToken();
 			await agent.User.changeLanguage(token, language);
 		} catch (error) {
-			// console.log(error);
+			throw error;
 		}
 	};
 }

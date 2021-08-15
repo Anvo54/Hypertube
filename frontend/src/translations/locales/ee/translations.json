@@ -83,6 +83,7 @@
 	"descending": "Laskuv",
 	"title": "Pealkiri",
 	"rating": "hinnang",
+	"imdb_rating": "IMDB hinnang",
 	"prodyear": "Tootmisaasta",
 	"no_more_results": "Pole rohkem tulemusi",
 	"load_more": "Rohkemate tulemuste laadimine...",

@@ -83,6 +83,7 @@
 	"descending": "Laskeva",
 	"title": "Nimi",
 	"rating": "arvostelut",
+	"imdb_rating": "IMDB arvostelu",
 	"prodyear": "Tuotantovuosi",
 	"no_more_results": "Ei enempää tuloksia",
 	"load_more": "Ladataan lisää...",

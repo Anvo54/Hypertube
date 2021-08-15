@@ -46,8 +46,6 @@ const Browse: React.FC<BrowseProps> = ({
 		style: { position: 'absolute', top: '10px', left: '-14px' },
 	};
 
-	console.log({ totalPages, page });
-
 	return (
 		<Segment>
 			{loading && <BrowseLoader />}

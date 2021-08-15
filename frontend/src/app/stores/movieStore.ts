@@ -73,7 +73,7 @@ export default class MovieStore {
 				this.loading = false;
 			});
 		} catch (error) {
-			throw 'Failed to fetch movie data.';
+			throw error;
 		}
 	};
 
@@ -232,7 +232,7 @@ export default class MovieStore {
 			if (error.response?.data?.message) {
 				throw error.response?.data?.message;
 			}
-			throw 'Error.';
+			throw error;
 		}
 	};
 
@@ -261,7 +261,7 @@ export default class MovieStore {
 			const token = await this.rootStore.userStore.getToken();
 			await agent.Movies.setWatched(this.movie.imdb, token);
 		} catch (error) {
-			throw 'Error, do toast!';
+			throw error;
 		}
 	};
 

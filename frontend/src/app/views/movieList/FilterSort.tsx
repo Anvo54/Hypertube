@@ -48,7 +48,7 @@ const FilterSort: React.FC = () => {
 	const orderValue = [
 		{ key: 1, text: t('title'), value: 'title' },
 		{ key: 2, text: t('prodyear'), value: 'year' },
-		{ key: 3, text: `IMDB ${t('rating')}`, value: 'rating' },
+		{ key: 3, text: t('imdb_rating'), value: 'rating' },
 		{ key: 4, text: t('genre'), value: 'genres' },
 	];
 
