@@ -27,7 +27,7 @@ export default class OAuthStore {
 				this.link42 = data42.link;
 			});
 		} catch (e) {
-			console.log(e);
+			throw 'Error';
 		}
 	};
 

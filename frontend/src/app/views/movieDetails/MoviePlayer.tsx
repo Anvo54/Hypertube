@@ -1,10 +1,13 @@
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactPlayer from 'react-player';
+import { toast } from 'react-toastify';
 import MovieLoader from './MovieLoader';
 
 const MoviePlayer = (): JSX.Element => {
+	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { movie, getSubtitles, setWatched } = rootStore.movieStore;
 
@@ -12,7 +15,7 @@ const MoviePlayer = (): JSX.Element => {
 
 	const checkWatched = (played: number) => {
 		if (played > 0.9 && !movie.watched) {
-			setWatched();
+			setWatched().catch(() => toast.info(t('set_watched_failed')));
 		}
 	};
 

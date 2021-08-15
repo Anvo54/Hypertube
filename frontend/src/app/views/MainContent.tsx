@@ -1,12 +1,15 @@
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { Menu, Segment } from 'semantic-ui-react';
 import Browse from './movieList/Browse';
 import FilterSort from './movieList/FilterSort';
 import SearchMovies from './movieList/SearchMovies';
 
 const MainContent: React.FC = () => {
+	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const {
 		getMovies,
@@ -31,11 +34,13 @@ const MainContent: React.FC = () => {
 	/* Get initial movie list */
 	useEffect(() => {
 		if (firstLoad) {
-			getMovies().then(() => {
-				setFirstLoad(false);
-			});
+			getMovies()
+				.catch(() => {
+					toast.error(t('get_movies_failed'));
+				})
+				.finally(() => setFirstLoad(false));
 		}
-	}, [firstLoad, getMovies, searchQuery, setSearchQuery]);
+	}, [firstLoad, getMovies, searchQuery, setSearchQuery, t]);
 
 	/* If Search query changes */
 
@@ -47,9 +52,13 @@ const MainContent: React.FC = () => {
 			setLoading(true);
 			setQuery(searchQuery);
 			setSearchQuery(searchQuery);
-			getMovies().then(() => {
-				if (isMounted) setLoading(false);
-			});
+			getMovies()
+				.catch(() => {
+					toast.error(t('get_movies_failed'));
+				})
+				.finally(() => {
+					if (isMounted) setLoading(false);
+				});
 		}, 700);
 		return () => {
 			if (searchTimer.current) clearTimeout(searchTimer.current!);
@@ -61,6 +70,7 @@ const MainContent: React.FC = () => {
 		getMovies,
 		setLoading,
 		setSearchQuery,
+		t,
 	]);
 
 	return (

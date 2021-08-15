@@ -11,7 +11,7 @@ interface IProps {
 }
 
 const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
-	const { i18n } = useTranslation();
+	const { i18n, t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { token, updateLanguage } = rootStore.userStore;
 
@@ -20,10 +20,10 @@ const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
 		if (oldLanguage && token) {
 			window.localStorage.removeItem('language');
 			if (!languageArray.includes(oldLanguage)) {
-				toast.error('Failed to save unknown language. Please try again.');
+				toast.error(t('save_unknown_language'));
 			} else {
 				updateLanguage(oldLanguage as Languages).catch(() => {
-					toast.error('Failed to save language. Please try again.');
+					toast.error(t('save_language_fail'));
 				});
 			}
 		}

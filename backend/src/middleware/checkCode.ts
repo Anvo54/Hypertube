@@ -17,7 +17,7 @@ export const checkCode = asyncHandler(async (req, res, next) => {
 	try {
 		link = await LinkModel.findOne({ code, linkType, user: userId });
 	} catch (err) {
-		console.error(err);
+		// console.error(err);
 	}
 
 	if (!link) return res.redirect(302, `${APP_URL}?${path}=error`);

@@ -35,7 +35,6 @@ const OAuthRoute: React.FC<RouteProps> = ({ ...rest }) => {
 						setError(false);
 					})
 					.catch((err) => {
-						console.log(err);
 						// If email in github is private, needs to register manually
 						if (err.response.data?.message?.username) {
 							const data = err.response.data.message;

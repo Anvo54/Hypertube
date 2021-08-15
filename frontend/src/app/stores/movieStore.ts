@@ -3,7 +3,6 @@ import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
 import _ from 'lodash';
-import { toast } from 'react-toastify';
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -15,7 +14,7 @@ export default class MovieStore {
 	endYear: Date | null;
 	genre = '';
 	ratingVal = 0;
-	orderVal = '';
+	orderVal = 'title';
 	order = 'asc';
 	loading = false;
 	params = new URLSearchParams();
@@ -38,8 +37,7 @@ export default class MovieStore {
 	}
 
 	getMovies = (): Promise<void> => {
-		return new Promise(async (resolve) => {
-			const token = await this.rootStore.userStore.getToken();
+		return new Promise(async (resolve, reject) => {
 			runInAction(() => {
 				this.loading = true;
 				this.page = 1;
@@ -48,6 +46,7 @@ export default class MovieStore {
 				}
 			});
 			try {
+				const token = await this.rootStore.userStore.getToken();
 				const tempMovies: IMovieList = await agent.Movies.search(
 					this.searchParams,
 					token
@@ -58,32 +57,31 @@ export default class MovieStore {
 					this.loading = false;
 				});
 			} catch (error) {
-				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+				reject();
 			}
 			resolve();
 		});
 	};
 
 	getMovie = async (id: string): Promise<void> => {
-		const token = await this.rootStore.userStore.getToken();
 		runInAction(() => (this.loading = true));
 		try {
+			const token = await this.rootStore.userStore.getToken();
 			const movie = await agent.Movies.get(id, token);
 			runInAction(() => {
 				this.movie = movie;
 				this.loading = false;
 			});
 		} catch (error) {
-			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
 			throw 'Failed to fetch movie data.';
 		}
 	};
 
 	addMovies = (): Promise<void> => {
-		return new Promise(async (resolve) => {
+		return new Promise(async (resolve, reject) => {
 			runInAction(() => (this.loading = true));
-			const token = await this.rootStore.userStore.getToken();
 			try {
+				const token = await this.rootStore.userStore.getToken();
 				const tempMovies: IMovieList = await agent.Movies.search(
 					this.searchParams,
 					token
@@ -96,90 +94,101 @@ export default class MovieStore {
 					this.loading = false;
 				});
 			} catch (error) {
-				if (error.logUserOut) return this.rootStore.userStore.logoutUser();
-				console.log(error);
+				reject();
 			}
 			resolve();
 		});
 	};
 
-	getNextPage = (value: number): void => {
-		runInAction(() => {
-			this.page = value;
-			if (this.params.has('page')) {
-				this.params.set('page', String(this.page));
-			} else {
-				this.params.append('page', String(this.page));
-			}
-			this.addMovies();
+	getNextPage = (value: number): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				this.page = value;
+				if (this.params.has('page')) {
+					this.params.set('page', String(this.page));
+				} else {
+					this.params.append('page', String(this.page));
+				}
+				return this.addMovies().catch(() => reject());
+			});
 		});
 	};
 
-	setRatingFilter = (value: number): void => {
-		runInAction(() => {
-			this.ratingVal = value;
-			if (this.params.has('rating')) {
-				this.params.set('rating', String(value));
-			} else {
-				this.params.append('rating', String(value));
-			}
-			this.getMovies();
+	setRatingFilter = (value: number): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				this.ratingVal = value;
+				if (this.params.has('rating')) {
+					this.params.set('rating', String(value));
+				} else {
+					this.params.append('rating', String(value));
+				}
+				return this.getMovies().catch(() => reject());
+			});
 		});
 	};
 
-	setOrder = (value: string): void => {
-		runInAction(() => {
-			if (this.params.has('order')) {
-				this.params.set('order', value);
-			} else {
-				this.params.append('order', value);
-			}
-			this.getMovies();
+	setOrder = (value: string): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				if (this.params.has('order')) {
+					this.params.set('order', value);
+				} else {
+					this.params.append('order', value);
+				}
+				this.getMovies().catch(() => reject());
+			});
 		});
 	};
 
-	setOrderValue = (value: string): void => {
-		runInAction(() => {
-			if (this.params.has('sort')) {
-				value === 'none'
-					? this.params.delete('sort')
-					: this.params.set('sort', value);
-			} else {
-				value === 'none'
-					? this.params.delete('sort')
-					: this.params.append('sort', value);
-			}
-			this.orderVal = value === 'none' ? '' : value;
-			this.getMovies();
+	setOrderValue = (value: string): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				if (this.params.has('sort')) {
+					value === 'none'
+						? this.params.delete('sort')
+						: this.params.set('sort', value);
+				} else {
+					value === 'none'
+						? this.params.delete('sort')
+						: this.params.append('sort', value);
+				}
+				this.orderVal = value === 'none' ? '' : value;
+				this.getMovies().catch(() => reject());
+			});
 		});
 	};
 
-	setStartYear = (value: Date): void => {
-		runInAction(() => {
-			this.startYear = value;
-			if (this.params.has('minYear')) {
-				value === null
-					? this.params.delete('minYear')
-					: this.params.set('minYear', value.getFullYear().toString());
-			} else {
-				this.params.append('minYear', value.getFullYear().toString());
-			}
-			this.getMovies();
+	setStartYear = (value: Date): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				this.startYear = value;
+				if (this.params.has('minYear')) {
+					value === null
+						? this.params.delete('minYear')
+						: this.params.set('minYear', value.getFullYear().toString());
+				} else {
+					this.params.append('minYear', value.getFullYear().toString());
+				}
+				this.getMovies().catch(() => reject());
+			});
 		});
 	};
 
-	setEndYear = (value: Date): void => {
-		runInAction(() => {
-			this.endYear = value;
-			if (this.params.has('maxYear')) {
-				value === null
-					? this.params.delete('maxYear')
-					: this.params.set('maxYear', value.getFullYear().toString());
-			} else {
-				this.params.append('maxYear', value.getFullYear().toString());
-			}
+	setEndYear = (value: Date): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				this.endYear = value;
+				if (this.params.has('maxYear')) {
+					value === null
+						? this.params.delete('maxYear')
+						: this.params.set('maxYear', value.getFullYear().toString());
+				} else {
+					this.params.append('maxYear', value.getFullYear().toString());
+				}
+				this.getMovies().catch(() => reject());
+			});
 		});
-		this.getMovies();
 	};
 
 	setSearchQuery = (query: string): void => {
@@ -190,23 +199,24 @@ export default class MovieStore {
 			} else {
 				this.params.append('query', query);
 			}
-			this.getMovies();
 		});
 	};
 
-	setGenre = (genre: string): void => {
-		runInAction(() => {
-			this.genre = genre;
-			if (this.params.has('genre')) {
-				genre === 'none'
-					? this.params.delete('genre')
-					: this.params.set('genre', genre);
-			} else {
-				genre === 'none'
-					? this.params.delete('genre')
-					: this.params.append('genre', genre);
-			}
-			this.getMovies();
+	setGenre = (genre: string): Promise<void> => {
+		return new Promise((resolve, reject) => {
+			runInAction(() => {
+				this.genre = genre;
+				if (this.params.has('genre')) {
+					genre === 'none'
+						? this.params.delete('genre')
+						: this.params.set('genre', genre);
+				} else {
+					genre === 'none'
+						? this.params.delete('genre')
+						: this.params.append('genre', genre);
+				}
+				this.getMovies().catch(() => reject());
+			});
 		});
 	};
 
@@ -219,10 +229,10 @@ export default class MovieStore {
 				this.subtitles = subtitles;
 			});
 		} catch (error: any) {
-			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
 			if (error.response?.data?.message) {
 				throw error.response?.data?.message;
-			} else throw 'Error.';
+			}
+			throw 'Error.';
 		}
 	};
 
@@ -251,7 +261,7 @@ export default class MovieStore {
 			const token = await this.rootStore.userStore.getToken();
 			await agent.Movies.setWatched(this.movie.imdb, token);
 		} catch (error) {
-			toast.info('Tried setting movie as watched but failed.');
+			throw 'Error, do toast!';
 		}
 	};
 
@@ -272,7 +282,6 @@ export default class MovieStore {
 				}
 			});
 		} catch (error) {
-			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
 			throw error;
 		}
 	};

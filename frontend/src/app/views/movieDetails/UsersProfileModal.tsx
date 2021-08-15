@@ -31,11 +31,11 @@ const UsersProfileModal: React.FC<IProps> = ({ show, username, setShow }) => {
 					setUser(res.user);
 				} else {
 					setShow(false);
-					toast.error('Fetching user profile failed.');
+					toast.error(t('get_user_profile_failed'));
 				}
 			});
 		}
-	}, [show, username, getUsersProfile, user, setShow]);
+	}, [show, username, getUsersProfile, user, setShow, t]);
 
 	return (
 		<>

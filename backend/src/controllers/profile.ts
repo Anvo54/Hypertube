@@ -28,9 +28,9 @@ export const getCurrentProfileController = asyncHandler(async (req, res) => {
 });
 
 const removeFile = (fileName: string) => {
-	unlink(path.resolve('public/profileImages', fileName), (error) =>
-		console.log(error)
-	);
+	unlink(path.resolve('public/profileImages', fileName), () => {
+		// console.log(error)
+	});
 };
 
 export const updateProfileController = asyncHandler(async (req, res) => {

@@ -14,6 +14,7 @@ import {
 	Icon,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 const FilterSort: React.FC = () => {
 	const rootStore = useContext(RootStoreContext);
@@ -32,7 +33,7 @@ const FilterSort: React.FC = () => {
 	} = rootStore.movieStore;
 
 	const genresObj = [
-		{ key: 'none', text: t('genre'), value: 'none' },
+		{ key: 'none', text: t('no_genre'), value: 'none' },
 		{ key: 'Action', text: t('action'), value: 'Action' },
 		{ key: 'Comedy', text: t('comedy'), value: 'Comedy' },
 		{ key: 'Drama', text: t('drama'), value: 'Drama' },
@@ -45,17 +46,24 @@ const FilterSort: React.FC = () => {
 	];
 
 	const orderValue = [
-		{ key: 0, text: t('order'), value: 'none' },
 		{ key: 1, text: t('title'), value: 'title' },
 		{ key: 2, text: t('prodyear'), value: 'year' },
-		{ key: 3, text: t('imdb rating'), value: 'rating' },
+		{ key: 3, text: `IMDB ${t('rating')}`, value: 'rating' },
 		{ key: 4, text: t('genre'), value: 'genres' },
 	];
 
-	const handleSort = () => {
-		ascDesc === 'asc' ? setAscDesc('desc') : setAscDesc('asc');
-		setOrder(ascDesc);
+	const sortOrder = [
+		{ key: 1, text: t('ascending'), value: 'asc' },
+		{ key: 2, text: t('descending'), value: 'desc' },
+	];
+
+	const handleSort = (newSortOrder: string) => {
+		setAscDesc(newSortOrder);
+		setOrder(newSortOrder).catch(() =>
+			toast.error(t('get_more_movies_failed'))
+		);
 	};
+
 	return (
 		<>
 			<Popup
@@ -80,9 +88,13 @@ const FilterSort: React.FC = () => {
 					<br />
 					<ButtonGroup>
 						<Dropdown
-							placeholder={t('genre')}
+							placeholder={t('select_genre')}
 							options={genresObj}
-							onChange={(e, { value }) => setGenre(value as string)}
+							onChange={(e, { value }) =>
+								setGenre(value as string).catch(() =>
+									toast.error(t('get_more_movies_failed'))
+								)
+							}
 							floating
 							value={genre}
 							as={Button}
@@ -93,12 +105,13 @@ const FilterSort: React.FC = () => {
 				<br />
 				<Rating
 					icon="star"
-					size="mini"
 					clearable
 					defaultRating={ratingVal}
 					maxRating={10}
 					onRate={(e, { rating }) => {
-						setRatingFilter(rating as number);
+						setRatingFilter(rating as number).catch(() =>
+							toast.error(t('get_more_movies_failed'))
+						);
 					}}
 				/>
 				<Grid.Column>
@@ -127,16 +140,23 @@ const FilterSort: React.FC = () => {
 					<Grid.Column>
 						<Dropdown
 							button
-							className="icon"
 							floating
-							labeled
-							icon={ascDesc === 'asc' ? 'sort down' : 'sort up'}
 							options={orderValue}
 							value={orderVal}
-							search
-							onChange={(e, { value }) => setOrderValue(value as string)}
-							placeholder={t('sort')}
-							onClick={() => handleSort()}
+							onChange={(e, { value }) =>
+								setOrderValue(value as string).catch(() =>
+									toast.error(t('get_more_movies_failed'))
+								)
+							}
+						/>
+					</Grid.Column>
+					<Grid.Column style={{ marginTop: 5 }}>
+						<Dropdown
+							button
+							floating
+							options={sortOrder}
+							value={ascDesc}
+							onChange={(e, { value }) => handleSort(value as string)}
 						/>
 					</Grid.Column>
 				</Menu.Item>

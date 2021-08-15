@@ -30,7 +30,7 @@ export const torrentEngine = new TorrentEngine({
 	supportedTypes: ['mp4', 'webm', 'mkv'],
 });
 
-torrentEngine.enabled = false;
+torrentEngine.enabled = true;
 
 app.use(cors({ origin: process.env.REACT_APP_BASE_URL, credentials: true }));
 app.use(logger('dev'));
@@ -40,7 +40,6 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
 
 mountRoutes(app);
-
 
 app.use((_req: Request, _res: Response, next: NextFunction) => {
 	next(createError(404));

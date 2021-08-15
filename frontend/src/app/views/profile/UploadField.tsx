@@ -30,9 +30,7 @@ const UploadField: React.FC<IProps> = ({ fileName, setImgFile }) => {
 			const allowedTypes = ['image/jpeg', 'image/png'];
 			const file = e.currentTarget.files[0];
 			if (file.size > 5242880 || !allowedTypes.includes(file.type)) {
-				toast.error(
-					'Invalid file. Supported types are jpeg and png. Maximum size is 5MB'
-				);
+				toast.error(t('profile_pic_validation_error'));
 				return;
 			}
 			setImgFile(file);
