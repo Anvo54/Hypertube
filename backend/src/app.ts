@@ -30,7 +30,7 @@ export const torrentEngine = new TorrentEngine({
 	supportedTypes: ['mp4', 'webm', 'mkv'],
 });
 
-torrentEngine.enabled = true;
+torrentEngine.enabled = false;
 
 app.use(cors({ origin: process.env.REACT_APP_BASE_URL, credentials: true }));
 app.use(logger('dev'));
