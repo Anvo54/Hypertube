@@ -50,7 +50,7 @@ const UsersProfileModal: React.FC<IProps> = ({ show, username, setShow }) => {
 					open={show}
 					size="tiny"
 					closeIcon
-					closeOnDimmerClick={false}
+					closeOnDimmerClick
 				>
 					<Header>
 						{user.firstName} {user.lastName} - {user.username}

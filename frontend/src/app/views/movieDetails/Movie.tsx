@@ -47,6 +47,8 @@ const Movie = () => {
 			getMovie(id)
 				.catch((err) => setError(err))
 				.finally(() => setLoading(false));
+		} else {
+			setLoading(false);
 		}
 	}, [id, getMovie, movie]);
 

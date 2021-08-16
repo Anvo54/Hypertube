@@ -31,16 +31,22 @@ const App = () => {
 	const emailStatus = urlParams.get('confirm-email');
 	const oAuthError = urlParams.get('oauth-error');
 	const tokenError = urlParams.get('error-token');
+	const code = urlParams.get('code');
+	const state = urlParams.get('state');
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		if (emailStatus || oAuthError || tokenError) return;
+		if (emailStatus || oAuthError || tokenError || code || state) {
+			setIsLoading(false);
+			return;
+		}
+
 		getNewToken()
 			.catch(() => {
 				/* Fail silently */
 			})
 			.finally(() => setIsLoading(false));
-	}, [emailStatus, getNewToken, oAuthError, tokenError]);
+	}, [code, emailStatus, getNewToken, oAuthError, state, tokenError]);
 
 	useEffect(() => {
 		if (emailStatus) {
