@@ -58,6 +58,7 @@ const UploadField: React.FC<IProps> = ({ fileName, setImgFile }) => {
 						color="teal"
 						size="small"
 						style={{ marginLeft: '7px' }}
+						type="button"
 					/>
 					<input ref={inputRef} type="file" hidden onChange={fileChange} />
 					<ImgPreview removeImg={removeImage} img={img} fileName={fileName} />

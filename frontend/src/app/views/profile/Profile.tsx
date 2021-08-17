@@ -185,6 +185,7 @@ const Profile: React.FC = () => {
 												color="teal"
 												fluid
 												size="large"
+												type="submit"
 											>
 												{t('update')}
 											</Button>
