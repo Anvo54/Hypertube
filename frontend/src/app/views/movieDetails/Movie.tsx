@@ -43,14 +43,10 @@ const Movie = () => {
 	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
-		if (movie === null || movie.imdb !== id) {
-			getMovie(id)
-				.catch((err) => setError(err))
-				.finally(() => setLoading(false));
-		} else {
-			setLoading(false);
-		}
-	}, [id, getMovie, movie]);
+		getMovie(id)
+			.catch((err) => setError(err))
+			.finally(() => setLoading(false));
+	}, [getMovie, id]);
 
 	const startPlay = () => {
 		setPlayerLoader(true);
