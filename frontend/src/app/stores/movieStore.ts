@@ -273,7 +273,7 @@ export default class MovieStore {
 								this.prepareTasks = {
 									torrent: 'disabled',
 									metadata: 'disabled',
-									subtitles: 'waiting',
+									subtitles: 'loading',
 									firstPieces: 'disabled',
 								};
 							} else {
