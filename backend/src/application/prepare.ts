@@ -154,11 +154,30 @@ const startDownload = (
 
 		torrentSetup.once('ready', async () => {
 			ready = true;
+			const instance = torrentEngine.instances.get(
+				torrentSetup.torrent?.hash ?? ''
+			);
+			if (instance) {
+				instance.once('idle', async () => {
+					try {
+						const movie = await MovieModel.findOne({
+							imdbCode: movieDocument.imdbCode,
+						});
+						if (movie) {
+							debug(`${movie.imdbCode} idle`);
+							torrentEngine.close(torrentSetup.torrent!.hash);
+							movie.status = 2;
+							await movie.save();
+						}
+					} catch (error) {
+						debug(`Failed to set movie as saved. Error: ${error}`);
+					}
+				});
+			}
 			if (subs) {
 				await onReady();
 			}
 		});
-
 		torrentSetup.setup();
 	});
 };
