@@ -18,6 +18,7 @@ export const ytsMovieToMovieThumbnail = (
 			genres: ytsMovie.genres,
 			rating: ytsMovie.rating,
 			imdb: ytsMovie.imdb_code,
+			watched: false,
 		} as IMovieThumbnail;
 	}
 };
@@ -37,6 +38,7 @@ export const omdbDetailsToMovieThumbnail = (
 			genres: omdbDetails.Genre.split(',').map((g) => g.trim()),
 			rating: parseFloat(omdbDetails.imdbRating),
 			imdb: omdbDetails.imdbID,
+			watched: false,
 		} as IMovieThumbnail;
 	}
 };

@@ -128,11 +128,20 @@ export const searchMovies = asyncHandler(async (req, res) => {
 		'movie',
 		'imdbCode'
 	);
+	let viewingsLength = viewings.length;
+
 	if (viewings.length) {
-		thumbnailList.forEach((thumbnail) => {
-			thumbnail.watched = !!viewings.find(
-				(v) => 'imdbCode' in v.movie && v.movie.imdbCode === thumbnail.imdb
-			);
+		thumbnailList = thumbnailList.map((t) => {
+			if (
+				viewingsLength &&
+				viewings.find(
+					(v) => 'imdbCode' in v.movie && v.movie.imdbCode === t.imdb
+				)
+			) {
+				viewingsLength -= 1;
+				return { ...t, watched: true };
+			}
+			return t;
 		});
 	}
 
