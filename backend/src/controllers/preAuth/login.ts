@@ -1,5 +1,5 @@
 import {
-	addRefreshTokenToRes,
+	addTokensToRes,
 	createRefreshToken,
 	createAccessToken,
 	revokeRefreshToken,
@@ -24,7 +24,7 @@ export const loginController = asyncHandler(async (req, res) => {
 		throw new Unauthorized('Wrong password.');
 
 	// Set refreshToken cookie and return accessToken
-	addRefreshTokenToRes(res, createRefreshToken(user));
+	addTokensToRes(res, createRefreshToken(user));
 	res.json({ status: 'OK', accessToken: createAccessToken(user) });
 });
 

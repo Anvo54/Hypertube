@@ -1,5 +1,5 @@
 import {
-	addRefreshTokenToRes,
+	addTokensToRes,
 	createRefreshToken,
 	createAccessToken,
 } from 'application/tokens';
@@ -58,6 +58,6 @@ export const resetPasswordController = asyncHandler(async (req, res) => {
 	await LinkModel.deleteOne({ code, user: user.id, linkType: LinkType.RESET });
 
 	// Set refreshToken cookie and return accessToken
-	addRefreshTokenToRes(res, createRefreshToken(user));
+	addTokensToRes(res, createRefreshToken(user));
 	res.json({ status: 'OK', accessToken: createAccessToken(user) });
 });
