@@ -1,6 +1,8 @@
 import LinkModel from 'models/link';
 import asyncHandler from 'express-async-handler';
 import Usermodel from 'models/user';
+import Debug from 'debug';
+const debug = Debug('app');
 
 export const confirmUserController = asyncHandler(async (req, res) => {
 	const { userId, code } = req.codePayload!;
@@ -15,7 +17,7 @@ export const confirmUserController = asyncHandler(async (req, res) => {
 	try {
 		await LinkModel.deleteOne({ code });
 	} catch (err) {
-		// console.error(err);
+		debug(err);
 	}
 
 	res.redirect(302, `${APP_URL}?confirm-email=success`);

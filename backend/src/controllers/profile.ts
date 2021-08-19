@@ -4,6 +4,8 @@ import { IUpdateUser } from 'models/user';
 import UserModel, { Language } from 'models/user';
 import asyncHandler from 'express-async-handler';
 import { BadRequest } from 'http-errors';
+import Debug from 'debug';
+const debug = Debug('app');
 
 export const getProfileController = asyncHandler(async (req, res) => {
 	const { username } = req.params;
@@ -28,8 +30,8 @@ export const getCurrentProfileController = asyncHandler(async (req, res) => {
 });
 
 const removeFile = (fileName: string) => {
-	unlink(path.resolve('public/profileImages', fileName), () => {
-		// console.log(error)
+	unlink(path.resolve('public/profileImages', fileName), (error) => {
+		debug(error);
 	});
 };
 
