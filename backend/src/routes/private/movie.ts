@@ -1,7 +1,6 @@
 import {
 	commentMovie,
 	getMovie,
-	prepareMovie,
 	searchMovies,
 	setWatched,
 	streamMovie,
