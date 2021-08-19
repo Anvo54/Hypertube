@@ -1,10 +1,13 @@
-import React from 'react';
+import { RootStoreContext } from 'app/stores/rootStore';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Header, Segment, Container, Button } from 'semantic-ui-react';
 import './landing.css';
 
 const MainContentPublic: React.FC = () => {
+	const rootStore = useContext(RootStoreContext);
+	const { token } = rootStore.userStore;
 	const { t } = useTranslation();
 	return (
 		<Segment
@@ -26,9 +29,9 @@ const MainContentPublic: React.FC = () => {
 				<Button
 					color="teal"
 					as={Link}
-					to="/register"
+					to={token ? '/movies' : '/register'}
 					size="huge"
-					content={t('landing_btn_start')}
+					content={token ? t('landing_btn_movies') : t('landing_btn_start')}
 				/>
 			</Container>
 		</Segment>

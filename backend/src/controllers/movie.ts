@@ -85,7 +85,7 @@ export const filterList = (
 		list = list.filter((t) => t.genres.includes(params.genre!));
 	}
 	if (params.rating) {
-		list = list.filter((t) => Math.floor(t.rating) === params.rating!);
+		list = list.filter((t) => Math.floor(t.rating) >= params.rating!);
 	}
 	if (params.minYear) {
 		list = list.filter((t) => t.year >= params.minYear!);

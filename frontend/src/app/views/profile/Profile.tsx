@@ -38,11 +38,11 @@ const Profile: React.FC = () => {
 			if (res?.user) {
 				setUser(res.user);
 			} else {
-				toast.error('Fetching user profile failed.');
+				toast.error(t('get_current_user_profile_failed'));
 			}
 			setIsLoading(false);
 		});
-	}, [getCurrentUser]);
+	}, [getCurrentUser, t]);
 
 	const formValidation = getRegisterFormValidator(t, true);
 
@@ -185,6 +185,7 @@ const Profile: React.FC = () => {
 												color="teal"
 												fluid
 												size="large"
+												type="submit"
 											>
 												{t('update')}
 											</Button>

@@ -9,14 +9,13 @@ export const confirmUserController = asyncHandler(async (req, res) => {
 	try {
 		await Usermodel.updateOne({ _id: userId }, { isConfirmed: true });
 	} catch (err) {
-		console.error(err);
 		return res.redirect(302, `${APP_URL}?confirm-email=error`);
 	}
 
 	try {
 		await LinkModel.deleteOne({ code });
 	} catch (err) {
-		console.error(err);
+		// console.error(err);
 	}
 
 	res.redirect(302, `${APP_URL}?confirm-email=success`);

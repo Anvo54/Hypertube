@@ -38,7 +38,7 @@ export default class UserStore {
 				const token = await this.getToken();
 				await agent.User.logout(token);
 			} catch (error) {
-				console.log(error);
+				// console.log(error);
 			}
 		}
 		runInAction(() => {
@@ -75,7 +75,6 @@ export default class UserStore {
 				resolve(data.accessToken);
 			} catch (error) {
 				if (error.logUserOut) this.logoutUser();
-				console.log('ERROR getNewToken ->', error);
 				reject();
 			}
 		});
@@ -176,7 +175,6 @@ export default class UserStore {
 			const token = await this.getToken();
 			await agent.User.changeLanguage(token, language);
 		} catch (error) {
-			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
 			throw error;
 		}
 	};

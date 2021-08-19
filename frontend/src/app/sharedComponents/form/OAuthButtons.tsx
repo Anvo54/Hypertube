@@ -11,6 +11,7 @@ import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import { LinkType } from 'app/stores/oAuthStore';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 interface IProps {
 	disabled: boolean;
@@ -23,8 +24,9 @@ const OAuthButtons: React.FC<IProps> = ({ disabled }) => {
 	const [showDimmer, setShowDimmer] = useState(false);
 
 	useEffect(() => {
-		if (!link42 && !linkGithub) getLinks();
-	}, [getLinks, link42, linkGithub]);
+		if (!link42 && !linkGithub)
+			getLinks().catch(() => toast.error(t('get_oauth_links_failed')));
+	}, [getLinks, link42, linkGithub, t]);
 
 	const clickedGithub = (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>

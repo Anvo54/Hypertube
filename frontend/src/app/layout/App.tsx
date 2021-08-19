@@ -4,11 +4,11 @@ import Register from 'app/views/Register';
 import Navigation from '../sharedComponents/navigation/Navigation';
 import Privateroute from '../sharedComponents/navigation/Privateroute';
 import { Switch, Route } from 'react-router';
-import { Container, Message } from 'semantic-ui-react';
+import { Container, Dimmer, Loader, Message } from 'semantic-ui-react';
 import { useContext, useEffect, useState } from 'react';
 import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
-import { useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import NotFound from 'app/views/NotFound';
 import OAuthRoute from 'app/sharedComponents/navigation/OAuthRoute';
 import ChangePassword from 'app/views/ChangePassword';
@@ -19,16 +19,34 @@ import Movie from 'app/views/movieDetails/Movie';
 import Profile from 'app/views/profile/Profile';
 import { ToastContainer } from 'react-toastify';
 import Footer from 'app/sharedComponents/Footer';
+import { useTranslation } from 'react-i18next';
 
 const App = () => {
+	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
-	const { token } = rootStore.userStore;
+	const { token, getNewToken } = rootStore.userStore;
 	const [message, setMessage] = useState('');
 	const search = useLocation().search;
 	const urlParams = new URLSearchParams(search);
 	const emailStatus = urlParams.get('confirm-email');
 	const oAuthError = urlParams.get('oauth-error');
 	const tokenError = urlParams.get('error-token');
+	const code = urlParams.get('code');
+	const state = urlParams.get('state');
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		if (emailStatus || oAuthError || tokenError || code || state) {
+			setIsLoading(false);
+			return;
+		}
+
+		getNewToken()
+			.catch(() => {
+				/* Fail silently */
+			})
+			.finally(() => setIsLoading(false));
+	}, [code, emailStatus, getNewToken, oAuthError, state, tokenError]);
 
 	useEffect(() => {
 		if (emailStatus) {
@@ -55,6 +73,13 @@ const App = () => {
 	const isMessageNegative =
 		emailStatus === 'error' || oAuthError !== null || tokenError !== null;
 
+	if (isLoading)
+		return (
+			<Dimmer active page>
+				<Loader content={t('loading')} size="massive" />
+			</Dimmer>
+		);
+
 	return (
 		<>
 			<Container>
@@ -70,10 +95,34 @@ const App = () => {
 					</Message>
 				)}
 				<Switch>
-					<Route path="/register" component={Register} />
-					<Route path="/login" component={Login} />
-					<Route path="/forgot" component={Forgot} />
-					<Route path="/reset-password/:id" component={ChangePassword} />
+					<Route
+						path="/register"
+						render={() => {
+							if (!token) return <Register />;
+							return <Redirect to="/movies" />;
+						}}
+					/>
+					<Route
+						path="/login"
+						render={() => {
+							if (!token) return <Login />;
+							return <Redirect to="/movies" />;
+						}}
+					/>
+					<Route
+						path="/forgot"
+						render={() => {
+							if (!token) return <Forgot />;
+							return <Redirect to="/movies" />;
+						}}
+					/>
+					<Route
+						path="/reset-password/:id"
+						render={() => {
+							if (!token) return <ChangePassword />;
+							return <Redirect to="/movies" />;
+						}}
+					/>
 					<OAuthRoute path="/oauth" />
 					<Privateroute path="/profile" component={Profile} />
 					<Privateroute path="/movies/:id" component={Movie} />

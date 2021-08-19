@@ -23,7 +23,7 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 		setLoading(true);
 		createComment(comment)
 			.then(() => setComment(''))
-			.catch(() => toast.error('Failed to add comment.'))
+			.catch(() => toast.error(t('add_comment_failed')))
 			.finally(() => setLoading(false));
 	};
 

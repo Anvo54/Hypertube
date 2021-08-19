@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
 	Header,
 	Item,
@@ -31,7 +32,9 @@ const Browse: React.FC<BrowseProps> = ({
 	const { t } = useTranslation();
 	const getNext = () => {
 		if (totalPages !== page) {
-			getNextPage(page + 1);
+			getNextPage(page + 1).catch(() =>
+				toast.error(t('get_more_movies_failed'))
+			);
 		}
 	};
 
@@ -81,9 +84,13 @@ const Browse: React.FC<BrowseProps> = ({
 					))}
 				</Item.Group>
 			)}
-			{totalPages !== page && <Header>{t('load_more')}</Header>}
+			{totalPages !== page && totalPages !== 0 && (
+				<Header>{t('load_more')}</Header>
+			)}
 			<Visibility onBottomVisible={() => getNext()} once={loading} />
-			{totalPages === page && <Header>{t('no_more_results')}</Header>}
+			{totalPages === page && totalPages !== 0 && (
+				<Header>{t('no_more_results')}</Header>
+			)}
 		</Segment>
 	);
 };
