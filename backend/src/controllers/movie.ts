@@ -219,6 +219,10 @@ export const prepareMovie = asyncHandler(async (req, res) => {
 });
 
 export const streamMovie = asyncHandler(async (req, res) => {
+	const cookie = req.cookies.isLoggedIn;
+	if (!cookie || cookie !== 'true') {
+		throw new Unauthorized('not logged in');
+	}
 	const movieDocument = await MovieModel.findOne({
 		imdbCode: req.params.imdbCode,
 	});

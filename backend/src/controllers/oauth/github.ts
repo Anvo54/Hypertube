@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import { getRandomString } from 'utils';
 import serviceGithub from 'services/oauth/github';
 import {
-	addRefreshTokenToRes,
+	addTokensToRes,
 	createAccessToken,
 	createRefreshToken,
 } from 'application/tokens';
@@ -60,7 +60,7 @@ export const oAuthGithubController = asyncHandler(
 		}
 
 		// Set refreshToken cookie and return accessToken
-		addRefreshTokenToRes(res, createRefreshToken(currentUser));
+		addTokensToRes(res, createRefreshToken(currentUser));
 		res.json({ status: 'OK', accessToken: createAccessToken(currentUser) });
 	}
 );

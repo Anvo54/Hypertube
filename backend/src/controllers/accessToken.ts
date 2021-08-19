@@ -1,6 +1,6 @@
 import {
 	IRefreshToken,
-	addRefreshTokenToRes,
+	addTokensToRes,
 	createRefreshToken,
 	createAccessToken,
 } from 'application/tokens';
@@ -24,6 +24,6 @@ export const accessTokenController = asyncHandler(async (req, res) => {
 		throw new JsonWebTokenError('Token version not valid.');
 
 	// Set refreshToken cookie and return accessToken
-	addRefreshTokenToRes(res, createRefreshToken(user));
+	addTokensToRes(res, createRefreshToken(user));
 	res.json({ status: 'OK', accessToken: createAccessToken(user) });
 });

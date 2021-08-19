@@ -21,10 +21,15 @@ export const createAccessToken = (user: IUserDocument): string => {
 	return sign(data, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: '2m' });
 };
 
-export const addRefreshTokenToRes = (res: Response, token: string): void => {
+export const addTokensToRes = (res: Response, token: string): void => {
 	res.cookie('jid', token, {
 		httpOnly: true,
 		path: '/api/accessToken',
+		maxAge: 604800000, // 7d in millis
+	});
+	res.cookie('isLoggedIn', 'true', {
+		httpOnly: true,
+		path: '/api/stream/*',
 		maxAge: 604800000, // 7d in millis
 	});
 };
