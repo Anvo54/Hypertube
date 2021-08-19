@@ -263,6 +263,10 @@ export const prepare = async (
 				res.write('data: { "kind": "subtitles", "status": "error" }\n\n');
 			}
 	}
-	movieDocument.lastViewed = Date.now();
-	cronScheduler.addCronJob(movieDocument);
+	const movie = await MovieModel.findOne({ imdbCode: movieDocument.imdbCode });
+	if (movie) {
+		movie.lastViewed = Date.now();
+		cronScheduler.addCronJob(movie);
+		await movie.save();
+	}
 };

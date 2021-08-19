@@ -32,12 +32,6 @@ export const torrentEngine = new TorrentEngine({
 
 torrentEngine.enabled = true;
 
-setInterval(() => {
-	debug(
-		`Instances: ${torrentEngine.instances.size} Setups: ${torrentEngine.setups.size}`
-	);
-}, 10000);
-
 app.use(cors({ origin: process.env.REACT_APP_BASE_URL, credentials: true }));
 app.use(logger('dev'));
 app.use(express.json());

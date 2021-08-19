@@ -29,7 +29,7 @@ export const addTokensToRes = (res: Response, token: string): void => {
 	});
 	res.cookie('isLoggedIn', 'true', {
 		httpOnly: true,
-		path: '/api/stream/*',
+		path: '/api/stream',
 		maxAge: 604800000, // 7d in millis
 	});
 };
