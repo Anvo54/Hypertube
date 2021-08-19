@@ -60,7 +60,7 @@ const handleSubtitles = async (
 	res: Response
 ): Promise<void> => {
 	try {
-		const subtitles = await downloadSubtitles(movieDocument, user);
+		const subtitles = await downloadSubtitles(movieDocument.imdbCode, user);
 		res.write(
 			`data: { "kind": "subtitles", "status": "done", "subtitles": ${JSON.stringify(
 				subtitles
@@ -253,7 +253,7 @@ export const prepare = async (
 			break;
 		default:
 			try {
-				const subtitles = await downloadSubtitles(movieDocument, user);
+				const subtitles = await downloadSubtitles(movieDocument.imdbCode, user);
 				res.write(
 					`data: { "kind": "subtitles", "status": "done", "subtitles": ${JSON.stringify(
 						subtitles
