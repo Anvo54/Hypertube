@@ -5,7 +5,7 @@ import oAuthRouter from './oauth';
 import { checkAccessToken } from 'middleware/checkAccessToken';
 import { accessTokenController } from 'controllers/accessToken';
 import userRouter from 'routes/private/user';
-import streamRouter from './stream';
+import streamRouter from './private/stream';
 import Path from 'path';
 import { prepareMovie } from 'controllers/movie';
 

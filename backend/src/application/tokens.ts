@@ -36,4 +36,5 @@ export const addTokensToRes = (res: Response, token: string): void => {
 
 export const revokeRefreshToken = (res: Response): void => {
 	res.clearCookie('jid', { httpOnly: true, path: '/api/accessToken' });
+	res.clearCookie('isLoggedIn', { httpOnly: true, path: '/api/stream' });
 };
