@@ -1,8 +1,8 @@
 import {
-	addTokensToRes,
+	addCookiesToRes,
 	createRefreshToken,
 	createAccessToken,
-	revokeRefreshToken,
+	revokeCookies,
 } from 'application/tokens';
 import asyncHandler from 'express-async-handler';
 import { Unauthorized } from 'http-errors';
@@ -24,11 +24,11 @@ export const loginController = asyncHandler(async (req, res) => {
 		throw new Unauthorized('Wrong password.');
 
 	// Set refreshToken cookie and return accessToken
-	addTokensToRes(res, createRefreshToken(user));
+	addCookiesToRes(res, createRefreshToken(user));
 	res.json({ status: 'OK', accessToken: createAccessToken(user) });
 });
 
 export const logoutController = (_req: Request, res: Response): void => {
-	revokeRefreshToken(res);
+	revokeCookies(res);
 	res.status(200).json({ status: 'OK' });
 };

@@ -21,7 +21,7 @@ export const createAccessToken = (user: IUserDocument): string => {
 	return sign(data, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: '2m' });
 };
 
-export const addTokensToRes = (res: Response, token: string): void => {
+export const addCookiesToRes = (res: Response, token: string): void => {
 	res.cookie('jid', token, {
 		httpOnly: true,
 		path: '/api/accessToken',
@@ -34,7 +34,7 @@ export const addTokensToRes = (res: Response, token: string): void => {
 	});
 };
 
-export const revokeRefreshToken = (res: Response): void => {
+export const revokeCookies = (res: Response): void => {
 	res.clearCookie('jid', { httpOnly: true, path: '/api/accessToken' });
 	res.clearCookie('isLoggedIn', { httpOnly: true, path: '/api/stream' });
 };
