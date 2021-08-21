@@ -105,7 +105,6 @@ export default class MovieStore {
 
 	addMovies = (): Promise<void> => {
 		return new Promise(async (resolve, reject) => {
-			runInAction(() => (this.loading = true));
 			try {
 				const token = await this.rootStore.userStore.getToken();
 				const tempMovies: IMovieList = await agent.Movies.search(
@@ -117,7 +116,6 @@ export default class MovieStore {
 						[...this.movies.movies, ...tempMovies.movies],
 						'imdb'
 					);
-					this.loading = false;
 				});
 			} catch (error) {
 				reject();

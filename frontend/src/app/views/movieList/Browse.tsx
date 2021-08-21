@@ -46,9 +46,15 @@ const Browse: React.FC<BrowseProps> = ({
 		style: { position: 'absolute', top: '10px', left: '-14px' },
 	};
 
+	if (loading)
+		return (
+			<Segment>
+				<BrowseLoader />
+			</Segment>
+		);
+
 	return (
 		<Segment>
-			{loading && <BrowseLoader />}
 			{movies.length === 0 ? (
 				<Header>{t('no_results')}</Header>
 			) : (
@@ -87,7 +93,7 @@ const Browse: React.FC<BrowseProps> = ({
 			{totalPages !== page && totalPages !== 0 && (
 				<Header>{t('load_more')}</Header>
 			)}
-			<Visibility onBottomVisible={() => getNext()} once={loading} />
+			<Visibility onBottomVisible={() => getNext()} once={false} />
 			{totalPages === page && totalPages !== 0 && (
 				<Header>{t('no_more_results')}</Header>
 			)}

@@ -44,6 +44,10 @@ const Movie = () => {
 	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
+
+	useEffect(() => {
 		getMovie(id)
 			.catch((err) => setError(err.message))
 			.finally(() => setLoading(false));
