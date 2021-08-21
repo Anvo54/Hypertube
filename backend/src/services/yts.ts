@@ -53,7 +53,7 @@ export interface IYtsTorrent {
 	type: string;
 }
 
-const agent = new AxiosAgent(process.env.YTS_API, 5000);
+const agent = new AxiosAgent(process.env.YTS_API, 10000);
 
 const listParams = (key: string, value: string) => {
 	const params = new URLSearchParams();

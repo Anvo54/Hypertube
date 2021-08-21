@@ -7,7 +7,7 @@ export interface IBayMovie {
 	imdb: string | null;
 }
 
-const agent = new AxiosAgent(process.env.BAY_API, 8000);
+const agent = new AxiosAgent(process.env.BAY_API, 10000);
 
 const makeParams = (key: string, value: string) => {
 	const params = new URLSearchParams();
