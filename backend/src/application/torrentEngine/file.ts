@@ -64,22 +64,6 @@ export class TorrentFile {
 		this.store = new ImmediateChunkStore(storage);
 	}
 
-	// put = (index: number, buffer: Buffer, cb: (err?: Error) => void): void => {
-	// 	if (index === this.endPiece && buffer.length > this.lastChunkLength) {
-	// 		this.store.put(index, buffer.slice(0, this.lastChunkLength), cb);
-	// 	} else {
-	// 		this.store.put(index, buffer, cb);
-	// 	}
-	// };
-
-	// get = (index: number, cb?: (err?: Error, chunk?: Buffer) => void): void => {
-	// 	if (index === this.endPiece) {
-	// 		this.store.get(index, { offset: 0, length: this.lastChunkLength }, cb);
-	// 	} else {
-	// 		this.store.get(index, undefined, cb);
-	// 	}
-	// };
-
 	stream = (start?: number, end?: number): FileStream => {
 		const startByte = start ?? 0;
 		const endByte = end ?? this.options.length - 1;

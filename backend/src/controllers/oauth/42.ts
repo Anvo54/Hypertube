@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import service42 from 'services/oauth/42';
 import { getRandomString } from 'utils';
 import {
-	addRefreshTokenToRes,
+	addCookiesToRes,
 	createAccessToken,
 	createRefreshToken,
 } from 'application/tokens';
@@ -42,7 +42,7 @@ export const oAuth42Controller = asyncHandler(
 		}
 
 		// Set refreshToken cookie and return accessToken
-		addRefreshTokenToRes(res, createRefreshToken(currentUser));
+		addCookiesToRes(res, createRefreshToken(currentUser));
 		res.json({ status: 'OK', accessToken: createAccessToken(currentUser) });
 	}
 );

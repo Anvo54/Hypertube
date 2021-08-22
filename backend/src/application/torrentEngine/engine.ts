@@ -4,7 +4,8 @@ import ParseTorrentFile from 'parse-torrent-file';
 import { IMetadata, TorrentInstance } from 'application/torrentEngine/instance';
 import Debug from 'debug';
 import Path from 'path';
-import { BadRequest } from 'http-errors';
+import { TorrentSetup } from './setup';
+import { SetupError } from './setupError';
 
 interface IOptions {
 	path: string;
@@ -14,6 +15,7 @@ interface IOptions {
 export class TorrentEngine extends EventEmitter {
 	options: IOptions;
 	instances = new Map<string, TorrentInstance>();
+	setups = new Map<string, TorrentSetup>();
 	intervals = new Map<string, NodeJS.Timeout>();
 	enabled = false;
 	debug = Debug('engine');
@@ -25,21 +27,11 @@ export class TorrentEngine extends EventEmitter {
 
 	add = (infoHash: string, imdbCode: string): Promise<TorrentInstance> =>
 		new Promise<TorrentInstance>((resolve, reject) => {
-			if (!this.enabled) {
-				return reject(new BadRequest('Torrent engine disabled.'));
-			}
-			if (this.instances.size > 4) {
-				return reject(new BadRequest('Too many torrents are downloading already. Please try again later.'));
-			}
-			if (this.instances.get(infoHash)) {
-				return reject(new BadRequest('Duplicate torrent.'));
-			}
 			const discovery = new TorrentDiscovery(infoHash);
 			const discoveryTimeout = setTimeout(() => {
 				discovery.destroy();
-				return reject(new BadRequest('Error fetching metadata for torrent. Please try again later.'));
-			}, 30000);
-			if (discoveryTimeout.unref) discoveryTimeout.unref();
+				return reject(new SetupError('torrent_no_metadata', 'metadata'));
+			}, 60000);
 
 			discovery.once('metadata', (metadata: ParseTorrentFile.Instance) => {
 				this.debug('Received metadata');
@@ -47,7 +39,7 @@ export class TorrentEngine extends EventEmitter {
 				const torrentMetadata = this.validateMetadata(metadata);
 				if (!torrentMetadata) {
 					discovery.destroy();
-					return reject(new BadRequest('Torrent metadata validation failed. Please try again later.'));
+					return reject(new SetupError('torrent_invalid_metadata', 'metadata'));
 				}
 				const instance = new TorrentInstance(
 					discovery,
@@ -56,7 +48,7 @@ export class TorrentEngine extends EventEmitter {
 					Path.resolve(this.options.path, imdbCode)
 				);
 				this.instances.set(infoHash, instance);
-				instance.on('ready', () => {
+				instance.once('ready', () => {
 					this.debug(`Instance ${imdbCode} ready`);
 					resolve(instance);
 					const interval = setInterval(() => instance.refresh(), 30000);
@@ -101,14 +93,10 @@ export class TorrentEngine extends EventEmitter {
 		});
 	};
 
-	speed = (): number => {
-		let speed = 0;
-		this.instances.forEach((instance) => {
-			instance.discovery.peers.forEach((peer) => {
-				speed = speed + peer.wire.downloadSpeed();
-			});
-		});
-		return speed;
+	setup = (imdbCode: string): TorrentSetup => {
+		const torrentSetup = new TorrentSetup(this, imdbCode);
+		this.setups.set(imdbCode, torrentSetup);
+		return torrentSetup;
 	};
 
 	close = (infoHash: string): void => {

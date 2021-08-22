@@ -10,22 +10,14 @@ export const buildMovie = (
 	ytsDetails: IYtsMovieDetails | undefined,
 	omdbDetails: IOmdbMovieDetails | undefined
 ): IMovie => {
-	let ytsThumbnail: IMovieThumbnail | undefined;
-	let omdbThumbnail: IMovieThumbnail | undefined;
 	let movieThumbnail: IMovieThumbnail;
 
 	if (!ytsMovie && !omdbDetails)
 		throw new Error('No movie data to build movie from.');
 
 	// Try to get movie thumbnails from both services.
-	try {
-		ytsThumbnail = ytsMovieToMovieThumbnail(ytsMovie);
-		// eslint-disable-next-line no-empty
-	} catch (_error) {}
-	try {
-		omdbThumbnail = omdbDetailsToMovieThumbnail(omdbDetails);
-		// eslint-disable-next-line no-empty
-	} catch (_error) {}
+	const ytsThumbnail = ytsMovieToMovieThumbnail(ytsMovie);
+	const omdbThumbnail = omdbDetailsToMovieThumbnail(omdbDetails);
 
 	if (ytsThumbnail) {
 		movieThumbnail = ytsThumbnail;

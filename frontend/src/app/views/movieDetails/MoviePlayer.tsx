@@ -15,7 +15,7 @@ const MoviePlayer = (): JSX.Element => {
 
 	const checkWatched = (played: number) => {
 		if (played > 0.9 && !movie.watched) {
-			setWatched().catch(() => toast.info(t('set_watched_failed')));
+			setWatched().catch(() => toast.error(t('error_movie_watched')));
 		}
 	};
 

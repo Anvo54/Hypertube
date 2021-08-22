@@ -23,8 +23,9 @@ import { useTranslation } from 'react-i18next';
 import Comments from './Comments';
 import UsersProfileModal from './UsersProfileModal';
 import MoviePlayer from './MoviePlayer';
-import { toast } from 'react-toastify';
 import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
+import PrepareModal from './PrepareModal';
+import { toast } from 'react-toastify';
 
 interface IParams {
 	id: string;
@@ -36,23 +37,29 @@ const Movie = () => {
 	const rootStore = useContext(RootStoreContext);
 	const [loading, setLoading] = useState(true);
 	const [playerLoader, setPlayerLoader] = useState(false);
-	const [playMovie, setPlayMovie] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [error, setError] = useState('');
+	const [movieReady, setMovieReady] = useState(false);
 	const [modalUsername, setModalUsername] = useState('');
 	const { movie, getMovie, prepareMovie, createComment } = rootStore.movieStore;
 
 	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
+
+	useEffect(() => {
 		getMovie(id)
-			.catch((err) => setError(err))
+			.catch((err) => setError(err.message))
 			.finally(() => setLoading(false));
 	}, [getMovie, id]);
 
 	const startPlay = () => {
 		setPlayerLoader(true);
 		prepareMovie()
-			.then(() => setPlayMovie(true))
-			.catch((err) => toast.error(err))
+			.then(() => setMovieReady(true))
+			.catch((error) => {
+				if (error && error.message) toast.error(t(error.message));
+			})
 			.finally(() => setPlayerLoader(false));
 	};
 
@@ -62,8 +69,8 @@ const Movie = () => {
 	};
 
 	if (loading) return <MovieLoader />;
-	if (error.length)
-		return <ErrorMessage style={{ marginTop: 80 }} message={error} />;
+	if (error)
+		return <ErrorMessage style={{ marginTop: 80 }} message={t(error)} />;
 
 	const headerStyles: any = {};
 	if (movie && movie.watched) headerStyles.marginBottom = '5px';
@@ -87,7 +94,7 @@ const Movie = () => {
 										{t('watched')}
 									</Header>
 								)}
-								{!playMovie && (
+								{!movieReady && (
 									<Dimmer.Dimmable
 										dimmed={playerLoader}
 										style={{
@@ -105,7 +112,7 @@ const Movie = () => {
 										<Image src="/background.png" onClick={() => startPlay()} />
 									</Dimmer.Dimmable>
 								)}
-								{!playerLoader && playMovie && <MoviePlayer />}
+								{!playerLoader && movieReady && <MoviePlayer />}
 							</GridColumn>
 							<Grid.Column style={{ marginTop: '10px' }}>
 								<Item.Content>
@@ -166,6 +173,7 @@ const Movie = () => {
 						username={modalUsername}
 						setShow={setShowModal}
 					/>
+					<PrepareModal movieReady={movieReady} />
 				</Segment>
 			</div>
 		)

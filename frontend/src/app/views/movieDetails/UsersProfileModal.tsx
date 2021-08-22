@@ -31,7 +31,7 @@ const UsersProfileModal: React.FC<IProps> = ({ show, username, setShow }) => {
 					setUser(res.user);
 				} else {
 					setShow(false);
-					toast.error(t('get_user_profile_failed'));
+					toast.error(t('error_user_fetch'));
 				}
 			});
 		}

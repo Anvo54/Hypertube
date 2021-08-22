@@ -9,17 +9,15 @@ import lodash, { isString, toLower } from 'lodash';
 import { details } from 'application/movie';
 import { Request } from 'express';
 import MovieModel from 'models/movie';
-import { startMovieDownload } from 'application/torrent';
-import Path from 'path';
-import Fs from 'fs';
 import { BadRequest, Unauthorized } from 'http-errors';
 import { movieStream } from 'application/stream';
-import { torrentEngine } from 'app';
-import { downloadSubtitles } from 'application/subtitles';
 import UserModel from 'models/user';
 import ViewingModel from 'models/viewing';
 import CommentModel, { IComment } from 'models/comment';
-import cronScheduler from 'cron';
+import { IAuthPayload } from '../../@types/express';
+import { JsonWebTokenError, verify } from 'jsonwebtoken';
+import { prepare } from 'application/prepare';
+import { SetupError } from 'application/torrentEngine/setupError';
 
 export interface IQueryParams {
 	query: string;
@@ -130,11 +128,22 @@ export const searchMovies = asyncHandler(async (req, res) => {
 		'movie',
 		'imdbCode'
 	);
-	thumbnailList.forEach((thumbnail) => {
-		thumbnail.watched = !!viewings.find(
-			(v) => 'imdbCode' in v.movie && v.movie.imdbCode === thumbnail.imdb
-		);
-	});
+	let viewingsLength = viewings.length;
+
+	if (viewings.length) {
+		thumbnailList = thumbnailList.map((t) => {
+			if (
+				viewingsLength &&
+				viewings.find(
+					(v) => 'imdbCode' in v.movie && v.movie.imdbCode === t.imdb
+				)
+			) {
+				viewingsLength -= 1;
+				return { ...t, watched: true };
+			}
+			return t;
+		});
+	}
 
 	const envelope: IMovieThumbnailEnvelope = {
 		count,
@@ -176,51 +185,53 @@ export const getMovie = asyncHandler(async (req, res) => {
 });
 
 export const prepareMovie = asyncHandler(async (req, res) => {
-	const user = await UserModel.findById(req.authPayload?.userId);
-	if (!user) throw new Unauthorized('not logged in');
+	// Send SSE headers.
+	const headers = {
+		'Content-Type': 'text/event-stream',
+		Connection: 'keep-alive',
+		'Cache-Control': 'no-cache',
+	};
+	res.writeHead(200, headers);
+	const interval = setInterval(() => {
+		res.write('data: { "kind": "keepalive" }\n\n');
+	}, 30000);
 
-	let movieDocument = await MovieModel.findOne({
-		imdbCode: req.params.imdbCode,
-	});
-	if (!movieDocument) {
-		movieDocument = new MovieModel({
-			imdbCode: req.params.imdbCode,
-			status: 0,
-		});
-	}
+	// Check JWT Token.
+	try {
+		const { authorization } = req.headers;
+		if (!authorization) throw new JsonWebTokenError('Token is missing.');
+		const token = authorization.split(' ')[1];
+		const payload = verify(
+			token,
+			process.env.ACCESS_TOKEN_SECRET!
+		) as IAuthPayload;
+		const user = await UserModel.findById(payload.userId);
+		if (!user) throw new Unauthorized('User not found.');
 
-	movieDocument.lastViewed = Date.now();
-	cronScheduler.addCronJob(movieDocument);
-
-	let subtitles: string[] = [];
-
-	if (movieDocument.status === 2) {
-		const videoPath = Path.resolve(
-			__dirname,
-			`../../movies/${movieDocument.imdbCode}/${movieDocument.fileName}`
-		);
-		if (!Fs.existsSync(videoPath)) {
-			movieDocument.status = 0;
+		// Setup torrent and download subtitles
+		await prepare(req.params.imdbCode, user, res);
+		res.write('data: { "kind": "ready" }\n\n');
+	} catch (error) {
+		if (error instanceof JsonWebTokenError || error instanceof Unauthorized) {
+			res.write('data: { "kind": "error", "type": "logout" }\n\n');
 		} else {
-			subtitles = await downloadSubtitles(movieDocument, user);
+			if (error instanceof SetupError) {
+				res.write(`data: { "kind": "${error.task}", "status": "error" }\n\n`);
+			}
+			res.write(
+				`data: { "kind": "error", "type": "generic", "message": "${error.message}" }\n\n`
+			);
 		}
 	}
-
-	if (movieDocument.status === 1) {
-		if (!torrentEngine.instances.get(movieDocument.torrentHash)) {
-			movieDocument.status = 0;
-		} else {
-			subtitles = await downloadSubtitles(movieDocument, user);
-		}
-	}
-
-	if (movieDocument.status === 0) {
-		subtitles = await startMovieDownload(movieDocument, user);
-	}
-	res.json(subtitles);
+	clearInterval(interval);
+	res.end();
 });
 
 export const streamMovie = asyncHandler(async (req, res) => {
+	const cookie = req.cookies.isLoggedIn;
+	if (!cookie || cookie !== 'true') {
+		throw new Unauthorized('not logged in');
+	}
 	const movieDocument = await MovieModel.findOne({
 		imdbCode: req.params.imdbCode,
 	});

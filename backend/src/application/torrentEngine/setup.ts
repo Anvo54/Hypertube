@@ -1,14 +1,12 @@
-import lodash from 'lodash';
-import { IMovieDocument } from 'models/movie';
-import ytsService from 'services/yts';
-import bayService from 'services/bay';
+import { EventEmitter } from 'stream';
 import Debug from 'debug';
-import { torrentEngine } from 'app';
-import MovieModel from 'models/movie';
-import { downloadSubtitles } from './subtitles';
-import { IUserDocument } from 'models/user';
-import { BadRequest } from 'http-errors';
-const debug = Debug('torrent');
+import debug from 'debug';
+import lodash from 'lodash';
+import bayService from 'services/bay';
+import ytsService from 'services/yts';
+import { TorrentEngine } from './engine';
+import { TorrentInstance } from './instance';
+import { SetupError } from './setupError';
 
 interface ITorrent {
 	hash: string;
@@ -76,7 +74,7 @@ const findTorrent = async (imdbCode: string): Promise<ITorrent> => {
 		if (bayPromiseResult.status === 'fulfilled' && bayPromiseResult.value) {
 			torrents = [...torrents, ...bayPromiseResult.value];
 		}
-		if (!torrents.length) throw new BadRequest('no torrents with seeders');
+		if (!torrents.length) throw new Error('No torrents with seeders.');
 		torrents = lodash.orderBy(torrents, ['seeds'], ['desc']);
 		const mostSeeds = torrents[0];
 		const br1 = torrents.find(
@@ -90,69 +88,60 @@ const findTorrent = async (imdbCode: string): Promise<ITorrent> => {
 		return mostSeeds;
 	} catch (error) {
 		debug(error);
-		throw error;
+		throw new SetupError('torrent_no_seed', 'torrent');
 	}
 };
 
-export const startMovieDownload = async (
-	movieDocument: IMovieDocument,
-	user: IUserDocument
-): Promise<string[]> => {
-	const torrent = await findTorrent(movieDocument.imdbCode);
-	return new Promise(async (resolve, reject) => {
-		try {
-			const instance = await torrentEngine.add(
-				torrent.hash,
-				movieDocument.imdbCode
-			);
-			instance.on('piece', (index: number) => {
-				debug(`Downloaded piece ${index} for ${movieDocument.imdbCode}`);
-			});
-			instance.on('idle', () => {
-				debug(`${movieDocument.imdbCode} idle`);
-				torrentEngine.close(torrent.hash);
-				MovieModel.findOne({
-					imdbCode: movieDocument.imdbCode,
-				})
-					.then((m) => {
-						if (m) {
-							m.status = 2;
-							m.save().catch((error) => debug(error));
-						}
-					})
-					.catch((error) => debug(error));
-			});
-			instance.on('moviehash', async (hash: string) => {
-				debug(`Received moviehash for ${movieDocument.imdbCode}`, hash);
-				movieDocument.movieHash = hash;
-				try {
-					await movieDocument.save();
-					const subtitles = await downloadSubtitles(movieDocument, user);
-					const interval = setInterval(() => {
-						debug('Checking if first pieces are downloaded ');
-						for (
-							let i = instance.file.startPiece;
-							i < instance.file.startPiece + 9;
-							i++
-						) {
-							if (!instance.bitfield.get(i)) return;
-						}
-						clearInterval(interval);
-						debug('resolving');
-						resolve(subtitles);
-					}, 5000);
-				} catch (error) {
-					reject(error);
-				}
-			});
-			movieDocument.torrentHash = torrent.hash;
-			movieDocument.fileName = instance.metadata.file.name;
-			movieDocument.status = 1;
-			await movieDocument.save();
+export class TorrentSetup extends EventEmitter {
+	debug = Debug('setup');
+	imdbCode: string;
+	torrent: ITorrent | undefined;
+	engine: TorrentEngine;
+	instance: TorrentInstance | undefined;
+	movieHash: string | undefined;
 
-			instance.startDownload();
+	constructor(engine: TorrentEngine, imdbCode: string) {
+		super();
+		this.engine = engine;
+		this.imdbCode = imdbCode;
+	}
+
+	setup = async (): Promise<void> => {
+		try {
+			if (!this.engine.enabled) {
+				throw new SetupError('torrent_engine_disabled', 'torrent');
+			}
+			if (this.engine.instances.size + this.engine.setups.size > 5) {
+				throw new SetupError('torrent_max_instances', 'torrent');
+			}
+			this.torrent = await findTorrent(this.imdbCode);
+			if (this.engine.instances.get(this.torrent.hash)) {
+				throw new SetupError('torrent_duplicate', 'torrent');
+			}
+			this.emit('task', 'torrent');
+			this.instance = await this.engine.add(this.torrent.hash, this.imdbCode);
+			this.emit('task', 'metadata');
+			this.instance.once('moviehash', (movieHash: string) => {
+				this.movieHash = movieHash;
+				this.emit('movieHash', movieHash);
+			});
+			const checkReady = () => {
+				if (!this.movieHash || !this.instance) return;
+				for (
+					let i = this.instance.file.startPiece;
+					i < this.instance.file.startPiece + 9;
+					i++
+				) {
+					if (!this.instance.bitfield.get(i)) return;
+				}
+				this.instance.removeListener('piece', checkReady);
+				this.emit('task', 'firstPieces');
+				this.emit('ready');
+			};
+			this.instance.on('piece', checkReady);
+			this.instance.startDownload();
 		} catch (error) {
-			reject(error);
+			this.emit('error', error);
 		}
-	});
-};
+	};
+}

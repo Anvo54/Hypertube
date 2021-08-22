@@ -3,6 +3,21 @@ import agent from '../services/agent';
 import { RootStore } from './rootStore';
 import { IMovie, IMovieList } from '../models/movie';
 import _ from 'lodash';
+import { EventSourcePolyfill } from 'event-source-polyfill';
+
+export type PrepareTaskStatus =
+	| 'disabled'
+	| 'waiting'
+	| 'loading'
+	| 'done'
+	| 'error';
+
+export interface IPrepareTasks {
+	torrent: PrepareTaskStatus;
+	metadata: PrepareTaskStatus;
+	subtitles: PrepareTaskStatus;
+	firstPieces: PrepareTaskStatus;
+}
 
 export default class MovieStore {
 	rootStore: RootStore;
@@ -20,11 +35,21 @@ export default class MovieStore {
 	params = new URLSearchParams();
 	movie: IMovie | null = null;
 	subtitles: string[] = [];
+	prepareMode: 'torrent' | 'server' | null = null;
+	prepareTasks: IPrepareTasks;
+	prepareModalOpen = false;
+	prepareError = '';
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		this.startYear = null;
 		this.endYear = null;
+		this.prepareTasks = {
+			torrent: 'waiting',
+			metadata: 'waiting',
+			subtitles: 'waiting',
+			firstPieces: 'waiting',
+		};
 		makeAutoObservable(this);
 	}
 
@@ -73,13 +98,13 @@ export default class MovieStore {
 				this.loading = false;
 			});
 		} catch (error) {
-			throw error;
+			if (error.logUserOut) return this.rootStore.userStore.logoutUser();
+			throw new Error('error_movie_fetch');
 		}
 	};
 
 	addMovies = (): Promise<void> => {
 		return new Promise(async (resolve, reject) => {
-			runInAction(() => (this.loading = true));
 			try {
 				const token = await this.rootStore.userStore.getToken();
 				const tempMovies: IMovieList = await agent.Movies.search(
@@ -91,7 +116,6 @@ export default class MovieStore {
 						[...this.movies.movies, ...tempMovies.movies],
 						'imdb'
 					);
-					this.loading = false;
 				});
 			} catch (error) {
 				reject();
@@ -221,19 +245,105 @@ export default class MovieStore {
 	};
 
 	prepareMovie = async (): Promise<void> => {
-		if (!this.movie) return;
-		try {
+		this.prepareModalOpen = true;
+		return new Promise(async (resolve, reject) => {
+			if (!this.movie) return reject();
 			const token = await this.rootStore.userStore.getToken();
-			const subtitles = await agent.Movies.prepare(this.movie.imdb, token);
-			runInAction(() => {
-				this.subtitles = subtitles;
-			});
-		} catch (error: any) {
-			if (error.response?.data?.message) {
-				throw error.response?.data?.message;
-			}
-			throw error;
-		}
+			const sse = new EventSourcePolyfill(
+				`http://localhost:8080/api/movies/${this.movie.imdb}/prepare`,
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+			sse.onerror = () => {
+				sse.close();
+				this.prepareError = 'error';
+				if (!this.prepareModalOpen) return reject(new Error(this.prepareError));
+				reject();
+			};
+			sse.onmessage = (event: any) => {
+				runInAction(() => {
+					const message = JSON.parse(event.data);
+					switch (message.kind) {
+						case 'mode':
+							if (message.status === 'server') {
+								this.prepareMode = 'server';
+								this.prepareTasks = {
+									torrent: 'disabled',
+									metadata: 'disabled',
+									subtitles: 'loading',
+									firstPieces: 'disabled',
+								};
+							} else {
+								this.prepareMode = 'torrent';
+								this.prepareTasks = {
+									torrent: 'loading',
+									metadata: 'waiting',
+									subtitles: 'waiting',
+									firstPieces: 'waiting',
+								};
+							}
+							break;
+						case 'torrent':
+							this.prepareTasks.torrent = message.status;
+							if (this.prepareTasks.torrent === 'done') {
+								this.prepareTasks.metadata = 'loading';
+							}
+							break;
+						case 'metadata':
+							this.prepareTasks.metadata = message.status;
+							if (this.prepareTasks.metadata === 'done') {
+								this.prepareTasks.subtitles = 'loading';
+								this.prepareTasks.firstPieces = 'loading';
+							}
+							break;
+						case 'subtitles':
+							this.prepareTasks.subtitles = message.status;
+							if (this.prepareTasks.subtitles === 'done') {
+								this.subtitles = message.subtitles;
+							}
+							if (this.prepareTasks.firstPieces === 'waiting') {
+								this.prepareTasks.firstPieces = 'loading';
+							}
+							break;
+						case 'firstPieces':
+							this.prepareTasks.firstPieces = message.status;
+							break;
+						case 'ready':
+							if (!this.prepareModalOpen) this.closePrepareModal();
+							sse.close();
+							resolve();
+							break;
+						case 'error':
+							sse.close();
+							if (message.type === 'logout') {
+								return this.rootStore.userStore.logoutUser();
+							}
+							this.prepareError = message.message ?? 'error';
+							if (!this.prepareModalOpen)
+								return reject(new Error(this.prepareError));
+							reject();
+					}
+				});
+			};
+		});
+	};
+
+	get isPrepareModalOpen(): string {
+		if (this.prepareModalOpen) return 'true';
+		return 'false';
+	}
+
+	closePrepareModal = (): void => {
+		this.prepareModalOpen = false;
+		this.prepareMode = null;
+		this.prepareTasks = {
+			torrent: 'waiting',
+			metadata: 'waiting',
+			subtitles: 'waiting',
+			firstPieces: 'waiting',
+		};
+		this.prepareError = '';
 	};
 
 	setLoading = (value: boolean): void => {
@@ -257,12 +367,8 @@ export default class MovieStore {
 	setWatched = async (): Promise<void> => {
 		if (!this.movie) return;
 		this.movie.watched = true;
-		try {
-			const token = await this.rootStore.userStore.getToken();
-			await agent.Movies.setWatched(this.movie.imdb, token);
-		} catch (error) {
-			throw error;
-		}
+		const token = await this.rootStore.userStore.getToken();
+		await agent.Movies.setWatched(this.movie.imdb, token);
 	};
 
 	createComment = async (comment: string): Promise<void> => {
