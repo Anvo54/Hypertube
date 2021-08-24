@@ -127,5 +127,18 @@
 	"error_language_save": "Keele salvestamine ebaõnnestus. Proovi uuesti.",
 	"error_movie_watched": "Filmi vaadatuks märkimine ebaõnnestus.",
 	"error_user_fetch": "Kasutaja profiili saamine ebaõnnestus.",
-	"error_invalid_file": "Ebakorrektne fail. Faili tüüp peab olema kas jpeg või png. Maksimaalne suurus 5MB."
+	"error_invalid_file": "Ebakorrektne fail. Faili tüüp peab olema kas jpeg või png. Maksimaalne suurus 5MB.",
+	"user_not_found": "Kasutajat ei leitud.",
+	"user_not_confirmed": "Kasutaja ei ole kinnitatud.",
+	"wrong_password": "Vale parool.",
+	"email_confirm_success": "Emaili kinnitamine õnnestus.",
+	"email_confirm_error": "Email kinnitamine ebaõnnestus või see on juba kinnitatud.",
+	"email_unique_error": "Selline email on juba olemas.",
+	"username_unique_error": "Selline kasutajanimi on juba olemas.",
+	"new_password_same_as_old": "Uus parool on sama vana parooliga.",
+	"invalid_email": "Email ei ekisteeri.",
+	"reset_already_requested": "Parooli vahetamise link on juba saadetud.",
+	"reset_code_invalid": "Parooli vahetamsise kood on vale.",
+	"not_authorized": "Ligipääs puudub. Palun logi sisse.",
+	"oauth_data_mismatch": "Autentimine ebaõnnestus, proovi hiljem uuesti."
 }

@@ -16,6 +16,7 @@ import { RootStoreContext } from 'app/stores/rootStore';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { getForgotPasswordFormValidator } from 'app/sharedComponents/form/validators';
+import { IForgetPassword } from 'app/models/user';
 
 const Forgot = () => {
 	const { t } = useTranslation();
@@ -30,9 +31,13 @@ const Forgot = () => {
 		window.scrollTo(0, 0);
 	}, []);
 
+	const onSubmit = async (
+		data: IForgetPassword
+	): Promise<Record<string, any> | void> => await forgetPassword(data, t);
+
 	return (
 		<FinalForm
-			onSubmit={forgetPassword}
+			onSubmit={onSubmit}
 			validate={formValidation.validateForm}
 			render={({ handleSubmit, submitError, dirtySinceLastSubmit }) => (
 				<Grid

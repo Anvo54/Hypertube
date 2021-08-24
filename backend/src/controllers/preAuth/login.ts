@@ -16,12 +16,12 @@ export const loginController = asyncHandler(async (req, res) => {
 
 	const user: IUserDocument | null = await Usermodel.findOne({ username });
 
-	if (!user) throw new Unauthorized('User not found.');
+	if (!user) throw new Unauthorized('user_not_found');
 
-	if (!user.isConfirmed) throw new Unauthorized('User not confirmed.');
+	if (!user.isConfirmed) throw new Unauthorized('user_not_confirmed');
 
 	if (!(await user.isPasswordValid(password)))
-		throw new Unauthorized('Wrong password.');
+		throw new Unauthorized('wrong_password');
 
 	// Set refreshToken cookie and return accessToken
 	addCookiesToRes(res, createRefreshToken(user));

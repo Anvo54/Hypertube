@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { getRegisterFormValidator } from 'app/sharedComponents/form/validators';
 import { history } from 'index';
 import { RootStoreContext } from 'app/stores/rootStore';
+import { IRegisterFormValues } from 'app/models/user';
 
 const Register: React.FC = () => {
 	const { t } = useTranslation();
@@ -34,6 +35,10 @@ const Register: React.FC = () => {
 		window.scrollTo(0, 0);
 	}, []);
 
+	const onSubmit = async (
+		data: IRegisterFormValues
+	): Promise<Record<string, any> | void> => await registerUser(data, t);
+
 	const githubHasPrivateEmail = () => queryParams.get('username') !== null;
 
 	return (
@@ -45,7 +50,7 @@ const Register: React.FC = () => {
 			)}
 			<div style={{ paddingBottom: 200 }}>
 				<FinalForm
-					onSubmit={registerUser}
+					onSubmit={onSubmit}
 					validate={formValidation.validateForm}
 					render={({
 						handleSubmit,

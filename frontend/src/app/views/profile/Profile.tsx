@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
 			const formData = new FormData();
 			Object.keys(values).forEach((key) => formData.append(key, values[key]));
 
-			const res = await updateUser(formData);
+			const res = await updateUser(formData, t);
 			if (!res.user) return res; // Error
 			setUser(res.user as IUser);
 			setPicFile(null);

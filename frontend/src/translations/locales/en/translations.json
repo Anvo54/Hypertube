@@ -127,5 +127,18 @@
 	"error_language_save": "Failed to save language. Please try again.",
 	"error_movie_watched": "Failed to set movie as watched.",
 	"error_user_fetch": "Fetching user profile failed.",
-	"error_invalid_file": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB."
+	"error_invalid_file": "Invalid file. Supported types are jpeg and png. Maximum size is 5MB.",
+	"user_not_found": "User not found.",
+	"user_not_confirmed": "User not confirmed.",
+	"wrong_password": "Wrong password.",
+	"email_confirm_success": "Email was confirmed.",
+	"email_confirm_error": "Confirming email failed or it was already confirmed.",
+	"email_unique_error": "This email already exists.",
+	"username_unique_error": "This username already exists.",
+	"new_password_same_as_old": "Entered password is same as the old password.",
+	"invalid_email": "Email doesn't exist.",
+	"reset_already_requested": "Reset password link has already been requested.",
+	"reset_code_invalid": "Reset password code invalid.",
+	"not_authorized": "Not authorized. Please login in.",
+	"oauth_data_mismatch": "Authentication failed, try again later."
 }

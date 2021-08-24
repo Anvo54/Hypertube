@@ -16,6 +16,7 @@ import ErrorMessage from 'app/sharedComponents/form/ErrorMessage';
 import OAuthButtons from 'app/sharedComponents/form/OAuthButtons';
 import { useTranslation } from 'react-i18next';
 import { getLoginFormValidator } from 'app/sharedComponents/form/validators';
+import { ILoginFormValues } from 'app/models/user';
 
 const Login: React.FC = () => {
 	const { t } = useTranslation();
@@ -29,10 +30,14 @@ const Login: React.FC = () => {
 		window.scrollTo(0, 0);
 	}, []);
 
+	const onSubmit = async (
+		data: ILoginFormValues
+	): Promise<Record<string, any> | void> => await loginUser(data, t);
+
 	return (
 		<div style={{ paddingBottom: 40 }}>
 			<FinalForm
-				onSubmit={loginUser}
+				onSubmit={onSubmit}
 				validate={formValidation.validateForm}
 				render={({
 					handleSubmit,

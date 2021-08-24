@@ -31,6 +31,7 @@ const App = () => {
 	const emailStatus = urlParams.get('confirm-email');
 	const oAuthError = urlParams.get('oauth-error');
 	const tokenError = urlParams.get('error-token');
+	const resetError = urlParams.get('reset-password');
 	const code = urlParams.get('code');
 	const state = urlParams.get('state');
 	const [isLoading, setIsLoading] = useState(true);
@@ -50,11 +51,11 @@ const App = () => {
 
 	useEffect(() => {
 		if (emailStatus) {
-			emailStatus === 'success' && setMessage('Email confirm success!');
-			emailStatus === 'error' && setMessage('Email confirm failed!');
+			emailStatus === 'success' && setMessage(t('email_confirm_success'));
+			emailStatus === 'error' && setMessage(t('email_confirm_error'));
 			setTimeout(() => setMessage(''), 4000);
 		}
-	}, [emailStatus]);
+	}, [emailStatus, t]);
 
 	useEffect(() => {
 		if (oAuthError) {
@@ -64,6 +65,13 @@ const App = () => {
 	}, [oAuthError]);
 
 	useEffect(() => {
+		if (resetError) {
+			setMessage(t('reset_code_invalid'));
+			setTimeout(() => setMessage(''), 4000);
+		}
+	}, [resetError, t]);
+
+	useEffect(() => {
 		if (tokenError) {
 			setMessage(tokenError);
 			setTimeout(() => setMessage(''), 4000);
@@ -71,7 +79,10 @@ const App = () => {
 	}, [tokenError]);
 
 	const isMessageNegative =
-		emailStatus === 'error' || oAuthError !== null || tokenError !== null;
+		emailStatus === 'error' ||
+		oAuthError !== null ||
+		tokenError !== null ||
+		resetError !== null;
 
 	if (isLoading)
 		return (
