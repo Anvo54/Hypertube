@@ -118,6 +118,7 @@ const startDownload = (
 		});
 
 		torrentSetup.once('movieHash', async (movieHash: string) => {
+			debug(`${movieDocument.imdbCode} movie hash`);
 			movieDocument.movieHash = movieHash;
 			await handleSubtitles(movieDocument, user, res);
 			subs = true;
@@ -127,17 +128,19 @@ const startDownload = (
 		});
 
 		const onReady = async () => {
+			debug(`${movieDocument.imdbCode} prepare finished`);
 			torrentSetup.removeAllListeners();
 			torrentEngine.setups.delete(movieDocument.imdbCode);
 			try {
 				const movie = await MovieModel.findOne({
 					imdbCode: movieDocument.imdbCode,
 				});
-				const instance = torrentEngine.instances.get(
-					torrentSetup.torrent?.hash ?? ''
-				);
+				const instance = torrentSetup.instance;
+				if (!instance) {
+					debug(`No torrent instance for ${movieDocument.imdbCode}`);
+				}
 				if (movie && instance) {
-					movie.status = 1;
+					if (movie.status === 3) movie.status = 1;
 					movie.torrentHash = torrentSetup.torrent!.hash;
 					movie.fileName = instance.metadata.file.name;
 					if (!movie.movieHash && torrentSetup.movieHash) {
@@ -153,18 +156,19 @@ const startDownload = (
 		};
 
 		torrentSetup.once('ready', async () => {
+			debug(`${movieDocument.imdbCode} torrent setup ready`);
 			ready = true;
 			const instance = torrentEngine.instances.get(
 				torrentSetup.torrent?.hash ?? ''
 			);
 			if (instance) {
 				instance.once('idle', async () => {
+					debug(`${movieDocument.imdbCode} idle`);
 					try {
 						const movie = await MovieModel.findOne({
 							imdbCode: movieDocument.imdbCode,
 						});
 						if (movie) {
-							debug(`${movie.imdbCode} idle`);
 							torrentEngine.close(torrentSetup.torrent!.hash);
 							movie.status = 2;
 							await movie.save();
