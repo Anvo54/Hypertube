@@ -5,8 +5,9 @@ import { Segment } from 'semantic-ui-react';
 const MovieLoader: React.FC = () => (
 	<Segment style={{ marginTop: 80, paddingBottom: 40 }}>
 		<ContentLoader
-			style={{ maxWidth: '900px', padding: '20px' }}
+			style={{ width: '100%', maxWidth: '900px', padding: '20px' }}
 			speed={2}
+			width={100}
 			viewBox="0 0 900 1080"
 			backgroundColor="#f3f3f3"
 			foregroundColor="#ecebeb"

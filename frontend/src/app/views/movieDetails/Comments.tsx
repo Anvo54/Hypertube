@@ -28,7 +28,8 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 	};
 
 	const handleKey = (e: KeyboardEvent<HTMLDivElement>) => {
-		if (comment.length < 2 || /^\s+$/.test(comment)) return;
+		if (comment.length < 2 || comment.length > 500 || /^\s+$/.test(comment))
+			return;
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			addComment();
@@ -97,7 +98,11 @@ const Comments: React.FC<IProps> = ({ comments, createComment, showModal }) => {
 					labelPosition="left"
 					icon="edit"
 					color="teal"
-					disabled={comment.length < 2 || /^\s+$/.test(comment) ? true : false}
+					disabled={
+						comment.length < 2 || comment.length > 500 || /^\s+$/.test(comment)
+							? true
+							: false
+					}
 					onClick={() => addComment()}
 				/>
 			</Form>
