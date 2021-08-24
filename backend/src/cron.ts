@@ -64,6 +64,7 @@ class CronScheduler {
 			Fs.rmdirSync(subtitlesPath, { recursive: true });
 		}
 		movieDocument.status = 0;
+		movieDocument.subtitles = [];
 		try {
 			await movieDocument.save();
 		} catch (error) {
