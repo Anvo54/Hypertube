@@ -25,16 +25,26 @@ export const addCookiesToRes = (res: Response, token: string): void => {
 	res.cookie('jid', token, {
 		httpOnly: true,
 		path: '/api/accessToken',
-		maxAge: 604800000, // 7d in millis
+		maxAge: 604800000, // 7d in millis,
+		sameSite: 'strict',
 	});
 	res.cookie('isLoggedIn', 'true', {
 		httpOnly: true,
 		path: '/api/stream',
 		maxAge: 604800000, // 7d in millis
+		sameSite: 'strict',
 	});
 };
 
 export const revokeCookies = (res: Response): void => {
-	res.clearCookie('jid', { httpOnly: true, path: '/api/accessToken' });
-	res.clearCookie('isLoggedIn', { httpOnly: true, path: '/api/stream' });
+	res.clearCookie('jid', {
+		httpOnly: true,
+		path: '/api/accessToken',
+		sameSite: 'strict',
+	});
+	res.clearCookie('isLoggedIn', {
+		httpOnly: true,
+		path: '/api/stream',
+		sameSite: 'strict',
+	});
 };
