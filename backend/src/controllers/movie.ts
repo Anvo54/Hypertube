@@ -278,6 +278,7 @@ export const commentMovie = asyncHandler(async (req, res) => {
 	if (
 		!isString(commentText) ||
 		commentText.length < 2 ||
+		commentText.length > 500 ||
 		/^\s+$/.test(commentText)
 	) {
 		throw new BadRequest('invalid comment');
