@@ -127,5 +127,18 @@
 	"error_language_save": "Kielen tallennus epäonnistui. Yritä uudelleen myöhemmin.",
 	"error_movie_watched": "Elokuvan määrittäminen katsotuksi epäonnistui.",
 	"error_user_fetch": "Käyttäjän tietojen hakeminen epäonnistui.",
-	"error_invalid_file": "Vääränlainen tiedosto. Tuetut tiedostotyypit ovat jpeg ja png. Maksimikoko on 5MB."
+	"error_invalid_file": "Vääränlainen tiedosto. Tuetut tiedostotyypit ovat jpeg ja png. Maksimikoko on 5MB.",
+	"user_not_found": "Käyttäjää ei löytynyt.",
+	"user_not_confirmed": "Käyttäjä ei ole vahvistettu.",
+	"wrong_password": "Väärä salasana.",
+	"email_confirm_success": "Sähköposti vahvistettu.",
+	"email_confirm_error": "Sähköpostin vahvistamine ebäonnistui tai se on jo vahvistettu.",
+	"email_unique_error": "Tämä säköposti on jo käytössä.",
+	"username_unique_error": "Tämä käyttäjänimi on jo käytössä.",
+	"new_password_same_as_old": "Syötetty salasana on sama kuin vanha salasana.",
+	"invalid_email": "Sähköposti ei ole käytössä.",
+	"reset_already_requested": "Salasanan vaihtamisen linkkiä on jo pyydetty.",
+	"reset_code_invalid": "Salasanan vaihtamise koodi on väärä.",
+	"not_authorized": "Ei pääsyä. Kirjaudu sisään.",
+	"oauth_data_mismatch": "Todennus epäonnistui, yritä myöhemmin uudelleen."
 }

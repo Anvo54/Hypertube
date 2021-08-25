@@ -39,7 +39,8 @@ const ChangePassword = () => {
 
 	const onSubmit = async (
 		data: IResetPassword
-	): Promise<Record<string, any> | void> => await sendResetPassword(data, id);
+	): Promise<Record<string, any> | void> =>
+		await sendResetPassword(data, id, t);
 
 	return (
 		<FinalForm

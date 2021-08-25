@@ -11,6 +11,7 @@ import { RootStore } from './rootStore';
 import { history } from '../..';
 import { FORM_ERROR } from 'final-form';
 import { MouseEvent } from 'react';
+import { TFunction } from 'react-i18next';
 
 export type Languages = 'en' | 'fi' | 'ee';
 export const languageArray = ['en', 'fi', 'ee'];
@@ -92,50 +93,63 @@ export default class UserStore {
 	};
 
 	registerUser = async (
-		data: IRegisterFormValues
+		data: IRegisterFormValues,
+		t: TFunction<'translation'>
 	): Promise<void | Record<string, any>> => {
 		try {
 			await agent.User.register(data);
 			this.setSuccess();
 		} catch (error) {
-			if (error.response.data.errors) return error.response.data.errors;
-			return { [FORM_ERROR]: error.response.data.errors };
+			if (error.response.data.errors) {
+				const translatedErrors: { email?: string; username?: string } = {};
+				const errors = error.response.data.errors;
+				if (errors.email) translatedErrors.email = t('email_unique_error');
+				if (errors.username)
+					translatedErrors.username = t('username_unique_error');
+				return translatedErrors;
+			}
+			return { [FORM_ERROR]: error.response.data.message };
 		}
 	};
 
 	sendResetPassword = async (
 		data: IResetPassword,
-		code: string
+		code: string,
+		t: TFunction<'translation'>
 	): Promise<void | Record<string, any>> => {
 		try {
 			const user = await agent.User.reset(code, data);
 			this.setToken(user.accessToken);
 			this.setSuccess();
 		} catch (error) {
-			return { [FORM_ERROR]: error.response.data.message };
+			if (error.response.status === 404)
+				return { [FORM_ERROR]: t('reset_code_invalid') };
+			return { [FORM_ERROR]: t(error.response.data.message) };
 		}
 	};
 
 	loginUser = async (
-		data: ILoginFormValues
+		data: ILoginFormValues,
+		t: TFunction<'translation'>
 	): Promise<void | Record<string, any>> => {
 		try {
 			const user = await agent.User.login(data);
 			this.setToken(user.accessToken);
 			history.push('/movies');
 		} catch (error) {
-			return { [FORM_ERROR]: error.response.data.message };
+			return { [FORM_ERROR]: t(error.response.data.message) };
 		}
 	};
 
 	forgetPassword = async (
-		data: IForgetPassword
+		data: IForgetPassword,
+		t: TFunction<'translation'>
 	): Promise<void | Record<string, any>> => {
 		try {
 			await agent.User.forget(data);
 			this.setSuccess();
 		} catch (error) {
-			return { [FORM_ERROR]: error.response.data.message };
+			return { [FORM_ERROR]: t(error.response.data.message) };
 		}
 	};
 
@@ -148,14 +162,23 @@ export default class UserStore {
 		}
 	};
 
-	updateUser = (data: FormData): Promise<IGetUser | Record<string, string>> => {
+	updateUser = (
+		data: FormData,
+		t: TFunction<'translation'>
+	): Promise<IGetUser | Record<string, string>> => {
 		return new Promise(async (resolve) => {
 			try {
 				const token = await this.getToken();
 				resolve(await agent.User.update(token, data));
 			} catch (error) {
-				if (error.response.data.errors)
-					return resolve(error.response.data.errors);
+				if (error.response.data.errors) {
+					const translatedErrors: { email?: string; username?: string } = {};
+					const errors = error.response.data.errors;
+					if (errors.email) translatedErrors.email = t('email_unique_error');
+					if (errors.username)
+						translatedErrors.username = t('username_unique_error');
+					return resolve(translatedErrors);
+				}
 				resolve({ [FORM_ERROR]: error.response.data.message });
 			}
 		});

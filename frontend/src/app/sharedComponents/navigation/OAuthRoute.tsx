@@ -60,7 +60,9 @@ const OAuthRoute: React.FC<RouteProps> = ({ ...rest }) => {
 						<Loader content={t('getting_data')} size="massive" />
 					</Dimmer>
 				) : error ? (
-					<Redirect to="/?oauth-error=Authentication+failed,+try+again+later." />
+					<Redirect
+						to={`/?oauth-error=${encodeURI(t('oauth_data_mismatch'))}`}
+					/>
 				) : (
 					<Redirect to="/movies" />
 				)
