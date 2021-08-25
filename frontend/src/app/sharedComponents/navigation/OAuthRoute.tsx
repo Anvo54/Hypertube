@@ -15,7 +15,7 @@ import { Dimmer, Loader } from 'semantic-ui-react';
 const OAuthRoute: React.FC<RouteProps> = ({ ...rest }) => {
 	const { t } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
-	const { setToken } = rootStore.userStore;
+	const { setToken, saveCurrentLanguage } = rootStore.userStore;
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(true);
 	const [isMounted, setIsMounted] = useState(true);
@@ -33,6 +33,7 @@ const OAuthRoute: React.FC<RouteProps> = ({ ...rest }) => {
 					.then((res) => {
 						setToken(res.accessToken);
 						setError(false);
+						saveCurrentLanguage(t);
 					})
 					.catch((err) => {
 						// If email in github is private, needs to register manually
@@ -49,7 +50,16 @@ const OAuthRoute: React.FC<RouteProps> = ({ ...rest }) => {
 			return;
 		} else setLoading(false);
 		return () => setIsMounted(false);
-	}, [code, linkType, setToken, state, isMounted, history]);
+	}, [
+		code,
+		linkType,
+		setToken,
+		state,
+		isMounted,
+		history,
+		t,
+		saveCurrentLanguage,
+	]);
 
 	return (
 		<Route
