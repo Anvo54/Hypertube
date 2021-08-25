@@ -25,7 +25,7 @@ export const addCookiesToRes = (res: Response, token: string): void => {
 	res.cookie('jid', token, {
 		httpOnly: true,
 		path: '/api/accessToken',
-		maxAge: 604800000, // 7d in millis,
+		maxAge: 604800000, // 7d in millis
 		sameSite: 'strict',
 	});
 	res.cookie('isLoggedIn', 'true', {
