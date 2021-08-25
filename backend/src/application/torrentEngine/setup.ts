@@ -126,7 +126,7 @@ export class TorrentSetup extends EventEmitter {
 				this.emit('movieHash', movieHash);
 			});
 			const checkReady = () => {
-				if (!this.movieHash || !this.instance) return;
+				if (!this.instance) return;
 				for (
 					let i = this.instance.file.startPiece;
 					i < this.instance.file.startPiece + 9;
@@ -140,6 +140,7 @@ export class TorrentSetup extends EventEmitter {
 			};
 			this.instance.on('piece', checkReady);
 			this.instance.startDownload();
+			checkReady();
 		} catch (error) {
 			this.emit('error', error);
 		}

@@ -122,7 +122,10 @@ export class TorrentInstance extends EventEmitter {
 	};
 
 	refresh = (): void => {
-		if (!this.pieceQueue.length && !this.priorityPieceQueue.length) return;
+		if (!this.pieceQueue.length && !this.priorityPieceQueue.length) {
+			this.emit('idle');
+			return;
+		}
 		this.debug('Refreshing');
 		process.nextTick(() => {
 			this.discovery.peers.forEach((peer) => {
