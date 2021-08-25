@@ -12,6 +12,7 @@ import { history } from '../..';
 import { FORM_ERROR } from 'final-form';
 import { MouseEvent } from 'react';
 import { TFunction } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 export type Languages = 'en' | 'fi' | 'ee';
 export const languageArray = ['en', 'fi', 'ee'];
@@ -135,6 +136,7 @@ export default class UserStore {
 		try {
 			const user = await agent.User.login(data);
 			this.setToken(user.accessToken);
+			await this.saveCurrentLanguage(t);
 			history.push('/movies');
 		} catch (error) {
 			return { [FORM_ERROR]: t(error.response.data.message) };
@@ -190,6 +192,19 @@ export default class UserStore {
 			return await agent.User.getUsersProfile(token, usersId);
 		} catch (error) {
 			return null;
+		}
+	};
+
+	saveCurrentLanguage = async (t: TFunction<'translation'>): Promise<void> => {
+		const language = window.localStorage.getItem('i18nActiveLng');
+		if (language && languageArray.includes(language)) {
+			try {
+				await this.updateLanguage(language as Languages);
+			} catch (_error) {
+				toast.error(t('error_language_save'));
+			}
+		} else {
+			toast.error(t('error_language_save'));
 		}
 	};
 

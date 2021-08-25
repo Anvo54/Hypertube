@@ -1,8 +1,7 @@
 import { RootStoreContext } from 'app/stores/rootStore';
-import { Languages, languageArray } from 'app/stores/userStore';
-import React, { useContext, useEffect } from 'react';
+import { Languages } from 'app/stores/userStore';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import { changeLanguage, languagesSelect } from 'translations/i18n';
 
@@ -11,23 +10,9 @@ interface IProps {
 }
 
 const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
-	const { i18n, t } = useTranslation();
+	const { i18n } = useTranslation();
 	const rootStore = useContext(RootStoreContext);
 	const { token, updateLanguage } = rootStore.userStore;
-
-	useEffect(() => {
-		const oldLanguage = window.localStorage.getItem('language');
-		if (oldLanguage && token) {
-			window.localStorage.removeItem('language');
-			if (!languageArray.includes(oldLanguage)) {
-				toast.error(t('error_language_save'));
-			} else {
-				updateLanguage(oldLanguage as Languages).catch(() => {
-					toast.error(t('error_language_save'));
-				});
-			}
-		}
-	});
 
 	const activeLanguageName = () => {
 		const activeLng = languagesSelect.find((row) => row.key === i18n.language);
@@ -41,8 +26,6 @@ const LanguageSelector: React.FC<IProps> = ({ isMobile = false }) => {
 		changeLanguage(value as string);
 		if (token) {
 			updateLanguage(value as Languages);
-		} else {
-			window.localStorage.setItem('language', value as string);
 		}
 	};
 
