@@ -42,7 +42,7 @@ export const getMovieInfo = async (
 				const omdbDetails = await omdbService.details(movie.imdb);
 				if ('Title' in omdbDetails && omdbDetails.Type === 'movie') {
 					const omdbThumbnail = omdbDetailsToMovieThumbnail(omdbDetails);
-					if (omdbThumbnail) throw new Error('omdbDetails data not complete');
+					if (!omdbThumbnail) throw new Error('omdbDetails data not complete');
 					return omdbThumbnail;
 				}
 				return Promise.reject('Movie data not found');
@@ -53,6 +53,8 @@ export const getMovieInfo = async (
 	promiseList.forEach((promise) => {
 		if (promise.status === 'fulfilled' && promise.value) {
 			thumbnailList.push(promise.value);
+		} else {
+			debug(promise);
 		}
 	});
 	return thumbnailList;
