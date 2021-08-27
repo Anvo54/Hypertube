@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "NODE_PATH=./src ts-node-dev src/app.ts",
+    "app": "NODE_PATH=./src ts-node src/app.ts",
     "lint": "eslint -c .eslintrc.js --ext .ts src/"
   },
   "author": "",

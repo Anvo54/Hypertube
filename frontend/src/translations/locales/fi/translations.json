@@ -140,5 +140,6 @@
 	"reset_already_requested": "Salasanan vaihtamisen linkkiä on jo pyydetty.",
 	"reset_code_invalid": "Salasanan vaihtamise koodi on väärä.",
 	"not_authorized": "Ei pääsyä. Kirjaudu sisään.",
-	"oauth_data_mismatch": "Todennus epäonnistui, yritä myöhemmin uudelleen."
+	"oauth_data_mismatch": "Todennus epäonnistui, yritä myöhemmin uudelleen.",
+	"torrent_max_bandwidth": "Internet kaistan käyttö ylitetty."
 }
