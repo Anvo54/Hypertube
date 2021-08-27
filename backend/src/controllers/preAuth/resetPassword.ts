@@ -19,6 +19,8 @@ export const sendResetPasswordController = asyncHandler(async (req, res) => {
 	const user = await Usermodel.findOne({ email });
 	if (!user) throw new BadRequest('invalid_email');
 
+	if (!user.isConfirmed) throw new BadRequest('user_not_confirmed');
+
 	const link = await LinkModel.findOne({ user: user.id, linkType: RESET });
 	if (link) throw new BadRequest('reset_already_requested');
 

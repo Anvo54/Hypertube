@@ -82,11 +82,12 @@ export default class UserStore {
 		});
 	};
 
-	setSuccess = (): void => {
+	setSuccess = (currentPath: string = history.location.pathname): void => {
 		this.success = true;
 		setTimeout(() => {
 			runInAction(() => {
 				this.success = !this.success;
+				if (currentPath !== history.location.pathname) return
 				if (this.token) return history.push('/movies');
 				history.push('/');
 			});
