@@ -140,5 +140,6 @@
 	"reset_already_requested": "Reset password link has already been requested.",
 	"reset_code_invalid": "Reset password code invalid.",
 	"not_authorized": "Not authorized. Please login in.",
-	"oauth_data_mismatch": "Authentication failed, try again later."
+	"oauth_data_mismatch": "Authentication failed, try again later.",
+	"torrent_max_bandwidth": "Maximum bandwidth reached."
 }

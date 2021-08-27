@@ -231,7 +231,7 @@ export class TorrentInstance extends EventEmitter {
 
 		while (peer.wire.requests.length < CONCURRENT_REQUESTS) {
 			let request = this.reserveBlock(peer, this.priorityPieceQueue);
-			if (!request && this.engine.clear())
+			if (!request)
 				request = this.reserveBlock(peer, this.pieceQueue);
 			if (request) {
 				this.requestBlock(request);

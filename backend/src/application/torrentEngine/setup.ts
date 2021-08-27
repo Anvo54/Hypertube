@@ -114,6 +114,10 @@ export class TorrentSetup extends EventEmitter {
 			if (this.engine.instances.size + this.engine.setups.size > 5) {
 				throw new SetupError('torrent_max_instances', 'torrent');
 			}
+			const bandwidth = process.env.INTERNET_BANDWIDTH;
+			if (bandwidth && this.engine.speed() / parseInt(bandwidth) > 0.8) {
+				throw new SetupError('torrent_max_bandwidth', 'torrent');
+			}
 			this.torrent = await findTorrent(this.imdbCode);
 			if (this.engine.instances.get(this.torrent.hash)) {
 				throw new SetupError('torrent_duplicate', 'torrent');

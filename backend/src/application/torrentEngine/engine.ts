@@ -86,11 +86,14 @@ export class TorrentEngine extends EventEmitter {
 		return data;
 	};
 
-	clear = (): boolean => {
-		const array = Array.from(this.instances.values());
-		return !array.some((i) => {
-			return i.priorityPieceQueue.length;
+	speed = (): number => {
+		let speed = 0;
+		this.instances.forEach((instance) => {
+			instance.discovery.peers.forEach((peer) => {
+				speed = speed + peer.wire.downloadSpeed();
+			});
 		});
+		return Math.ceil(speed / 100000);
 	};
 
 	setup = (imdbCode: string): TorrentSetup => {
