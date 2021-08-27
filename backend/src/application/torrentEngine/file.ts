@@ -68,11 +68,15 @@ export class TorrentFile {
 		const startByte = start ?? 0;
 		const endByte = end ?? this.options.length - 1;
 		const stream = new FileStream(this, startByte, endByte);
-		this.debug(`Stream ${startByte}-${endByte} ${stream.startPiece}-${stream.endPiece} open`);
+		this.debug(
+			`Stream ${startByte}-${endByte} ${stream.startPiece}-${stream.endPiece} open`
+		);
 		const instance = this.instance;
 
 		eos(stream, () => {
-			this.debug(`Stream ${startByte}-${endByte} ${this.startPiece}-${this.endPiece} closed`);
+			this.debug(
+				`Stream ${startByte}-${endByte} ${this.startPiece}-${this.endPiece} closed`
+			);
 			instance.priorityPieceQueue = instance.priorityPieceQueue.filter((p) => {
 				return p.index < this.startPiece || p.index > this.endPiece;
 			});

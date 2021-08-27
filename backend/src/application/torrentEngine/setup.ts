@@ -134,6 +134,7 @@ export class TorrentSetup extends EventEmitter {
 				) {
 					if (!this.instance.bitfield.get(i)) return;
 				}
+				if (!this.instance.bitfield.get(this.instance.file.endPiece)) return;
 				this.instance.removeListener('piece', checkReady);
 				this.emit('task', 'firstPieces');
 				this.emit('ready');

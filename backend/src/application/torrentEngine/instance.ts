@@ -70,7 +70,7 @@ export class TorrentInstance extends EventEmitter {
 			offset: metadata.file.offset,
 			length: metadata.file.length,
 			chunkLength: metadata.pieceLength,
-			leftOver: metadata.length - metadata.file.length,
+			leftOver: metadata.length - (metadata.file.length + metadata.file.offset),
 			lastChunkLength: metadata.lastPieceLength,
 		});
 		this.numOfPieces = this.metadata.pieces.length - 1;
@@ -401,20 +401,26 @@ export class TorrentInstance extends EventEmitter {
 	};
 
 	onPieceComplete = (index: number, buffer: Buffer): void => {
-		this.bitfield.set(index);
 		this.file.store.put(index, buffer, (err?: Error) => {
 			if (err) {
-				this.debug(`Error writing data piece ${index}`, err, buffer.length);
+				this.debug(
+					`Error writing data piece ${index}`,
+					err,
+					'Buffer length: ',
+					buffer.length
+				);
+				return;
+			}
+			this.bitfield.set(index);
+			this.debug(`Piece ${index} validated`);
+			this.emit(`piece${index}`);
+			this.emit('piece', index);
+			this.discovery.peers.forEach((peer) => {
+				peer.wire.have(index);
+			});
+			if (!this.pieceQueue.length && !this.priorityPieceQueue.length) {
+				this.emit('idle');
 			}
 		});
-		this.debug(`Piece ${index} validated`);
-		this.emit(`piece${index}`);
-		this.emit('piece', index);
-		this.discovery.peers.forEach((peer) => {
-			peer.wire.have(index);
-		});
-		if (!this.pieceQueue.length && !this.priorityPieceQueue.length) {
-			this.emit('idle');
-		}
 	};
 }
